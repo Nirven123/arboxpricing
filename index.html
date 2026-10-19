@@ -1,0 +1,2300 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>מחשבון מחירים — Arbox</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root{
+      --navy:#081838;
+      --blue:#4F87FF;
+      --peach:#FADAB3;
+      --off-white:#F5F5F5;
+      --white:#FFFFFF;
+      --blue-light:#A3B5FF;
+      --blue-mid:#5B72E8;
+      --text:#081838;
+      --text-muted:#64748b;
+      --border:#E2E8F0;
+      --shadow:0 4px 24px rgba(8,24,56,.08);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Heebo',sans-serif;background:var(--off-white);color:var(--navy);direction:rtl;min-height:100vh}
+
+    /* ── Header ── */
+    .header{background:var(--navy);color:#fff;padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 16px rgba(8,24,56,.3)}
+    .header-logo{display:flex;align-items:center;gap:10px}
+    .header-logo-text{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.3px}
+    .header-logo-tag{background:rgba(79,135,255,.2);border:1px solid rgba(79,135,255,.4);color:var(--blue-light);font-size:12px;font-weight:600;padding:3px 10px;border-radius:9999px}
+    .header-btns{display:flex;gap:8px}
+    .hdr-btn{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);color:#fff;padding:7px 18px;border-radius:9999px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;font-family:'Heebo',sans-serif}
+    .hdr-btn:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4)}
+    .hdr-btn.primary{background:var(--blue);border-color:var(--blue)}
+    .hdr-btn.primary:hover{background:#3a70e8}
+
+    /* ── Layout ── */
+    .main{max-width:980px;margin:0 auto;padding:28px 16px 80px;display:flex;flex-direction:column;gap:16px}
+
+    /* ── Card ── */
+    .card{background:var(--white);border-radius:24px;padding:28px;box-shadow:var(--shadow)}
+    .card-title{font-size:17px;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:10px;color:var(--navy)}
+    .step{width:30px;height:30px;background:var(--blue);color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;box-shadow:0 2px 8px rgba(79,135,255,.4)}
+
+    /* ── Billing toggle ── */
+    .billing-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+    .toggle-wrap{display:flex;background:var(--off-white);border-radius:14px;padding:4px;border:1.5px solid var(--border)}
+    .toggle-btn{padding:9px 28px;border:none;border-radius:10px;background:transparent;color:var(--text-muted);font-size:15px;font-weight:700;cursor:pointer;transition:all .18s;font-family:'Heebo',sans-serif}
+    .toggle-btn.active{background:var(--navy);color:#fff;box-shadow:0 2px 10px rgba(8,24,56,.3)}
+    .save-chip{background:linear-gradient(135deg,#d1fae5,#a7f3d0);color:#065f46;font-size:12px;font-weight:700;padding:4px 12px;border-radius:9999px;border:1px solid #6ee7b7}
+    .annual-note{font-size:13px;color:var(--blue);font-weight:600;background:rgba(79,135,255,.08);border:1px solid rgba(79,135,255,.2);padding:6px 14px;border-radius:9999px}
+
+    /* ── Package cards ── */
+    .pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .pkg-card{border:2px solid var(--border);border-radius:20px;padding:22px 18px;cursor:pointer;transition:all .18s;position:relative;text-align:center;background:var(--white)}
+    .pkg-card:hover{border-color:var(--blue-light);transform:translateY(-3px);box-shadow:0 8px 24px rgba(79,135,255,.15)}
+    .pkg-card.sel{border-color:var(--blue);background:linear-gradient(160deg,rgba(79,135,255,.05) 0%,rgba(79,135,255,.12) 100%);box-shadow:0 0 0 4px rgba(79,135,255,.15)}
+    .pkg-name{font-size:18px;font-weight:800;margin-bottom:8px;color:var(--navy)}
+    .pkg-price{font-size:32px;font-weight:900;color:var(--blue);line-height:1}
+    .pkg-price sub{font-size:13px;font-weight:500;color:var(--text-muted)}
+    .pkg-annual{font-size:12px;color:var(--text-muted);margin-top:6px;min-height:16px;font-weight:500}
+    .pkg-annual-banner{font-size:11px;font-weight:700;color:var(--blue);background:rgba(79,135,255,.1);border-radius:6px;padding:3px 8px;margin-top:6px;display:inline-block}
+    .pkg-check{position:absolute;top:12px;left:12px;width:24px;height:24px;background:var(--blue);border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800}
+    .pkg-card.sel .pkg-check{display:flex}
+
+    /* ── Payment cards ── */
+    .pay-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .pay-card{border:2px solid var(--border);border-radius:20px;padding:18px;cursor:pointer;transition:all .18s;position:relative;background:var(--white)}
+    .pay-card:hover{border-color:var(--blue-light);transform:translateY(-2px)}
+    .pay-card.sel{border-color:var(--blue);background:linear-gradient(160deg,rgba(79,135,255,.05),rgba(79,135,255,.1));box-shadow:0 0 0 4px rgba(79,135,255,.12)}
+    .pay-card.full{grid-column:span 2}
+    .pay-name{font-size:16px;font-weight:800;margin-bottom:5px;color:var(--navy)}
+    .pay-price{font-size:22px;font-weight:900;color:var(--blue)}
+    .pay-price small{font-size:13px;font-weight:500;color:var(--text-muted)}
+    .pay-extra{font-size:12px;color:#dc2626;font-weight:600;margin-top:4px}
+    .pay-desc{font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.6}
+    .pay-note{font-size:12px;color:var(--blue);font-weight:600;margin-top:5px;background:rgba(79,135,255,.08);border-radius:8px;padding:4px 10px;display:inline-block}
+    .pay-check{position:absolute;top:12px;left:12px;width:24px;height:24px;background:var(--blue);border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;font-size:12px}
+    .pay-card.sel .pay-check{display:flex}
+
+    /* ── Add-ons ── */
+    .addon-list{display:flex;flex-direction:column;gap:10px}
+    .addon-item{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0 12px;border:2px solid var(--border);border-radius:16px;padding:14px 18px;cursor:pointer;transition:all .18s;background:var(--white)}
+    .addon-edit{width:100%;margin-top:12px;padding-top:12px;border-top:1.5px dashed rgba(79,135,255,.3);display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;cursor:default}
+    .addon-edit-label{font-size:12.5px;font-weight:700;color:var(--text-muted)}
+    .addon-default{font-size:12px;color:#94a3b8}
+
+    /* ── Editable price fields (setup costs + add-ons) ── */
+    .price-edit{display:flex;align-items:center;gap:6px}
+    .price-edit input{width:84px;border:1.5px solid var(--border);border-radius:10px;padding:7px 8px;font-size:15px;font-weight:800;color:var(--blue);direction:ltr;text-align:center;outline:none;font-family:'Heebo',sans-serif;background:var(--white)}
+    .price-edit input.qty{width:64px;color:var(--navy)}
+    .price-edit input:focus{border-color:var(--blue)}
+    .price-edit input.changed{border-color:#f59e0b;background:#fffbeb}
+    .price-edit input:disabled{opacity:.45}
+    .price-edit .cur{font-size:14px;font-weight:700;color:var(--navy)}
+    .price-edit small{font-size:12px;color:#94a3b8}
+    .reset-mini{background:none;border:none;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;padding:0 2px;white-space:nowrap}
+    .reset-mini:hover{text-decoration:underline}
+
+    /* ── Setup costs ── */
+    .setup-list{display:flex;flex-direction:column;gap:10px}
+    .setup-row{display:flex;align-items:center;gap:14px;border:2px solid var(--border);border-radius:16px;padding:14px 18px;background:var(--white);transition:all .18s;flex-wrap:wrap}
+    .setup-row.on{border-color:var(--blue);background:linear-gradient(160deg,rgba(79,135,255,.04),rgba(79,135,255,.1))}
+    .setup-row-main{flex:1;min-width:150px}
+    .setup-row-name{font-weight:700;font-size:15px}
+    .setup-row-desc{font-size:12.5px;color:var(--text-muted);margin-top:2px}
+    .setup-total{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding:12px 18px;border-radius:14px;background:linear-gradient(135deg,rgba(250,218,179,.35),rgba(250,218,179,.75));border:1.5px solid rgba(250,218,179,.95);font-weight:800;font-size:15px;color:var(--navy)}
+    .addon-item:hover{border-color:var(--blue-light)}
+    .addon-item.sel{border-color:var(--blue);background:linear-gradient(160deg,rgba(79,135,255,.04),rgba(79,135,255,.1))}
+    .addon-item-name{font-weight:700;font-size:15px}
+    .addon-item-desc{font-size:13px;color:var(--text-muted);margin-top:2px}
+    .addon-item-price{font-size:20px;font-weight:800;color:var(--blue);white-space:nowrap}
+    .addon-item-price small{font-size:12px;font-weight:500;color:#94a3b8}
+    .no-addons{text-align:center;color:#94a3b8;padding:32px 0;font-size:14px;line-height:1.8}
+
+    /* ── Custom items ── */
+    .custom-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+    .custom-row input[type=text]{flex:1;min-width:130px;border:1.5px solid var(--border);border-radius:10px;padding:9px 13px;font-size:14px;direction:rtl;outline:none;font-family:'Heebo',sans-serif;color:var(--navy)}
+    .custom-row input[type=text]:focus{border-color:var(--blue)}
+    .custom-row input[type=number]{width:90px;border:1.5px solid var(--border);border-radius:10px;padding:9px 10px;font-size:14px;direction:ltr;text-align:center;outline:none;font-family:'Heebo',sans-serif}
+    .custom-row input[type=number]:focus{border-color:var(--blue)}
+    .custom-row select{border:1.5px solid var(--border);border-radius:10px;padding:9px 10px;font-size:13px;outline:none;background:var(--white);cursor:pointer;color:var(--navy);font-family:'Heebo',sans-serif}
+    .custom-row select:focus{border-color:var(--blue)}
+    .btn-icon{width:34px;height:34px;border-radius:9px;border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;background:#fee2e2;color:#dc2626;flex-shrink:0;transition:background .15s}
+    .btn-icon:hover{background:#fecaca}
+    .btn-add-custom{display:flex;align-items:center;gap:7px;background:var(--off-white);border:1.5px dashed var(--border);border-radius:12px;padding:11px 18px;cursor:pointer;color:var(--text-muted);font-size:14px;font-weight:600;width:100%;justify-content:center;transition:all .15s;margin-top:4px;font-family:'Heebo',sans-serif}
+    .btn-add-custom:hover{background:#e8edf5;border-color:#94a3b8;color:var(--navy)}
+
+    /* ── Discount ── */
+    .disc-toggle-row{display:flex;align-items:center;gap:12px}
+    .switch{position:relative;display:inline-block;width:46px;height:26px;cursor:pointer;flex-shrink:0}
+    .switch input{opacity:0;width:0;height:0}
+    .slider{position:absolute;inset:0;background:#cbd5e1;border-radius:13px;transition:.2s}
+    .slider::before{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;right:3px;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+    .switch input:checked + .slider{background:var(--blue)}
+    .switch input:checked + .slider::before{transform:translateX(-20px)}
+    .disc-fields-inner{margin-top:18px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+    .disc-field{display:flex;flex-direction:column;gap:5px}
+    .disc-field label{font-size:13px;font-weight:700;color:var(--navy)}
+    .disc-input-wrap{display:flex;align-items:center;gap:7px}
+    .disc-input-wrap input{width:80px;border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-size:16px;font-weight:700;direction:ltr;text-align:center;outline:none;font-family:'Heebo',sans-serif}
+    .disc-input-wrap input:focus{border-color:var(--blue)}
+    .disc-input-wrap .pct-sign{font-size:20px;font-weight:800;color:var(--blue)}
+    .disc-select{border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-size:14px;font-weight:600;outline:none;background:var(--white);cursor:pointer;font-family:'Heebo',sans-serif;color:var(--navy)}
+    .disc-select:focus{border-color:var(--blue)}
+    .disc-months-wrap{display:flex;align-items:center;gap:7px}
+    .disc-months-wrap input{width:70px;border:1.5px solid var(--border);border-radius:10px;padding:9px 10px;font-size:15px;direction:ltr;text-align:center;outline:none;font-family:'Heebo',sans-serif;font-weight:700}
+    .disc-months-wrap input:focus{border-color:var(--blue)}
+    .disc-targets-wrap{margin-top:18px;border:1.5px solid var(--border);border-radius:14px;padding:16px 18px;background:var(--off-white)}
+    .disc-targets-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px}
+    .disc-target-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:14px;cursor:pointer}
+    .disc-target-row input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--blue)}
+    .disc-target-price{color:var(--text-muted);font-size:12px;margin-right:4px}
+    .disc-preview{margin-top:14px;background:linear-gradient(135deg,rgba(79,135,255,.08),rgba(79,135,255,.14));border:1.5px solid rgba(79,135,255,.25);border-radius:12px;padding:12px 16px;font-size:14px;color:var(--blue);line-height:1.6;font-weight:600}
+
+    /* ── Note field ── */
+    .note-textarea{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;font-family:'Heebo',sans-serif;color:var(--navy);resize:vertical;min-height:76px;outline:none;direction:rtl;background:var(--white);transition:border-color .15s}
+    .note-textarea:focus{border-color:var(--blue)}
+    .note-textarea::placeholder{color:#94a3b8}
+
+    /* ── Summary ── */
+    .summary-card{background:var(--navy);color:#fff;border-radius:24px;padding:30px;box-shadow:0 8px 32px rgba(8,24,56,.35)}
+    .summary-title{font-size:19px;font-weight:800;margin-bottom:24px;display:flex;align-items:center;gap:8px}
+    .sum-line{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:15px}
+    .sum-line:last-child{border-bottom:none}
+    .sum-line.sep{border-top:2px solid rgba(255,255,255,.2);border-bottom:none;margin-top:10px;padding-top:16px}
+    .sum-line.big{font-size:26px;font-weight:900}
+    .sum-line.dim{color:#93c5fd;font-size:13px}
+    .sum-line.onetime-section{border-top:1px solid rgba(255,255,255,.15);color:#fde68a;font-size:13px}
+    .green{color:#86efac;font-weight:700}
+    .warn{color:#fca5a5}
+    .pdf-btn{display:block;width:100%;margin-top:20px;background:var(--blue);border:none;color:#fff;padding:14px;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;text-align:center;transition:all .15s;font-family:'Heebo',sans-serif;letter-spacing:.2px}
+    .pdf-btn:hover{background:#3a70e8;transform:translateY(-1px)}
+    .empty-summary{text-align:center;padding:48px;color:#94a3b8;font-size:15px;background:var(--white);border-radius:24px;box-shadow:var(--shadow)}
+    .empty-summary .emo{font-size:40px;display:block;margin-bottom:12px}
+
+    /* ── Modals ── */
+    .overlay{position:fixed;inset:0;background:rgba(8,24,56,.6);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+    .overlay.open{display:flex}
+    .modal{background:var(--white);border-radius:24px;padding:30px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(8,24,56,.3)}
+    .modal-sm{max-width:440px}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+    .modal-head h2{font-size:20px;font-weight:800;color:var(--navy)}
+    .close-btn{background:var(--off-white);border:none;font-size:18px;cursor:pointer;color:var(--text-muted);width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:9999px;transition:background .15s}
+    .close-btn:hover{background:var(--border)}
+
+    /* ── Auth ── */
+    .auth-panel label{display:block;font-weight:700;font-size:14px;margin-bottom:6px;color:var(--navy)}
+    .auth-panel input{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;font-size:15px;direction:rtl;outline:none;margin-bottom:10px;font-family:'Heebo',sans-serif}
+    .auth-panel input:focus{border-color:var(--blue)}
+    .auth-error{color:#dc2626;font-size:13px;margin-bottom:8px;display:none;font-weight:600}
+
+    /* ── Admin ── */
+    .admin-section{border:1.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;background:var(--off-white)}
+    .admin-section h3{font-size:15px;font-weight:800;margin-bottom:16px;color:var(--navy)}
+    .field-row{margin-bottom:10px}
+    .field-row label{display:block;font-weight:700;font-size:13px;margin-bottom:5px;color:var(--navy)}
+    .field-row input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-size:14px;direction:rtl;outline:none;font-family:'Heebo',sans-serif;background:var(--white)}
+    .field-row input:focus{border-color:var(--blue)}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .btn{padding:9px 20px;border-radius:9999px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'Heebo',sans-serif}
+    .btn-primary{background:var(--blue);color:#fff}
+    .btn-primary:hover{background:#3a70e8}
+    .btn-ghost{background:var(--off-white);color:var(--navy);border:1.5px solid var(--border)}
+    .btn-ghost:hover{background:var(--border)}
+    .btn-danger{background:#fee2e2;color:#dc2626}
+    .btn-danger:hover{background:#fecaca}
+    .btn-green{background:#dcfce7;color:#15803d}
+    .btn-green:hover{background:#bbf7d0}
+    .btn-warning{background:#fef9c3;color:#854d0e}
+    .btn-warning:hover{background:#fef08a}
+    .btn-purple{background:rgba(79,135,255,.12);color:var(--blue);border:1.5px solid rgba(79,135,255,.3)}
+    .btn-purple:hover{background:rgba(79,135,255,.2)}
+    .admin-addon-row{border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;background:var(--white)}
+    .admin-addon-top{display:flex;justify-content:space-between;align-items:center}
+    .admin-addon-info{font-weight:700;font-size:14px;color:var(--navy)}
+    .admin-addon-prices{font-size:12px;color:var(--text-muted);margin-top:3px}
+    .admin-addon-actions{display:flex;gap:6px;flex-shrink:0}
+    .admin-addon-edit-form{border-top:1.5px solid var(--border);margin-top:12px;padding-top:12px}
+    .btn-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+    .import-box{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12px;font-family:monospace;height:80px;resize:vertical;direction:ltr;outline:none}
+    .import-box:focus{border-color:var(--blue)}
+    .publish-note{background:linear-gradient(135deg,rgba(250,218,179,.3),rgba(250,218,179,.6));border:1.5px solid rgba(250,218,179,.8);border-radius:12px;padding:14px;font-size:13px;color:#7c3700;line-height:1.7;margin-bottom:14px}
+
+    /* ── PDF modal / composer fields ── */
+    .pdf-field{margin-bottom:16px}
+    .pdf-field label{display:block;font-weight:700;font-size:14px;margin-bottom:5px;color:var(--navy)}
+    .pdf-field input,.pdf-field textarea{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;font-size:14px;direction:rtl;outline:none;font-family:'Heebo',sans-serif}
+    .pdf-field input:focus,.pdf-field textarea:focus{border-color:var(--blue)}
+    .pdf-field textarea{height:72px;resize:vertical}
+    .pdf-field textarea.tall{height:120px}
+    .pdf-field-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+    .pdf-field-head label{margin-bottom:0}
+    .reset-link{background:none;border:none;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;font-family:'Heebo',sans-serif;padding:0}
+    .reset-link:hover{text-decoration:underline}
+
+    /* ── Composer (proposal builder) ── */
+    .composer-overlay{position:fixed;inset:0;background:rgba(8,24,56,.65);z-index:300;display:none;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(4px)}
+    .composer-overlay.open{display:flex}
+    .composer-shell{background:var(--off-white);border-radius:24px;width:100%;max-width:1440px;height:96vh;box-shadow:0 24px 64px rgba(8,24,56,.4);display:flex;flex-direction:column;overflow:hidden}
+    .composer-head{background:var(--navy);color:#fff;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;flex-wrap:wrap;gap:10px}
+    .composer-head h2{font-size:17px;font-weight:800}
+    .composer-head-right{display:flex;align-items:center;gap:12px}
+    .lang-toggle{display:flex;background:rgba(255,255,255,.1);border-radius:12px;padding:3px;border:1.5px solid rgba(255,255,255,.2)}
+    .lang-toggle button{padding:6px 16px;border:none;border-radius:9px;background:transparent;color:rgba(255,255,255,.7);font-size:13px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif}
+    .lang-toggle button.active{background:var(--blue);color:#fff}
+    .composer-close{background:rgba(255,255,255,.12);border:none;color:#fff;width:32px;height:32px;border-radius:9999px;cursor:pointer;font-size:16px}
+    .composer-body{flex:1;display:flex;overflow:hidden}
+    .composer-form{width:440px;flex-shrink:0;overflow-y:auto;padding:20px;border-left:1.5px solid var(--border);background:#fff}
+    .composer-preview-pane{flex:1;overflow:auto;background:#e5e9f0;display:flex;justify-content:center;padding:28px 16px}
+    .composer-footer{padding:14px 22px;border-top:1.5px solid var(--border);background:#fff;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0}
+    .cf-section{margin-bottom:18px}
+    .cf-section-title{font-size:13px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--border)}
+    .radio-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:14px;cursor:pointer;color:var(--navy)}
+    .radio-row input{width:16px;height:16px;accent-color:var(--blue);cursor:pointer}
+    .feature-row{display:flex;justify-content:space-between;align-items:center;padding:8px 2px;border-bottom:1px solid var(--border);font-size:13.5px;gap:10px}
+    .feature-row:last-child{border-bottom:none}
+    .feature-row span{color:var(--navy)}
+    .feature-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--blue);cursor:pointer;flex-shrink:0}
+    .proposal-scale-wrap{transform-origin:top center;transition:transform .1s}
+    .proposal-paper{width:794px;background:#fff;box-shadow:0 8px 32px rgba(8,24,56,.18);font-family:Arial,sans-serif;color:#081838}
+
+    /* ── Admin feature table ── */
+    .admin-feat-table{width:100%;border-collapse:collapse;font-size:13px}
+    .admin-feat-table th{text-align:center;padding:6px 4px;color:var(--text-muted);font-size:11px;font-weight:700;border-bottom:2px solid var(--border)}
+    .admin-feat-table th:first-child{text-align:right}
+    .admin-feat-table td{padding:7px 4px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .admin-feat-table td:not(:first-child){text-align:center}
+    .admin-feat-table input[type=text]{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:6px 8px;font-size:12.5px;direction:rtl;font-family:'Heebo',sans-serif}
+    .admin-feat-table input[type=checkbox]{width:17px;height:17px;accent-color:var(--blue);cursor:pointer}
+    .admin-feat-table .del-feat-btn{background:#fee2e2;color:#dc2626;border:none;border-radius:8px;width:26px;height:26px;cursor:pointer;font-size:13px}
+
+    @media(max-width:900px){
+      .composer-body{flex-direction:column;overflow-y:auto}
+      .composer-form{width:100%;border-left:none;border-bottom:1.5px solid var(--border);overflow-y:visible}
+      .composer-preview-pane{overflow:visible}
+    }
+    @media(max-width:600px){
+      .pkg-grid{grid-template-columns:1fr}
+      .pay-grid{grid-template-columns:1fr}
+      .pay-card.full{grid-column:span 1}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════ HEADER ════ -->
+<header class="header">
+  <div class="header-logo">
+    <div class="header-logo-text">Arbox</div>
+    <span class="header-logo-tag">מחשבון מחירים פנימי</span>
+  </div>
+  <div class="header-btns">
+    <button class="hdr-btn primary" onclick="openProposalComposer()">📄 הצעה ללקוח</button>
+    <button class="hdr-btn" style="background:rgba(34,197,94,.18);border-color:rgba(34,197,94,.4)" onclick="openDealSummary()">✅ סיכום עסקה סגורה</button>
+    <button class="hdr-btn" onclick="openAdmin()">⚙️ ניהול תוספים ופיצ'רים</button>
+  </div>
+</header>
+
+<!-- ════ MAIN ════ -->
+<div class="main">
+
+  <!-- 1. Billing -->
+  <div class="card">
+    <div class="card-title"><span class="step">1</span>סוג חיוב</div>
+    <div class="billing-row">
+      <div class="toggle-wrap">
+        <button class="toggle-btn active" id="btn-monthly" onclick="setBilling('monthly')">חיוב חודשי</button>
+        <button class="toggle-btn" id="btn-annual" onclick="setBilling('annual')">חיוב שנתי</button>
+      </div>
+      <span class="save-chip">✦ חיסכון עד 17%</span>
+      <span class="annual-note" id="annual-note" style="display:none">💳 תשלום אחד לשנה קדימה</span>
+    </div>
+  </div>
+
+  <!-- 2. Package -->
+  <div class="card">
+    <div class="card-title"><span class="step">2</span>בחירת חבילה</div>
+    <div class="pkg-grid">
+      <div class="pkg-card" id="pkg-basic" onclick="selectPkg('basic')">
+        <div class="pkg-check">✓</div>
+        <div class="pkg-name">Basic</div>
+        <div class="pkg-price" id="pp-basic">189<sub>₪/חודש</sub></div>
+        <div class="pkg-annual" id="pa-basic"></div>
+      </div>
+      <div class="pkg-card" id="pkg-standard" onclick="selectPkg('standard')">
+        <div class="pkg-check">✓</div>
+        <div class="pkg-name">Standard</div>
+        <div class="pkg-price" id="pp-standard">489<sub>₪/חודש</sub></div>
+        <div class="pkg-annual" id="pa-standard"></div>
+      </div>
+      <div class="pkg-card" id="pkg-professional" onclick="selectPkg('professional')">
+        <div class="pkg-check">✓</div>
+        <div class="pkg-name">Professional</div>
+        <div class="pkg-price" id="pp-professional">1,089<sub>₪/חודש</sub></div>
+        <div class="pkg-annual" id="pa-professional"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Setup costs (one-time) -->
+  <div class="card">
+    <div class="card-title"><span class="step">3</span>עלויות הקמה חד-פעמיות</div>
+    <div id="setup-container"></div>
+    <div style="font-size:12px;color:#94a3b8;margin-top:10px;text-align:center">המחיר נקבע אוטומטית לפי החבילה · אפשר לערוך לפי מה שסוכם עם הלקוח · מופיע בהצעה בנפרד מדמי המנוי</div>
+  </div>
+
+  <!-- 3. Payment -->
+  <div class="card">
+    <div class="card-title"><span class="step">4</span>מודול סליקה</div>
+    <div class="pay-grid">
+      <div class="pay-card full sel" id="pay-none" onclick="selectPay('none')">
+        <div class="pay-check">✓</div>
+        <div class="pay-name">ללא סליקה</div>
+        <div class="pay-price" style="color:var(--text-muted);font-size:16px">ללא עלות נוספת</div>
+        <div class="pay-desc">הלקוח לא צריך מודול סליקה בשלב זה.</div>
+      </div>
+      <div class="pay-card" id="pay-grow" onclick="selectPay('grow')">
+        <div class="pay-check">✓</div>
+        <div class="pay-name">⚡ Grow</div>
+        <div class="pay-price" id="pp-grow">+79₪ <small>/חודש</small></div>
+        <div class="pay-extra" id="pe-grow">+ 59₪/חודש לGrow ישירות (בנפרד)</div>
+        <div class="pay-desc">✅ ללא עלות הקמה · עמלת סליקה חצי שקל על כל עסקה מעל 100 עסקאות/חודש</div>
+        <div class="pay-note">79₪ בחשבון ארבוקס · 59₪ לGrow בנפרד</div>
+      </div>
+      <div class="pay-card" id="pay-pelecard" onclick="selectPay('pelecard')">
+        <div class="pay-check">✓</div>
+        <div class="pay-name">💳 Pelecard</div>
+        <div class="pay-price" id="pp-pelecard">+79₪ <small>/חודש</small></div>
+        <div class="pay-extra" id="pe-pelecard">+ 145₪/חודש לפלאכארד (בנפרד) · הקמה 400₪</div>
+        <div class="pay-desc">⚠️ תשלום דו-ערוצי:<br>• לארבוקס: כרגיל<br>• לפלאכארד ישירות: 145₪/חודש + 400₪ הקמה</div>
+      </div>
+      <div class="pay-card" id="pay-icredit" onclick="selectPay('icredit')">
+        <div class="pay-check">✓</div>
+        <div class="pay-name">💠 iCredit</div>
+        <div class="pay-price" id="pp-icredit">+186₪ <small>/חודש</small></div>
+        <div class="pay-desc">✅ פתרון סליקה משולב<br>✅ תמיכה בכרטיסי אשראי מגוונים</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Add-ons (admin) -->
+  <div class="card">
+    <div class="card-title"><span class="step">5</span>תוספים ופיצ'רים</div>
+    <div class="addon-list" id="addons-container">
+      <div class="no-addons">אין תוספים מוגדרים עדיין.<br><small>מנהל יכול להוסיף דרך ⚙️ ניהול תוספים</small></div>
+    </div>
+  </div>
+
+  <!-- 5. Custom items -->
+  <div class="card">
+    <div class="card-title"><span class="step">6</span>שורות מותאמות אישית</div>
+    <div id="custom-items-list"></div>
+    <button class="btn-add-custom" onclick="addCustomItem()">+ הוסף שורה</button>
+    <div style="font-size:12px;color:#94a3b8;margin-top:8px;text-align:center">שעות הטמעה, ציוד, פיצ'רים מיוחדים וכו׳</div>
+  </div>
+
+  <!-- 6. Discount -->
+  <div class="card">
+    <div class="card-title"><span class="step">7</span>הנחה מיוחדת</div>
+
+    <div style="font-size:12.5px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:10px">הנחה לחיוב חודשי (משפיעה רק על המחיר החודשי)</div>
+    <div class="disc-toggle-row">
+      <label class="switch">
+        <input type="checkbox" id="disc-enabled-m" onchange="toggleDiscount('m')"/>
+        <span class="slider"></span>
+      </label>
+      <span style="font-size:15px;font-weight:700;color:var(--navy)">הוסף הנחה לחיוב חודשי</span>
+    </div>
+    <div id="disc-wrap-m" style="display:none">
+      <div class="disc-fields-inner">
+        <div class="disc-field">
+          <label>אחוז הנחה</label>
+          <div class="disc-input-wrap">
+            <input type="number" id="disc-pct-m" value="10" min="1" max="99" oninput="updateDiscount('m')"/>
+            <span class="pct-sign">%</span>
+          </div>
+        </div>
+        <div class="disc-field">
+          <label>מגבלת זמן (מספר חודשים)</label>
+          <div class="disc-months-wrap">
+            <input type="number" id="disc-months-m" value="3" min="1" max="36" oninput="updateDiscount('m')"/>
+            <span style="font-size:14px;color:var(--text-muted)">חודשים</span>
+          </div>
+        </div>
+      </div>
+      <div class="disc-targets-wrap" id="disc-targets-wrap-m" style="display:none">
+        <div class="disc-targets-title">על אילו שורות תחול ההנחה?</div>
+        <div id="disc-targets-list-m"></div>
+      </div>
+      <div class="disc-preview" id="disc-preview-m" style="display:none"></div>
+    </div>
+
+    <div style="height:1px;background:var(--border);margin:22px 0"></div>
+
+    <div style="font-size:12.5px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:10px">הנחה לחיוב שנתי (משפיעה רק על המחיר השנתי)</div>
+    <div class="disc-toggle-row">
+      <label class="switch">
+        <input type="checkbox" id="disc-enabled-a" onchange="toggleDiscount('a')"/>
+        <span class="slider"></span>
+      </label>
+      <span style="font-size:15px;font-weight:700;color:var(--navy)">הוסף הנחה לחיוב שנתי</span>
+    </div>
+    <div id="disc-wrap-a" style="display:none">
+      <div class="disc-fields-inner">
+        <div class="disc-field">
+          <label>אחוז הנחה</label>
+          <div class="disc-input-wrap">
+            <input type="number" id="disc-pct-a" value="10" min="1" max="99" oninput="updateDiscount('a')"/>
+            <span class="pct-sign">%</span>
+          </div>
+        </div>
+        <div class="disc-field">
+          <label>מגבלת זמן (מספר שנים)</label>
+          <div class="disc-months-wrap">
+            <input type="number" id="disc-months-a" value="1" min="1" max="10" oninput="updateDiscount('a')"/>
+            <span style="font-size:14px;color:var(--text-muted)">שנים</span>
+          </div>
+        </div>
+      </div>
+      <div class="disc-targets-wrap" id="disc-targets-wrap-a" style="display:none">
+        <div class="disc-targets-title">על אילו שורות תחול ההנחה?</div>
+        <div id="disc-targets-list-a"></div>
+      </div>
+      <div class="disc-preview" id="disc-preview-a" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- 7. Note -->
+  <div class="card">
+    <div class="card-title"><span class="step">8</span>הערה להצעה</div>
+    <textarea class="note-textarea" id="deal-note" placeholder="לדוג׳: חלוקה ל-2 תשלומים · הנחת מנהל לשנה שנייה · תנאים מיוחדים..." oninput="updateSummary()"></textarea>
+    <div style="font-size:12px;color:#94a3b8;margin-top:6px">הטקסט יופיע בהצעה ללקוח</div>
+  </div>
+
+  <!-- 8. Summary -->
+  <div id="summary-section">
+    <div class="empty-summary"><span class="emo">☝️</span>בחר חבילה כדי לראות סיכום מחיר</div>
+  </div>
+
+</div>
+
+<!-- ════ ADMIN MODAL ════ -->
+<div class="overlay" id="overlay-admin" onclick="overlayClick(event,'overlay-admin')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>⚙️ ניהול תוספים ופיצ'רים</h2>
+      <button class="close-btn" onclick="closeAdmin()">✕</button>
+    </div>
+    <div id="auth-panel" class="auth-panel">
+      <label>סיסמת מנהל</label>
+      <div class="auth-error" id="auth-err">סיסמה שגויה</div>
+      <input type="password" id="admin-pw" placeholder="הכנס סיסמה" onkeydown="if(event.key==='Enter')checkPw()"/>
+      <button class="btn btn-primary" onclick="checkPw()">כניסה</button>
+    </div>
+    <div id="admin-panel" style="display:none">
+      <div class="admin-section">
+        <h3 id="addon-form-title">➕ הוספת תוסף חדש</h3>
+        <div class="field-row"><label>שם התוסף *</label><input type="text" id="n-name" placeholder="לדוג׳: ניהול הוצאות"/></div>
+        <div class="field-row"><label>תיאור קצר (אופציונלי)</label><input type="text" id="n-desc" placeholder="תיאור קצר"/></div>
+        <div class="two-col">
+          <div class="field-row"><label>מחיר חודשי (₪)</label><input type="number" id="n-monthly" placeholder="0" min="0"/></div>
+          <div class="field-row"><label>מחיר שנתי לחודש (₪)</label><input type="number" id="n-annual" placeholder="0" min="0"/></div>
+        </div>
+        <div class="two-col">
+          <div class="field-row"><label>תוספת ליחידה (₪, אופציונלי)</label><input type="number" id="n-unit" placeholder="לדוג׳: 6" min="0"/></div>
+          <div class="field-row"><label>שם היחידה</label><input type="text" id="n-unitlabel" placeholder="לדוג׳: אנשי צוות"/></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="add-addon-btn" onclick="saveAddon()">+ הוסף</button>
+          <button class="btn btn-ghost" id="cancel-edit-btn" style="display:none" onclick="cancelEdit()">ביטול</button>
+        </div>
+      </div>
+      <div class="admin-section">
+        <h3>📋 תוספים קיימים</h3>
+        <div id="admin-addon-list"><div style="color:#94a3b8;font-size:14px;text-align:center;padding:12px">אין תוספים עדיין</div></div>
+      </div>
+      <div class="admin-section">
+        <h3>📊 טבלת פיצ'רים להצעה (מסומן = כלול בחבילה כברירת מחדל)</h3>
+        <div style="font-size:12px;color:#854d0e;background:#fef9c3;border:1px solid #fde047;border-radius:8px;padding:8px 12px;margin-bottom:12px;line-height:1.6">
+          ⚠️ עמודת Basic היא ניחוש התחלתי (אין דוגמת הצעה קיימת ל-Basic) — כדאי לבדוק ולתקן. שים לב גם לחפיפה אפשרית בין שורת "שירות בקרת כניסה" לבין תוסף "Access Control" בתשלום.
+        </div>
+        <div style="overflow-x:auto">
+          <table class="admin-feat-table">
+            <thead><tr><th>פיצ'ר</th><th>Basic</th><th>Standard</th><th>Professional</th><th></th></tr></thead>
+            <tbody id="admin-feat-body"></tbody>
+          </table>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="addFeatureRow()">+ הוסף שורת פיצ'ר</button>
+        </div>
+      </div>
+      <div class="admin-section">
+        <h3>♻️ איפוס לברירת המחדל של הקובץ</h3>
+        <div class="publish-note">
+          התוספים והפיצ'רים תמיד נטענים קודם מהזיכרון של הדפדפן (localStorage) - ורק אם הוא ריק, מהערכים שכתובים בקובץ. אם משהו נראה שבור, חסר, או לא מתעדכן — זו כנראה עריכת בדיקה ישנה שנתקעה בזיכרון. הכפתור מוחק את מה ששמור בדפדפן הזה ומחזיר בדיוק את מה שכתוב בקובץ.
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-warning" onclick="resetAddonsToDefaults()">איפוס תוספים</button>
+          <button class="btn btn-warning" onclick="resetFeaturesToDefaults()">איפוס טבלת פיצ'רים</button>
+        </div>
+      </div>
+      <div class="admin-section">
+        <h3>🚀 פרסם לכולם</h3>
+        <div class="publish-note">
+          שינויים נשמרים <strong>אצלך בלבד</strong> (localStorage).<br>
+          כדי שכולם יראו: לחץ <strong>הורד קובץ מעודכן</strong> ← עדכן אותו ב-GitHub ← כולם מעודכנים.
+        </div>
+        <button class="btn btn-purple" onclick="publishForAll()">⬇️ הורד קובץ מעודכן לפרסום</button>
+      </div>
+      <div class="admin-section">
+        <h3>🔄 ייצוא / ייבוא קונפיג</h3>
+        <div class="btn-row">
+          <button class="btn btn-green" onclick="exportConfig()">📤 ייצא</button>
+          <button class="btn btn-ghost" onclick="toggleImport()">📥 ייבא</button>
+        </div>
+        <div id="export-box" style="display:none;margin-top:12px">
+          <textarea class="import-box" id="export-text" readonly onclick="this.select()"></textarea>
+        </div>
+        <div id="import-box" style="display:none;margin-top:12px">
+          <textarea class="import-box" id="import-text" placeholder="הדבק קונפיג..."></textarea>
+          <button class="btn btn-primary" style="margin-top:8px" onclick="importConfig()">ייבא</button>
+        </div>
+      </div>
+      <div style="text-align:center"><button class="btn btn-ghost" onclick="closeAdmin()">סגור</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PROPOSAL COMPOSER ════ -->
+<div class="composer-overlay" id="overlay-composer">
+  <div class="composer-shell">
+    <div class="composer-head">
+      <h2>📄 עריכת הצעה ללקוח</h2>
+      <div class="composer-head-right">
+        <div class="lang-toggle">
+          <button id="lang-btn-he" class="active" onclick="setProposalLang('he')">עברית</button>
+          <button id="lang-btn-en" onclick="setProposalLang('en')">English</button>
+        </div>
+        <button class="composer-close" onclick="closeProposalComposer()">✕</button>
+      </div>
+    </div>
+    <div id="composer-no-pkg" style="display:none;padding:60px;text-align:center;color:#94a3b8;font-size:15px">יש לבחור חבילה לפני יצירת הצעה</div>
+    <div id="composer-body-wrap" class="composer-body">
+      <div class="composer-form">
+
+        <div class="cf-section">
+          <div class="cf-section-title">פרטי לקוח והצעה</div>
+          <div class="pdf-field"><label>שם עסק / לקוח</label><input type="text" id="pdf-client" placeholder="לדוג׳: מכון כושר הגבעה" oninput="renderProposalPreview()"/></div>
+          <div class="pdf-field"><label>איש קשר (אופציונלי)</label><input type="text" id="pdf-contact" placeholder="שם ותפקיד" oninput="renderProposalPreview()"/></div>
+          <div class="pdf-field"><label>שם איש/אשת המכירות</label><input type="text" id="pdf-rep" placeholder="לדוג׳: ניר ונטורה" oninput="renderProposalPreview()"/></div>
+          <div class="pdf-field"><label>תוקף ההצעה</label><input type="text" id="pdf-validity" value="30 יום ממועד ההצעה" oninput="renderProposalPreview()"/></div>
+        </div>
+
+        <div class="cf-section">
+          <div class="cf-section-title">מודול סליקה — פירוט מורחב (המחיר הראשי כבר כולל את הסליקה שנבחרה)</div>
+          <label class="radio-row"><input type="radio" name="pay-display" value="both" onchange="setPayDisplay('both')"/> הצג פירוט של כל אפשרויות הסליקה</label>
+          <label class="radio-row"><input type="radio" name="pay-display" value="selected" checked onchange="setPayDisplay('selected')"/> הצג פירוט רק לסליקה שנבחרה</label>
+          <label class="radio-row"><input type="radio" name="pay-display" value="none" onchange="setPayDisplay('none')"/> בלי פירוט סליקה נוסף</label>
+        </div>
+
+        <div class="cf-section">
+          <div class="cf-section-title">תצוגת מחיר</div>
+          <label class="radio-row"><input type="checkbox" id="cf-include-addons" onchange="renderProposalPreview()"/> כלול את התוספים שנבחרו בסכום הכולל (אחרת יוצגו כתוספים אופציונליים בלבד)</label>
+          <label class="radio-row"><input type="checkbox" id="cf-show-vat" onchange="renderProposalPreview()"/> הצג מחירים כולל מע"מ (ברירת מחדל: לפני מע"מ)</label>
+        </div>
+
+        <div class="cf-section">
+          <div class="cf-section-title">טבלת פיצ'רים (לפי החבילה שנבחרה — ניתן לשנות לכל הצעה)</div>
+          <div id="feature-checklist"></div>
+          <div id="custom-feature-rows"></div>
+          <div class="btn-row" style="margin-top:10px">
+            <button class="btn btn-ghost" style="font-size:13px" onclick="addCustomFeatureRow()">+ הוסף שורת פיצ'ר להצעה זו בלבד</button>
+          </div>
+        </div>
+
+        <div class="cf-section">
+          <div class="pdf-field-head"><label>פסקת פתיחה</label><button class="reset-link" onclick="resetContentField('intro')">אפס לברירת מחדל</button></div>
+          <div class="pdf-field"><textarea class="tall" id="cf-intro" oninput="renderProposalPreview()"></textarea></div>
+
+          <div class="pdf-field-head"><label>למה Arbox (כולל נתונים)</label><button class="reset-link" onclick="resetContentField('why')">אפס לברירת מחדל</button></div>
+          <div class="pdf-field"><textarea class="tall" id="cf-why" oninput="renderProposalPreview()"></textarea></div>
+
+          <div class="pdf-field-head"><label>חלק מלקוחותינו</label><button class="reset-link" onclick="resetContentField('clients')">אפס לברירת מחדל</button></div>
+          <div class="pdf-field"><textarea id="cf-clients" oninput="renderProposalPreview()"></textarea></div>
+
+          <div class="pdf-field-head"><label>יתרונות המערכת (שורה לכל יתרון)</label><button class="reset-link" onclick="resetContentField('value')">אפס לברירת מחדל</button></div>
+          <div class="pdf-field"><textarea class="tall" id="cf-value" oninput="renderProposalPreview()"></textarea></div>
+
+          <div class="pdf-field-head"><label>תוכנית עבודה (שורה לכל שלב)</label><button class="reset-link" onclick="resetContentField('workplan')">אפס לברירת מחדל</button></div>
+          <div class="pdf-field"><textarea id="cf-workplan" oninput="renderProposalPreview()"></textarea></div>
+
+          <div class="pdf-field-head"><label>האותיות הקטנות (שורה לכל סעיף)</label><button class="reset-link" onclick="resetContentField('small')">אפס לברירת מחדל</button></div>
+          <div class="pdf-field"><textarea class="tall" id="cf-small" oninput="renderProposalPreview()"></textarea></div>
+
+          <div class="pdf-field-head"><label>הערה מיוחדת להצעה (אופציונלי)</label><span></span></div>
+          <div class="pdf-field"><textarea id="cf-note" oninput="renderProposalPreview()"></textarea></div>
+        </div>
+
+      </div>
+      <div class="composer-preview-pane" id="composer-preview-pane">
+        <div class="proposal-scale-wrap" id="proposal-scale-wrap">
+          <div class="proposal-paper" id="proposal-paper"></div>
+        </div>
+      </div>
+    </div>
+    <div class="composer-footer">
+      <button class="btn btn-ghost" onclick="closeProposalComposer()">ביטול</button>
+      <button class="btn btn-primary" onclick="generateProposalPDF()" id="gen-pdf-btn">⬇️ ייצוא PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ DEAL SUMMARY (סיכום עסקה סגורה) ════ -->
+<div class="composer-overlay" id="overlay-dealsummary">
+  <div class="composer-shell">
+    <div class="composer-head">
+      <h2>✅ סיכום עסקה סגורה</h2>
+      <div class="composer-head-right">
+        <button class="composer-close" onclick="closeDealSummary()">✕</button>
+      </div>
+    </div>
+    <div id="ds-no-pkg" style="display:none;padding:60px;text-align:center;color:#94a3b8;font-size:15px">יש לבחור חבילה במחשבון (שלבים 1-7) לפני יצירת סיכום עסקה</div>
+    <div id="ds-body-wrap" class="composer-body">
+      <div class="composer-form">
+        <div class="cf-section">
+          <div class="cf-section-title">פרטי לקוח והעסקה</div>
+          <div class="pdf-field"><label>שם עסק / לקוח</label><input type="text" id="ds-client" placeholder="לדוג׳: מכון כושר הגבעה" oninput="renderDealSummaryPreview()"/></div>
+          <div class="pdf-field"><label>איש קשר (אופציונלי)</label><input type="text" id="ds-contact" placeholder="שם ותפקיד" oninput="renderDealSummaryPreview()"/></div>
+          <div class="pdf-field"><label>נציג מכירות</label><input type="text" id="ds-rep" placeholder="לדוג׳: ניר ונטורה" oninput="renderDealSummaryPreview()"/></div>
+          <div class="pdf-field"><label>תאריך סגירת העסקה</label><input type="date" id="ds-close-date" oninput="renderDealSummaryPreview()"/></div>
+          <div class="pdf-field"><label>תאריך תחילת ההתקשרות</label><input type="date" id="ds-start-date" oninput="renderDealSummaryPreview()"/></div>
+        </div>
+
+        <div class="cf-section">
+          <div class="cf-section-title">התחייבות</div>
+          <div id="ds-commit-info" style="font-size:13.5px;color:var(--navy);line-height:1.7;background:var(--off-white);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;"></div>
+          <div style="font-size:11.5px;color:#94a3b8;margin-top:6px;">נקבע אוטומטית לפי סוג החיוב שנבחר במחשבון (שלב 1). אם סוכם משהו שונה — ציין זאת למטה ב"הערות לעסקה".</div>
+        </div>
+
+        <div class="cf-section">
+          <div class="cf-section-title">תצוגת מחיר</div>
+          <label class="radio-row"><input type="checkbox" id="ds-show-vat" checked onchange="renderDealSummaryPreview()"/> הצג את סה"כ לתשלום כולל מע"מ</label>
+        </div>
+
+        <div class="cf-section">
+          <div class="cf-section-title">הערות לעסקה</div>
+          <div class="pdf-field"><textarea class="tall" id="ds-notes" placeholder="לדוג׳: הנחת מנהל מיוחדת לשנה שנייה, תנאי תשלום ייחודיים, התחייבות שסוכמה בנפרד וכו׳" oninput="renderDealSummaryPreview()"></textarea></div>
+        </div>
+
+        <div style="font-size:12px;color:#94a3b8;line-height:1.7">
+          פירוט החבילה, עלויות ההקמה, הסליקה, התוספים, השורות המותאמות וההנחות נשלף אוטומטית ממה שמוגדר כרגע במחשבון (שלבים 1-7).
+        </div>
+      </div>
+      <div class="composer-preview-pane" id="ds-preview-pane">
+        <div class="proposal-scale-wrap" id="ds-scale-wrap">
+          <div class="proposal-paper" id="ds-paper"></div>
+        </div>
+      </div>
+    </div>
+    <div class="composer-footer">
+      <button class="btn btn-ghost" onclick="closeDealSummary()">ביטול</button>
+      <button class="btn btn-green" onclick="copyDealSummaryText()" id="copy-ds-btn">📋 העתק טקסט להאבספוט</button>
+      <button class="btn btn-primary" onclick="generateDealSummaryPDF()" id="gen-ds-pdf-btn">⬇️ ייצוא PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════ CONFIG ══ */
+const ADMIN_PASSWORD = "arbox2024";
+const INITIAL_ADDONS = [
+  {
+    name: "סניף נוסף",
+    description: "לא ב-Basic",
+    monthly: 280,
+    annual: 232
+  },
+  {
+    name: "Arbox WhatsApp",
+    description: "זמין לכל החבילות · ללא הנחה שנתית",
+    monthly: 59,
+    annual: 59
+  },
+  {
+    name: "Access Control — בקרת כניסה",
+    description: "לא ב-Basic · נתון למו\"מ",
+    monthly: 250,
+    annual: 207
+  },
+  {
+    name: "ניהול חדרים",
+    description: "לא ב-Basic · כלול ב-Professional",
+    monthly: 150,
+    annual: 125
+  },
+  {
+    name: "ניהול חוגים",
+    description: "חודשיים ראשונים חינם · כלול ב-Professional",
+    monthly: 150,
+    annual: 125
+  },
+  {
+    name: "ניהול הוצאות — בסיסי",
+    description: "מספר WhatsApp אחד, ללא חיבור Gmail",
+    monthly: 39,
+    annual: 32
+  },
+  {
+    name: "ניהול הוצאות — פרו",
+    description: "3 מספרי WhatsApp + חיבור Gmail",
+    monthly: 59,
+    annual: 49
+  },
+  {
+    name: "ניהול הפקדות",
+    description: "",
+    monthly: 19,
+    annual: 16
+  },
+  {
+    name: "ניהול מלאי",
+    description: "",
+    monthly: 29,
+    annual: 24
+  },
+  {
+    name: "לוקרים",
+    description: "",
+    monthly: 49,
+    annual: 41
+  },
+  {
+    name: "דוח שכר מתקדם",
+    description: "19₪ קבוע + 6₪ לכל איש צוות",
+    monthly: 19,
+    annual: 19,
+    perUnit: 6,
+    unitLabel: "אנשי צוות",
+    unitLabelEn: "staff members"
+  }
+];
+const VAT = 0.18;
+
+/* ══════════════════════════════════════ LOGO (embedded, for on-brand PDF header) ══ */
+const LOGO_GRADIENT = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgMzM1LjA3IDEzNC40OSI+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5jbHMtMSB7CiAgICAgICAgZmlsbDogdXJsKCNyYWRpYWwtZ3JhZGllbnQpOwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6ICMwODE4Mzg7CiAgICAgIH0KICAgIDwvc3R5bGU+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9InJhZGlhbC1ncmFkaWVudCIgY3g9Ijk5OS45MiIgY3k9Ijg0LjA1IiBmeD0iOTk5LjkyIiBmeT0iODQuMDUiIHI9IjUwLjA1IiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKC0zMjk3Ljk1IC0xNTYuOTEpIHNjYWxlKDMuMzMpIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iLjIzIiBzdG9wLWNvbG9yPSIjZmFkYWIzIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iLjczIiBzdG9wLWNvbG9yPSIjNGY4N2ZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iLjk5IiBzdG9wLWNvbG9yPSIjMDgxODM4Ii8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0yOTYuNjgsMTExLjQzbDExLjU0LTE5LjEyLTEwLjkxLTE3LjU3aDEyLjY4bDUuODgsMTAuNDEsNS44OC0xMC40MWgxMi42MWwtMTAuOTEsMTcuNTcsMTEuNjIsMTkuMTJoLTEyLjgybC02LjUyLTExLjU0LTYuNTIsMTEuNTRoLTEyLjU0WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTI3Ni43LDExMi41N2MtMTEuNjIsMC0xOS42Mi04LjcxLTE5LjYyLTE5LjQ4czgtMTkuNTUsMTkuNTUtMTkuNTUsMTkuNjIsOC43OCwxOS42MiwxOS41NS04LDE5LjQ4LTE5LjU1LDE5LjQ4Wk0yNjcuODUsOTMuMDljMCw1LjUyLDMuNjEsOS40Miw4Ljg1LDkuNDJzOC43MS0zLjksOC43MS05LjQyLTMuNjEtOS40OS04LjcxLTkuNDktOC44NSwzLjktOC44NSw5LjQ5WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTIzNS41MSwxMTIuNTdjLTUuMDMsMC05LjE0LTIuMjctMTEuNjItNS44MXY0LjY3aC0xMC4zNHYtNDkuOTNoMTAuOTF2MTIuOTZsLS4yOCw0LjY3YzIuNDEtMy42MSw2LjU5LTUuNiwxMS4xOS01LjYsMTAuMiwwLDE3LjM1LDguODUsMTcuMzUsMTkuNTVzLTcuMjIsMTkuNDgtMTcuMjEsMTkuNDhaTTIyNC4zMiw5My4xNmMwLDUuNiw0LjExLDkuNDIsOC45OSw5LjQyLDQuNTMsMCw4LjY0LTMuMzMsOC42NC05LjQycy00LjA0LTkuNTYtOC42NC05LjU2Yy01LjEsMC04Ljk5LDQuMTgtOC45OSw5LjU2WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTE4NS4yNywxMTEuNDN2LTM2LjY5aDEwLjQxdjUuMTdjMS42My0zLjA1LDQuMzktNS4xNyw5LjQyLTUuMTdoMy42OHY5LjIxaC0zLjYxYy01LjY3LDAtOSwzLjc1LTksMTAuNTV2MTYuOTNoLTEwLjkxWiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTE1NS4wNSwxMTIuNTdjLTEwLjI3LDAtMTcuMzUtOC43OC0xNy4zNS0xOS40OHM3LjA4LTE5LjU1LDE3LjM1LTE5LjU1YzQuODksMCw5LjIxLDIuMTIsMTEuNDcsNS44OHYtNC42N2gxMC4zNHYzNi42OWgtMTAuNDF2LTQuNjdjLTIuMiwzLjc1LTYuNTksNS44MS0xMS40LDUuODFaTTE0OC40Nyw5My4xNmMwLDYuMTYsNC4xMSw5LjQyLDguNjQsOS40Miw1LjEsMCw4LjkyLTQuMTEsOC45Mi05LjQycy0zLjgyLTkuNTYtOC45Mi05LjU2Yy00LjY3LDAtOC42NCwzLjU0LTguNjQsOS41NloiLz4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik00Ny43MSw1MC4yQzY0LjE5LDE0LjI5LDk0LjE4LTcuMiwxMTQuNjksMi4yMWMyMC41MSw5LjQxLDIzLjc4LDQ2LjE2LDcuMyw4Mi4wNy0xNi40OCwzNS45Mi00Ni40Nyw1Ny40LTY2Ljk4LDQ3Ljk5LTYuMjMtMi44Ni0xMC44Ny04LjI1LTEzLjg1LTE1LjM3LS45OC0yLjMzLTMuOTYtMi45OC01LjgzLTEuMjgtMywyLjczLTYuNDEsNC4zMi0xMC4wNyw0LjQ1QzEyLjE3LDEyMC41NC44OCwxMDIuMTUuMDUsNzguOThjLS44My0yMy4xNyw5LjExLTQyLjMzLDIyLjItNDIuOCw3LjMzLS4yNiwxNC4wOSw1LjM4LDE4Ljc3LDE0LjQ3LDEuNCwyLjcxLDUuMywyLjU5LDYuNTctLjE4LjA0LS4wOS4wOC0uMTguMTItLjI3WiIvPgo8L3N2Zz4=";
+const LOGO_WHITE = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgMzM1LjA3IDEzNC40OSI+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5jbHMtMSB7CiAgICAgICAgZmlsbDogdXJsKCNyYWRpYWwtZ3JhZGllbnQpOwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6ICNmZmY7CiAgICAgIH0KICAgIDwvc3R5bGU+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9InJhZGlhbC1ncmFkaWVudCIgY3g9IjY0Ni4wNyIgY3k9Ijg0LjA1IiBmeD0iNjQ2LjA3IiBmeT0iODQuMDUiIHI9IjUwLjA1IiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMTE4LjQ2IC0xNTYuOTEpIHNjYWxlKDMuMzMpIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iLjIzIiBzdG9wLWNvbG9yPSIjZmFkYWIzIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iLjczIiBzdG9wLWNvbG9yPSIjNGY4N2ZmIi8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0yOTYuNjgsMTExLjQzbDExLjU0LTE5LjEyLTEwLjkxLTE3LjU3aDEyLjY4bDUuODgsMTAuNDEsNS44OC0xMC40MWgxMi42MWwtMTAuOTEsMTcuNTcsMTEuNjIsMTkuMTJoLTEyLjgybC02LjUyLTExLjU0LTYuNTIsMTEuNTRoLTEyLjU0WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTI3Ni43LDExMi41N2MtMTEuNjIsMC0xOS42Mi04LjcxLTE5LjYyLTE5LjQ4czgtMTkuNTUsMTkuNTUtMTkuNTUsMTkuNjIsOC43OCwxOS42MiwxOS41NS04LDE5LjQ4LTE5LjU1LDE5LjQ4Wk0yNjcuODUsOTMuMDljMCw1LjUyLDMuNjEsOS40Miw4Ljg1LDkuNDJzOC43MS0zLjksOC43MS05LjQyLTMuNjEtOS40OS04LjcxLTkuNDktOC44NSwzLjktOC44NSw5LjQ5WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTIzNS41MSwxMTIuNTdjLTUuMDMsMC05LjE0LTIuMjctMTEuNjItNS44MXY0LjY3aC0xMC4zNHYtNDkuOTNoMTAuOTF2MTIuOTZsLS4yOCw0LjY3YzIuNDEtMy42MSw2LjU5LTUuNiwxMS4xOS01LjYsMTAuMiwwLDE3LjM1LDguODUsMTcuMzUsMTkuNTVzLTcuMjIsMTkuNDgtMTcuMjEsMTkuNDhaTTIyNC4zMiw5My4xNmMwLDUuNiw0LjExLDkuNDIsOC45OSw5LjQyLDQuNTMsMCw4LjY0LTMuMzMsOC42NC05LjQycy00LjA0LTkuNTYtOC42NC05LjU2Yy01LjEsMC04Ljk5LDQuMTgtOC45OSw5LjU2WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTE4NS4yNywxMTEuNDN2LTM2LjY5aDEwLjQxdjUuMTdjMS42My0zLjA1LDQuMzktNS4xNyw5LjQyLTUuMTdoMy42OHY5LjIxaC0zLjYxYy01LjY3LDAtOSwzLjc1LTksMTAuNTV2MTYuOTNoLTEwLjkxWiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTE1NS4wNSwxMTIuNTdjLTEwLjI3LDAtMTcuMzUtOC43OC0xNy4zNS0xOS40OHM3LjA4LTE5LjU1LDE3LjM1LTE5LjU1YzQuODksMCw5LjIxLDIuMTIsMTEuNDcsNS44OHYtNC42N2gxMC4zNHYzNi42OWgtMTAuNDF2LTQuNjdjLTIuMiwzLjc1LTYuNTksNS44MS0xMS40LDUuODFaTTE0OC40Nyw5My4xNmMwLDYuMTYsNC4xMSw5LjQyLDguNjQsOS40Miw1LjEsMCw4LjkyLTQuMTEsOC45Mi05LjQycy0zLjgyLTkuNTYtOC45Mi05LjU2Yy00LjY3LDAtOC42NCwzLjU0LTguNjQsOS41NloiLz4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik00Ny43MSw1MC4yQzY0LjE5LDE0LjI5LDk0LjE4LTcuMiwxMTQuNjksMi4yMWMyMC41MSw5LjQxLDIzLjc4LDQ2LjE2LDcuMyw4Mi4wNy0xNi40OCwzNS45Mi00Ni40Nyw1Ny40LTY2Ljk4LDQ3Ljk5LTYuMjMtMi44Ni0xMC44Ny04LjI1LTEzLjg1LTE1LjM3LS45OC0yLjMzLTMuOTYtMi45OC01LjgzLTEuMjgtMywyLjczLTYuNDEsNC4zMi0xMC4wNyw0LjQ1QzEyLjE3LDEyMC41NC44OCwxMDIuMTUuMDUsNzguOThjLS44My0yMy4xNyw5LjExLTQyLjMzLDIyLjItNDIuOCw3LjMzLS4yNiwxNC4wOSw1LjM4LDE4Ljc3LDE0LjQ3LDEuNCwyLjcxLDUuMywyLjU5LDYuNTctLjE4LjA0LS4wOS4wOC0uMTguMTItLjI3WiIvPgo8L3N2Zz4=";
+
+/* ══════════════════════════════════════ PROPOSAL FEATURE CHECKLIST ══
+   NOTE: "basic" column values below are Nir's best inference, not confirmed
+   against a real Basic-tier proposal (none was available). "accessControl"
+   may overlap with the paid "Access Control" add-on above — worth
+   double-checking before sending to a real customer. Everything here is
+   editable in "⚙️ ניהול תוספים" → "טבלת פיצ'רים". */
+const INITIAL_FEATURES = [
+  {key:'users',         type:'text', label_he:'מספר משתמשים',                              label_en:'Users',                                basic:'ללא הגבלה', standard:'ללא הגבלה', professional:'ללא הגבלה'},
+  {key:'crm',           type:'bool', label_he:'פלטפורמת ניהול לקוחות CRM',                  label_en:'CRM platform',                         basic:true,  standard:true, professional:true},
+  {key:'api',           type:'bool', label_he:'שימוש ב-API',                                 label_en:'API access',                           basic:false, standard:true, professional:true},
+  {key:'brandedApp',    type:'bool', label_he:'אפליקציה ממותגת — Arbox Brand',               label_en:'Branded app (Arbox Brand)',            basic:false, standard:false, professional:true},
+  {key:'accessControl', type:'bool', label_he:'שירות בקרת כניסה',                            label_en:'Access control service',               basic:false, standard:true, professional:true},
+  {key:'support',       type:'text', label_he:'תמיכה',                                       label_en:'Support',                              basic:'Support', standard:'Support', professional:'VIP Support'},
+  {key:'onlineLinks',   type:'bool', label_he:'לינקים און ליין — לו״ז, הרשמות ורכישות',       label_en:'Online links — schedule, signups & purchases', basic:true, standard:true, professional:true},
+  {key:'calendar',      type:'bool', label_he:'יומן מותאם לפי סוגי פעילות',                   label_en:'Custom calendar by activity type',     basic:true,  standard:true, professional:true},
+  {key:'bookings',      type:'bool', label_he:'ניהול רישום לפגישות, חוגים, סדנאות וקורסים',   label_en:'Booking management — sessions, classes & workshops', basic:true, standard:true, professional:true},
+  {key:'reports',       type:'bool', label_he:'דו״חות ניהול ובקרת חדרים',                     label_en:'Management reports & room control',    basic:false, standard:true, professional:true},
+  {key:'messaging',     type:'bool', label_he:'שליחת הודעות Push ואימיילים',                  label_en:'Push notifications & email messaging', basic:true,  standard:true, professional:true},
+  {key:'automation',    type:'bool', label_he:'אוטומציית משימות והודעות',                     label_en:'Task & message automation',            basic:false, standard:true, professional:true},
+];
+
+/* ══════════════════════════════════════ DEFAULT PROPOSAL CONTENT (editable per-proposal) ══ */
+const DEFAULT_CONTENT = {
+  he: {
+    intro: `אין לי ספק כי הטמעת Arbox בארגון תסייע בשיפור ביצועי המכירות וההכנסות, בהעלאת רמת השירות ושביעות הרצון של הלקוחות שלך ובייעול תהליכי העבודה, הניהול והבקרה.`,
+    why: `Arbox נוסדה לפני למעלה מ-9 שנים מתוך מטרה לתת פתרון טכנולוגי חדיש, זמין ואיכותי בתחום הוולנס בישראל ובעולם. כיום הפלטפורמה נחשבת למובילה בתחום מבחינת נראות, חווית משתמש, שירות ותמיכה, יכולות, אבטחת מידע, ייעול תהליכים וחיסכון כספי.
+אנו מעניקים כיום שירות ב-25 מדינות ללמעלה מ-6,000 עסקים ומעסיקים כ-60 עובדים, אשר מחויבים לשיפור וקידום חווית המשתמש, המוצר והשירות.
+בסקר שביעות הרצון האחרון שערכנו לקהל לקוחותינו שמחנו לגלות כי 96.5% מהם ציינו כי ימליצו על פלטפורמת הניהול של Arbox לעמיתים ולקולגות.`,
+    clients: `רשת סטודיו "נעים", מרכז הספורט של אונ' ת"א, קאנטרי רמת רחל, רשת "לוקר-רום", נכסי אריאל, אמות, תעשייה אווירית, האקדמית "אונו", קאנטרי זיכרון, מובילאיי, מגדל, נייס ועוד…`,
+    value: `כלי ניהול חכם — דוחות מדויקים, סטטיסטיקות ודשבורדים ניהוליים שיעזרו בקבלת החלטות.
+חווית משתמש — פלטפורמה אינטואיטיבית ומאוד קלה לתפעול ללא צורך בהכשרות ארוכות.
+שקט נפשי — ליווי בתהליך ההטמעה, כלי תמיכה חכמים ושירות יוצא מן הכלל.
+חיסכון בזמן ובכוח אדם — פלטפורמה זריזה, גישה מהירה לפעולות מרכזיות, כלי שיפור יעילות.
+אוטומציות — הודעות ומשימות אוטומטיות, חיבור ל-Voice Center, ל-Zapier ול-Open API.
+נגישות מכל מקום — גישה מאובטחת לך ולעובדים שלך, מכל מקום, דרך כל מכשיר ובכל זמן.
+אבטחת מידע — עמידה בתקני אבטחת מידע ופרטיות המחמירים ביותר.`,
+    workplan: `אישור ההצעה
+אישור תשלום
+פתיחת משתמש והגדרות ראשוניות
+התחלת עבודה`,
+    small: `לדמי השירות ולרכיבים החד פעמיים יתווסף מע"מ כחוק.
+השירות בחבילה החודשית הינו בהתחייבות לחודש 1. במידה והלקוח יבחר להפסיק את ההתקשרות מסיבה כלשהי, עליו לתת הודעה בכתב (למייל החברה) 30 יום מראש.
+השירות בחבילה השנתית הינו בתשלום מראש ובהתחייבות לשנה.
+תמיכה טכנית: מחלקת שירות טכני ייעודי — ניתן לפנות דרך הצ'אט במערכת. שעות פעילות: ימים א'-ה' 8:00-20:00.`,
+  },
+  en: {
+    intro: `We're confident that implementing Arbox will help grow your sales and revenue, raise your service level and customer satisfaction, and streamline your day-to-day operations, management and oversight.`,
+    why: `Arbox was founded over 9 years ago to bring a modern, reliable and high-quality technology solution to the wellness industry in Israel and worldwide. Today the platform is a market leader in usability, user experience, service and support, capabilities, data security, process efficiency and cost savings.
+We currently serve businesses in 25 countries, with over 6,000 active businesses, and a team of about 60 employees dedicated to improving the product, service and user experience.
+In our most recent customer satisfaction survey, 96.5% of respondents said they would recommend the Arbox management platform to peers and colleagues.`,
+    clients: `Naim Studios, Tel Aviv University Sports Center, Ramat Rachel Country Club, the Locker Room chain, Ariel Properties, Amot, Israel Aerospace Industries, Ono Academic College, Zichron Country Club, Mobileye, Migdal, NICE, and more…`,
+    value: `Smart management tools — accurate reports, statistics and management dashboards to support decision-making.
+Great user experience — an intuitive platform that's very easy to operate, with no need for lengthy training.
+Peace of mind — guided onboarding, smart support tools and outstanding service.
+Save time and manpower — a fast platform with quick access to key actions and efficiency tools.
+Automations — automatic messages and tasks, integration with Voice Center, Zapier and Open API.
+Access from anywhere — secure access for you and your staff, from any device, at any time.
+Data security — compliance with the strictest data security and privacy standards.`,
+    workplan: `Proposal approval
+Payment confirmation
+Account setup and initial configuration
+Go live`,
+    small: `VAT will be added to service fees and one-time charges as required by law.
+The monthly plan requires a minimum commitment of 1 month. To cancel, the customer must provide 30 days' written notice by email to the company.
+The annual plan is paid in advance and requires a one-year commitment.
+Technical support: a dedicated support team is available via in-app chat. Hours: Sun–Thu 8:00-20:00.`,
+  }
+};
+
+const UI_STRINGS = {
+  he: {
+    dir:'rtl', docTitle:'הצעה למקסום פעילות באמצעות פלטפורמת הניהול Arbox', quoteWord:'הצעת מחיר',
+    toLabel:'לכבוד', dateLabel:'תאריך', clientDetails:'פרטי לקוח', contactLabel:'איש קשר',
+    whyTitle:'למה Arbox היא הבחירה הנכונה לארגון שלך?', clientsTitle:'כיום חלק מלקוחותינו',
+    planFor:'לניהול הפעילות העסקית', planDetails:'פירוט המסלול', perMonth:'לחודש', perYear:'לשנה',
+    valueTitle:'הטמעת Arbox תאפשר לך לקבל מערכת לניהול הפעילות',
+    serviceDetailTitle:'פירוט תוספים', serviceCol:'שירות', typeCol:'סוג', priceCol:'מחיר',
+    costSummaryTitle:'סיכום עלויות', totalBeforeVat:'סה"כ לפני מע"מ', vat:'מע"מ 18%', totalWithVat:'סה"כ כולל מע"מ',
+    billingTypeLabel:'סוג חיוב', monthly:'חודשי', annualPrepaid:'שנתי — תשלום מראש',
+    workplanTitle:'תוכנית עבודה', smallTitle:'האותיות הקטנות', validityLabel:'תוקף ההצעה',
+    signOff:'לשיתוף פעולה מוצלח ופורה,', repDefault:'צוות Arbox', addonWord:'תוסף', fixedWord:'קבוע', onetimeWord:'חד פעמי',
+    noteLabel:'הערה', vatNote:'* כל המחירים לפני מע"מ אלא אם צוין אחרת', directPayNote:'* משולם ישירות לספק הסליקה, לא דרך Arbox',
+    payTitle:'אפשרויות סליקה וחשבוניות', directly:'ישירות (לא דרך Arbox)',
+    setupTitle:'עלויות הקמה חד-פעמיות', setupSub:'משולמות פעם אחת בתחילת ההתקשרות, בנפרד מדמי המנוי',
+    setupTotal:'סה"כ חד-פעמי', freeWord:'ללא עלות',
+  },
+  en: {
+    dir:'ltr', docTitle:'Proposal to maximize your activity with the Arbox management platform', quoteWord:'Price proposal',
+    toLabel:'Prepared for', dateLabel:'Date', clientDetails:'Client details', contactLabel:'Contact',
+    whyTitle:'Why Arbox is the right choice for your organization', clientsTitle:'Some of our customers today',
+    planFor:'for managing your business', planDetails:'Plan details', perMonth:'/month', perYear:'/year',
+    valueTitle:'Implementing Arbox gives you a complete management system',
+    serviceDetailTitle:'Add-ons breakdown', serviceCol:'Service', typeCol:'Type', priceCol:'Price',
+    costSummaryTitle:'Cost summary', totalBeforeVat:'Total before VAT', vat:'VAT 18%', totalWithVat:'Total incl. VAT',
+    billingTypeLabel:'Billing type', monthly:'Monthly', annualPrepaid:'Annual — paid upfront',
+    workplanTitle:'Work plan', smallTitle:'Terms & conditions', validityLabel:'Proposal valid for',
+    signOff:'To a successful and fruitful partnership,', repDefault:'The Arbox team', addonWord:'Add-on', fixedWord:'Fixed', onetimeWord:'One-time',
+    noteLabel:'Note', vatNote:'* All prices exclude VAT unless stated otherwise', directPayNote:'* Paid directly to the payment provider, not through Arbox',
+    payTitle:'Payment processing options', directly:'Direct (not through Arbox)',
+    setupTitle:'One-time setup costs', setupSub:'Paid once at the start of the engagement, separately from the subscription',
+    setupTotal:'One-time total', freeWord:'Free',
+  }
+};
+
+/* ══════════════════════════════════════ PRICING ══ */
+const PACKAGES = {
+  basic:        {name:'Basic',        monthly:189,  annual:157 },
+  standard:     {name:'Standard',     monthly:489,  annual:406 },
+  professional: {name:'Professional', monthly:1089, annual:904 },
+};
+const PAYMENT = {
+  none:     {name:'ללא סליקה', monthly:0,   annual:0  },
+  grow:     {name:'Grow',      monthly:79,  annual:66, extraMonthly:59 },
+  pelecard: {name:'Pelecard',  monthly:79,  annual:66, extraMonthly:145, setupFee:400},
+  icredit:  {name:'iCredit',   monthly:186, annual:155},
+};
+// Grow's per-transaction processing fee (percentage) is different per package.
+const GROW_FEE_PCT = {basic:0.9, standard:0.75, professional:0.69};
+// One-time setup costs. Implementation fee follows the selected package (Professional = branded app);
+// data migration is the same for everyone. Both are defaults the rep can edit per deal.
+const SETUP_FEES    = {basic:199, standard:299, professional:399};
+const MIGRATION_FEE = 399;
+const SETUP_NAMES   = {impl:{he:'דמי הטמעה',en:'Onboarding & implementation'}, mig:{he:'העברת נתונים',en:'Data migration'}};
+
+/* ══════════════════════════════════════ STATE ══ */
+let billing      = 'monthly';
+let selPkg       = null;
+let selPay       = 'none';
+let selAddons    = new Set();
+let addons       = [];
+let customItems  = [];
+// Two fully independent discounts: "m" only ever affects monthly billing, "a" only ever affects annual billing.
+let discM = {enabled:false, pct:10, period:3, unchecked:new Set()}; // period = number of MONTHS
+let discA = {enabled:false, pct:10, period:1, unchecked:new Set()}; // period = number of YEARS
+let editingIdx   = null;
+let features     = [];
+let editingFeatIdx = null;
+let setupState   = {impl:{on:true,price:0}, mig:{on:true,price:MIGRATION_FEE}};
+// Per-deal price edits for selected add-ons: {idx:{monthly?,annual?,perUnit?,qty?}}. Not persisted.
+let addonOverrides = {};
+
+/* ── Proposal composer state ── */
+let proposalLang   = 'he';           // 'he' | 'en'
+let payDisplay     = 'selected';     // 'both' | 'selected' | 'none'
+let featureOverrides = {};           // {key: bool|string} for the CURRENT proposal only
+let customFeatureRows = [];          // [{label, checked}] extra rows for THIS proposal only, not persisted
+
+/* ══════════════════════════════════════ INIT ══ */
+(function(){
+  const s=localStorage.getItem('arbox_addons');
+  addons=s?(JSON.parse(s)||[...INITIAL_ADDONS]):[...INITIAL_ADDONS];
+  const fs=localStorage.getItem('arbox_features');
+  features=fs?(JSON.parse(fs)||[...INITIAL_FEATURES]):[...INITIAL_FEATURES];
+  renderSetup();
+  renderAddons();
+  renderCustomItems();
+  updateSummary();
+})();
+
+/* ══════════════════════════════════════ BILLING ══ */
+function setBilling(type){
+  billing=type;
+  document.getElementById('btn-monthly').classList.toggle('active',type==='monthly');
+  document.getElementById('btn-annual').classList.toggle('active',type==='annual');
+  document.getElementById('annual-note').style.display=type==='annual'?'inline-flex':'none';
+  refreshPkgPrices(); refreshPayPrices(); renderAddons(); refreshDiscountUI(); updateSummary();
+}
+function refreshPkgPrices(){
+  Object.entries(PACKAGES).forEach(([k,p])=>{
+    const price=billing==='monthly'?p.monthly:p.annual;
+    document.getElementById(`pp-${k}`).innerHTML=`${fmt(price)}<sub>₪/חודש</sub>`;
+    const paEl=document.getElementById(`pa-${k}`);
+    if(billing==='annual'){
+      paEl.innerHTML=`<span class="pkg-annual-banner">💳 ${fmt(price*12)}₪ — תשלום אחד לשנה קדימה</span>`;
+    } else {
+      paEl.textContent='';
+    }
+  });
+}
+function refreshPayPrices(){
+  const pc=billing==='monthly'?79:66, i=billing==='monthly'?186:155;
+  const gPrice=billing==='monthly'?79:66;
+  document.getElementById('pp-grow').innerHTML=`+${gPrice}₪ <small>/חודש</small>`;
+  document.getElementById('pe-grow').textContent=`+ 59₪/חודש לGrow ישירות (בנפרד)`;
+  document.getElementById('pp-pelecard').innerHTML=`+${pc}₪ <small>/חודש</small>`;
+  document.getElementById('pp-icredit').innerHTML=`+${i}₪ <small>/חודש</small>`;
+  document.getElementById('pe-pelecard').textContent=billing==='annual'
+    ?`+ 145₪/חודש לפלאכארד · הקמה 400₪ · סה"כ לפלאכארד: ${fmt(145*12+400)}₪/שנה`
+    :`+ 145₪/חודש לפלאכארד (בנפרד) · הקמה 400₪`;
+}
+
+/* ══════════════════════════════════════ PACKAGE ══ */
+function selectPkg(k){
+  if(selPkg) document.getElementById(`pkg-${selPkg}`).classList.remove('sel');
+  selPkg=k;
+  document.getElementById(`pkg-${k}`).classList.add('sel');
+  setupState.impl.price=SETUP_FEES[k];
+  renderSetup(); refreshDiscountUI(); updateSummary();
+}
+
+/* ══════════════════════════════════════ PAYMENT ══ */
+function selectPay(k){
+  document.getElementById(`pay-${selPay}`).classList.remove('sel');
+  selPay=k;
+  document.getElementById(`pay-${k}`).classList.add('sel');
+  refreshDiscountUI(); updateSummary();
+}
+
+/* ══════════════════════════════════════ SETUP COSTS (one-time) ══ */
+function setupDefault(k){ return k==='impl'?(selPkg?SETUP_FEES[selPkg]:0):MIGRATION_FEE; }
+function getSetupLines(L){
+  if(!selPkg)return [];
+  return ['impl','mig'].filter(k=>setupState[k].on).map(k=>({key:k,name:SETUP_NAMES[k][L||'he'],price:setupState[k].price||0}));
+}
+function renderSetup(){
+  const c=document.getElementById('setup-container');
+  if(!c)return;
+  if(!selPkg){c.innerHTML=`<div class="no-addons" style="padding:18px 0">בחר חבילה כדי לראות את עלות ההטמעה</div>`;return;}
+  const rows=[
+    {k:'impl',desc:`ברירת מחדל ל-${PACKAGES[selPkg].name}: ${fmt(SETUP_FEES[selPkg])}₪`},
+    {k:'mig', desc:`ברירת מחדל: ${fmt(MIGRATION_FEE)}₪`},
+  ];
+  c.innerHTML=`<div class="setup-list">${rows.map(r=>{
+    const st=setupState[r.k], changed=st.price!==setupDefault(r.k);
+    return `<div class="setup-row ${st.on?'on':''}">
+      <label class="switch"><input type="checkbox" ${st.on?'checked':''} onchange="toggleSetup('${r.k}',this.checked)"/><span class="slider"></span></label>
+      <div class="setup-row-main"><div class="setup-row-name">${SETUP_NAMES[r.k].he}</div><div class="setup-row-desc">${r.desc}</div></div>
+      <div class="price-edit">
+        <input type="number" min="0" id="setup-price-${r.k}" class="${changed?'changed':''}" value="${st.price}" ${st.on?'':'disabled'} oninput="updateSetupPrice('${r.k}',this.value)"/>
+        <span class="cur">₪</span>
+        <button class="reset-mini" id="setup-reset-${r.k}" style="visibility:${changed?'visible':'hidden'}" onclick="resetSetupPrice('${r.k}')">↺ ברירת מחדל</button>
+      </div>
+    </div>`;}).join('')}</div>
+    <div class="setup-total"><span>סה"כ הקמה חד-פעמית</span><span id="setup-total-val"></span></div>`;
+  refreshSetupTotal();
+}
+function refreshSetupTotal(){
+  const el=document.getElementById('setup-total-val'); if(!el)return;
+  const sum=getSetupLines('he').reduce((a,l)=>a+l.price,0);
+  el.textContent=sum?`${fmt(sum)}₪ + מע"מ`:'ללא עלות';
+}
+function toggleSetup(k,on){ setupState[k].on=on; renderSetup(); updateSummary(); }
+function updateSetupPrice(k,val){
+  setupState[k].price=Math.max(0,parseFloat(val)||0);
+  const changed=setupState[k].price!==setupDefault(k);
+  document.getElementById('setup-price-'+k).classList.toggle('changed',changed);
+  document.getElementById('setup-reset-'+k).style.visibility=changed?'visible':'hidden';
+  refreshSetupTotal(); updateSummary();
+}
+function resetSetupPrice(k){ setupState[k].price=setupDefault(k); renderSetup(); updateSummary(); }
+
+/* ══════════════════════════════════════ ADDONS ══ */
+// Catalog prices are the defaults; a rep can override them per deal while the add-on is selected.
+function hasUnits(a){ return !!(a&&Number(a.perUnit)>0); }
+function addonDefault(i,b){ const a=addons[i]; return b==='monthly'?a.monthly:a.annual; }
+function addonPrice(i,b){ const o=addonOverrides[i]; return (o&&o[b]!=null)?o[b]:addonDefault(i,b); }
+function addonUnitPrice(i){ const o=addonOverrides[i]; return (o&&o.perUnit!=null)?o.perUnit:(Number(addons[i].perUnit)||0); }
+function addonQty(i){ const o=addonOverrides[i]; return (o&&o.qty!=null)?o.qty:1; }
+function addonTotal(i,b){ return addonPrice(i,b)+(hasUnits(addons[i])?addonUnitPrice(i)*addonQty(i):0); }
+function addonDetail(i,b,L){
+  const a=addons[i]; if(!hasUnits(a))return '';
+  const ul=L==='en'?(a.unitLabelEn||'units'):(a.unitLabel||'יחידות');
+  return `${fmt(addonPrice(i,b))}₪ + ${fmt(addonUnitPrice(i))}₪ × ${fmt(addonQty(i))} ${ul}`;
+}
+function buildAddonLines(b,L){
+  const out=[];
+  selAddons.forEach(i=>{const a=addons[i];if(!a)return;out.push({name:a.name,detail:addonDetail(i,b,L),price:addonTotal(i,b),key:`addon-${i}`});});
+  return out;
+}
+function addonIsChanged(i){
+  const o=addonOverrides[i]; if(!o)return false;
+  return (o.monthly!=null&&o.monthly!==addons[i].monthly)||(o.annual!=null&&o.annual!==addons[i].annual)
+    ||(hasUnits(addons[i])&&o.perUnit!=null&&o.perUnit!==Number(addons[i].perUnit));
+}
+function renderAddons(){
+  const c=document.getElementById('addons-container');
+  if(!addons.length){c.innerHTML=`<div class="no-addons">אין תוספים מוגדרים עדיין.<br><small>מנהל יכול להוסיף דרך ⚙️ ניהול תוספים</small></div>`;return;}
+  c.innerHTML=addons.map((a,i)=>{
+    const sel=selAddons.has(i), units=hasUnits(a);
+    const def=addonDefault(i,billing);
+    const priceTxt=sel
+      ? `+${fmt(addonTotal(i,billing))}₪ <small>/חודש</small>`
+      : (units?`+${fmt(def)}₪ <small>+ ${fmt(a.perUnit)}₪ ל${esc(a.unitLabel||'יחידה')}</small>`:`+${fmt(def)}₪ <small>/חודש</small>`);
+    let edit='';
+    if(sel){
+      const baseChanged=addonPrice(i,billing)!==def;
+      const unitChanged=units&&addonUnitPrice(i)!==Number(a.perUnit);
+      edit=`<div class="addon-edit" onclick="event.stopPropagation()">
+        <span class="addon-edit-label">${units?'מחיר קבוע':'מחיר'}</span>
+        <div class="price-edit"><input type="number" min="0" id="ao-base-${i}" class="${baseChanged?'changed':''}" value="${addonPrice(i,billing)}" oninput="updateAddonOverride(${i},'base',this.value)"/><span class="cur">₪</span>${units?'':'<small>/חודש</small>'}</div>
+        ${units?`<span class="addon-edit-label">+</span>
+        <div class="price-edit"><input type="number" min="0" id="ao-unit-${i}" class="${unitChanged?'changed':''}" value="${addonUnitPrice(i)}" oninput="updateAddonOverride(${i},'unit',this.value)"/><span class="cur">₪ ×</span></div>
+        <div class="price-edit"><input type="number" min="0" step="1" class="qty" id="ao-qty-${i}" value="${addonQty(i)}" oninput="updateAddonOverride(${i},'qty',this.value)"/><span class="cur">${esc(a.unitLabel||'יחידות')}</span></div>`:''}
+        <span class="addon-default" id="ao-def-${i}" style="display:${addonIsChanged(i)?'inline':'none'}">ברירת מחדל: ${fmt(def)}₪${units?` + ${fmt(a.perUnit)}₪`:''}</span>
+        <button class="reset-mini" id="ao-reset-${i}" style="display:${addonIsChanged(i)?'inline':'none'}" onclick="resetAddonOverride(${i})">↺ אפס</button>
+      </div>`;
+    }
+    return `<div class="addon-item ${sel?'sel':''}" onclick="toggleAddon(${i})">
+      <div><div class="addon-item-name">${esc(a.name)}</div>${a.description?`<div class="addon-item-desc">${esc(a.description)}</div>`:''}</div>
+      <div class="addon-item-price" id="ao-price-${i}">${priceTxt}</div>
+      ${edit}
+    </div>`;
+  }).join('');
+}
+function toggleAddon(i){
+  if(selAddons.has(i)){selAddons.delete(i);delete addonOverrides[i];}else selAddons.add(i);
+  renderAddons(); refreshDiscountUI(); updateSummary();
+}
+function updateAddonOverride(i,field,val){
+  const v=Math.max(0,parseFloat(val)||0);
+  const o=addonOverrides[i]||(addonOverrides[i]={});
+  if(field==='base'){
+    // The edited billing gets the exact value; the other billing follows proportionally (keeping the
+    // catalog's annual-vs-monthly ratio) unless the rep has edited that one explicitly too.
+    o[billing]=v; o.manual=o.manual||{}; o.manual[billing]=true;
+    const other=billing==='monthly'?'annual':'monthly';
+    if(!o.manual[other]){const d=addonDefault(i,billing);o[other]=d?Math.round(v*addonDefault(i,other)/d):v;}
+  }
+  else if(field==='unit')o.perUnit=v;
+  else if(field==='qty')o.qty=Math.round(v);
+  // Update the visible bits in place (re-rendering would steal focus from the input being typed in).
+  const a=addons[i];
+  document.getElementById('ao-price-'+i).innerHTML=`+${fmt(addonTotal(i,billing))}₪ <small>/חודש</small>`;
+  const b=document.getElementById('ao-base-'+i); if(b)b.classList.toggle('changed',addonPrice(i,billing)!==addonDefault(i,billing));
+  const u=document.getElementById('ao-unit-'+i); if(u)u.classList.toggle('changed',addonUnitPrice(i)!==Number(a.perUnit));
+  const ch=addonIsChanged(i);
+  document.getElementById('ao-def-'+i).style.display=ch?'inline':'none';
+  document.getElementById('ao-reset-'+i).style.display=ch?'inline':'none';
+  refreshDiscountUI(); updateSummary();
+}
+function resetAddonOverride(i){
+  const o=addonOverrides[i]; if(o){delete o.monthly;delete o.annual;delete o.perUnit;delete o.manual;}
+  renderAddons(); refreshDiscountUI(); updateSummary();
+}
+
+/* ══════════════════════════════════════ CUSTOM ══ */
+function addCustomItem(){
+  customItems.push({name:'',price:0,type:'onetime'});
+  renderCustomItems();
+}
+function removeCustomItem(i){
+  customItems.splice(i,1);
+  renderCustomItems(); updateSummary();
+}
+function updateCustomItem(i,field,val){
+  customItems[i][field]=field==='price'?(parseFloat(val)||0):val;
+  updateSummary();
+}
+function renderCustomItems(){
+  const c=document.getElementById('custom-items-list');
+  if(!customItems.length){c.innerHTML='';return;}
+  c.innerHTML=customItems.map((item,i)=>`
+    <div class="custom-row">
+      <input type="text" placeholder="שם השורה" value="${esc(item.name)}" oninput="updateCustomItem(${i},'name',this.value)"/>
+      <input type="number" placeholder="מחיר" value="${item.price||''}" min="0" oninput="updateCustomItem(${i},'price',this.value)"/>
+      <span style="font-size:13px;color:var(--text-muted)">₪</span>
+      <select onchange="updateCustomItem(${i},'type',this.value)">
+        <option value="onetime" ${item.type==='onetime'?'selected':''}>חד פעמי</option>
+        <option value="recurring" ${item.type==='recurring'?'selected':''}>קבוע (חודשי)</option>
+      </select>
+      <button class="btn-icon" onclick="removeCustomItem(${i})">✕</button>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════ DISCOUNT ══ */
+function refreshDiscountUI(){
+  renderDiscountTargets('m'); renderDiscountTargets('a');
+  updateDiscount('m'); updateDiscount('a');
+}
+function toggleDiscount(which){
+  const D=which==='m'?discM:discA;
+  D.enabled=document.getElementById('disc-enabled-'+which).checked;
+  document.getElementById('disc-wrap-'+which).style.display=D.enabled?'block':'none';
+  refreshDiscountUI(); updateSummary();
+}
+function updateDiscount(which){
+  const D=which==='m'?discM:discA;
+  D.pct=parseFloat(document.getElementById('disc-pct-'+which).value)||0;
+  D.period=parseInt(document.getElementById('disc-months-'+which).value)||1;
+  renderDiscountTargets(which);
+  const prev=document.getElementById('disc-preview-'+which);
+  if(!D.enabled||!selPkg||!D.pct){prev.style.display='none';return;}
+  const billingForThis=which==='m'?'monthly':'annual';
+  const t=calcProposalVariant(billingForThis,true);
+  if(!t){prev.style.display='none';return;}
+  const unitHe=which==='a'?(D.period===1?'שנה':'שנים'):(D.period===1?'חודש':'חודשים');
+  const saveLabel=`${fmt(Math.round(t.discSavingsPerDiscUnit))}₪/${which==='a'?'שנה':'חודש'}`;
+  prev.textContent=`💰 הנחה של ${D.pct}% למשך ${D.period} ${unitHe} | חיסכון: ${saveLabel}`;
+  prev.style.display='block';
+}
+
+function renderDiscountTargets(which){
+  const D=which==='m'?discM:discA;
+  const wrap=document.getElementById('disc-targets-wrap-'+which);
+  if(!D.enabled||!selPkg){wrap.style.display='none';return;}
+  const billingForThis=which==='m'?'monthly':'annual';
+  const unitLabel=billingForThis==='monthly'?'חודש':'שנה';
+  const items=[];
+  if(selPkg){const p=PACKAGES[selPkg];items.push({key:'pkg',label:`חבילת ${p.name}`,price:billingForThis==='monthly'?p.monthly:p.annual});}
+  if(selPay!=='none'){const p=PAYMENT[selPay];items.push({key:'pay',label:`סליקה — ${p.name}`,price:billingForThis==='monthly'?p.monthly:p.annual});}
+  selAddons.forEach(i=>{const a=addons[i];if(a)items.push({key:`addon-${i}`,label:a.name,price:addonTotal(i,billingForThis)});});
+  if(!items.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  document.getElementById('disc-targets-list-'+which).innerHTML=items.map(it=>`
+    <label class="disc-target-row">
+      <input type="checkbox" ${!D.unchecked.has(it.key)?'checked':''} onchange="toggleDiscTarget('${which}','${it.key}',this.checked)"/>
+      ${esc(it.label)} <span class="disc-target-price">(${fmt(it.price)}₪/${unitLabel})</span>
+    </label>`).join('');
+}
+function toggleDiscTarget(which,key,checked){
+  const D=which==='m'?discM:discA;
+  if(checked)D.unchecked.delete(key);else D.unchecked.add(key);
+  updateDiscount(which); updateSummary();
+}
+
+/* ══════════════════════════════════════ CALC ══ */
+function calcTotals(){
+  if(!selPkg)return null;
+  const pkg=PACKAGES[selPkg];
+  const pkgPrice=billing==='monthly'?pkg.monthly:pkg.annual;
+  const pay=PAYMENT[selPay];
+  const payPrice=billing==='monthly'?pay.monthly:pay.annual;
+  const pelecardExtra=selPay==='pelecard'?145:0;
+  const setupFee=selPay==='pelecard'?400:0;
+  const D=billing==='monthly'?discM:discA; // each discount only ever applies to its own matching billing type
+
+  const addonLines=buildAddonLines(billing,'he');
+  const setupLines=getSetupLines('he');
+  const setupTotal=setupLines.reduce((s,l)=>s+l.price,0);
+
+  const recurringCustom=customItems.filter(c=>c.type==='recurring').reduce((s,c)=>s+(c.price||0),0);
+  const onetimeCustom=customItems.filter(c=>c.type==='onetime'&&(c.name||c.price));
+  const onetimeTotal=onetimeCustom.reduce((s,c)=>s+(c.price||0),0);
+  const recurringCustomLines=customItems.filter(c=>c.type==='recurring'&&(c.name||c.price));
+
+  let discountableMonthly=0,nonDiscountableMonthly=0;
+  const addP=(key,price)=>{if(D.enabled&&!D.unchecked.has(key))discountableMonthly+=price;else nonDiscountableMonthly+=price;};
+  addP('pkg',pkgPrice);
+  if(selPay!=='none')addP('pay',payPrice);
+  addonLines.forEach(a=>addP(a.key,a.price));
+  nonDiscountableMonthly+=recurringCustom;
+
+  const baseMonthly=pkgPrice+payPrice+addonLines.reduce((s,a)=>s+a.price,0)+recurringCustom;
+
+  // discM.period is in months; discA.period is in years
+  const discMonthsCount = billing==='annual' ? D.period*12 : D.period;
+  let discountedMonthly, discSavingsPerDiscUnit=0;
+  if(D.enabled&&D.pct>0){
+    const discAmt=discountableMonthly*(D.pct/100);
+    discountedMonthly=(discountableMonthly-discAmt)+nonDiscountableMonthly;
+    discSavingsPerDiscUnit = billing==='annual' ? discAmt*12 : discAmt;
+  } else {
+    discountedMonthly=baseMonthly;
+  }
+
+  // Effective total for billing period (before VAT)
+  let arboxBase;
+  if(billing==='annual'){
+    if(D.enabled&&D.pct>0){
+      const discMonthsCapped=Math.min(discMonthsCount,12);
+      arboxBase=discountedMonthly*discMonthsCapped + baseMonthly*(12-discMonthsCapped) + onetimeTotal;
+    } else {
+      arboxBase=baseMonthly*12+onetimeTotal;
+    }
+  } else {
+    // Monthly billing — show one discounted month
+    arboxBase=(D.enabled&&D.pct>0?discountedMonthly:baseMonthly)+onetimeTotal;
+  }
+
+  const vatAmt=Math.round(arboxBase*VAT);
+  const arboxGross=arboxBase+vatAmt;
+  const pelecardTotal=billing==='annual'?pelecardExtra*12+setupFee:pelecardExtra+setupFee;
+
+  return {pkg,pkgPrice,pay,payPrice,pelecardExtra,setupFee,pelecardTotal,
+    addonLines,recurringCustomLines,onetimeCustom,onetimeTotal,
+    baseMonthly,discountedMonthly,discSavingsPerDiscUnit,discMonthsCount,
+    arboxBase,vatAmt,arboxGross,setupLines,setupTotal};
+}
+
+/* ══════════════════════════════════════ SUMMARY ══ */
+function updateSummary(){
+  const el=document.getElementById('summary-section');
+  const t=calcTotals();
+  const dealNote=document.getElementById('deal-note')?document.getElementById('deal-note').value.trim():'';
+  if(!t){el.innerHTML=`<div class="empty-summary"><span class="emo">☝️</span>בחר חבילה כדי לראות סיכום מחיר</div>`;return;}
+  const period=billing==='annual'?'/שנה':'/חודש';
+  let lines='';
+  lines+=row(`חבילת ${t.pkg.name}`,`${fmt(t.pkgPrice)}₪/חודש`);
+  if(selPay!=='none') lines+=row(`סליקה — ${t.pay.name}`,`+${fmt(t.payPrice)}₪/חודש`);
+  if(selPay==='grow'){
+    lines+=rowDim(`+ עמלה ${GROW_FEE_PCT[selPkg]}% לעסקה מעל 100/חודש`,'Grow');
+    lines+=`<div class="sum-line"><span class="warn">⚠️ Grow ישירות (בנפרד)</span><span class="warn">59₪/חודש</span></div>`;
+  }
+  if(selPay==='pelecard') lines+=row(`<span class="warn">פלאכארד ישירות</span>`,`<span class="warn">+145₪/חודש + 400₪ הקמה</span>`);
+  t.addonLines.forEach(a=>lines+=row(`${esc(a.name)}${a.detail?` <span style="opacity:.6;font-size:12px">(${esc(a.detail)})</span>`:''}`,`+${fmt(a.price)}₪/חודש`));
+  t.recurringCustomLines.forEach(c=>lines+=row(esc(c.name)||'שורה חודשית',`+${fmt(c.price)}₪/חודש`));
+
+  {
+    const D=billing==='monthly'?discM:discA;
+    if(D.enabled&&D.pct>0){
+      const unit=billing==='annual'?(D.period===1?'שנה':'שנים'):(D.period===1?'חודש':'חודשים');
+      lines+=`<div class="sum-line"><span class="green">🏷️ הנחה ${D.pct}%</span><span class="green">למשך ${D.period} ${unit}</span></div>`;
+      if(billing==='monthly') lines+=rowDim(`מחיר מוזל`,`${fmt(t.discountedMonthly)}₪/חודש`);
+    } else if(billing==='annual'){
+      lines+=rowDim(`× 12 חודשים`,`${fmt(t.baseMonthly*12)}₪`);
+    }
+  }
+
+  if(t.onetimeTotal>0){
+    t.onetimeCustom.forEach(c=>lines+=`<div class="sum-line onetime-section"><span>⚡ ${esc(c.name)||'תשלום חד-פעמי'}</span><span>+${fmt(c.price)}₪</span></div>`);
+  }
+  if(dealNote) lines+=`<div class="sum-line dim" style="font-style:italic"><span>📝 ${esc(dealNote).substring(0,60)}${dealNote.length>60?'...':''}</span></div>`;
+
+  lines+=`<div class="sum-line sep"></div>`;
+  lines+=row(`<strong>סה"כ לפני מע"מ</strong>`,`<strong>${fmt(t.arboxBase)}₪${period}</strong>`);
+  lines+=rowDim('מע"מ 18%',`+${fmt(t.vatAmt)}₪`);
+  lines+=`<div class="sum-line big"><span>💳 סה"כ כולל מע"מ</span><span>${fmt(t.arboxGross)}₪${period}</span></div>`;
+  if(selPay==='pelecard'){
+    lines+=`<div class="sum-line sep"></div>`;
+    lines+=`<div class="sum-line dim"><span><span class="warn">⚠️</span> בנוסף לפלאכארד ישירות</span><span class="warn">${fmt(t.pelecardTotal)}₪${billing==='annual'?'/שנה':''}</span></div>`;
+  }
+  if(t.setupLines.length){
+    lines+=`<div class="sum-line sep"><span style="color:#fde68a;font-weight:800">⚡ עלויות הקמה חד-פעמיות</span><span></span></div>`;
+    t.setupLines.forEach(l=>lines+=`<div class="sum-line" style="font-size:14px"><span>${esc(l.name)}</span><span>${l.price?fmt(l.price)+'₪':'<span class="green">ללא עלות</span>'}</span></div>`);
+    lines+=`<div class="sum-line" style="color:#fde68a"><strong>סה"כ חד-פעמי</strong><span><strong>${fmt(t.setupTotal)}₪</strong> <span style="font-size:12px;color:#93c5fd">(${fmt(Math.round(t.setupTotal*(1+VAT)))}₪ כולל מע"מ)</span></span></div>`;
+  }
+
+  el.innerHTML=`<div class="summary-card"><div class="summary-title">💰 סיכום — ${billing==='monthly'?'חיוב חודשי':'חיוב שנתי (מראש)'}</div>${lines}<button class="pdf-btn" onclick="openProposalComposer()">📄 ייצא הצעה ללקוח</button></div>`;
+}
+function row(l,v){return `<div class="sum-line"><span>${l}</span><span>${v}</span></div>`}
+function rowDim(l,v){return `<div class="sum-line dim"><span>${l}</span><span>${v}</span></div>`}
+
+/* ══════════════════════════════════════ ADMIN ══ */
+function openAdmin(){
+  document.getElementById('overlay-admin').classList.add('open');
+  document.getElementById('auth-panel').style.display='block';
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('auth-err').style.display='none';
+  document.getElementById('admin-pw').value='';
+  setTimeout(()=>document.getElementById('admin-pw').focus(),100);
+}
+function closeAdmin(){document.getElementById('overlay-admin').classList.remove('open');cancelEdit();}
+function overlayClick(e,id){if(e.target.id===id)document.getElementById(id).classList.remove('open');}
+function checkPw(){
+  if(document.getElementById('admin-pw').value===ADMIN_PASSWORD){
+    document.getElementById('auth-panel').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    renderAdminList();
+    renderAdminFeatureTable();
+  } else {document.getElementById('auth-err').style.display='block';}
+}
+function renderAdminList(){
+  const c=document.getElementById('admin-addon-list');
+  if(!addons.length){c.innerHTML=`<div style="color:#94a3b8;font-size:14px;text-align:center;padding:12px">אין תוספים עדיין</div>`;return;}
+  c.innerHTML=addons.map((a,i)=>`
+    <div class="admin-addon-row" id="ar-${i}">
+      <div class="admin-addon-top">
+        <div>
+          <div class="admin-addon-info">${esc(a.name)}</div>
+          <div class="admin-addon-prices">${a.monthly}₪/חודש · ${a.annual}₪/חודש (שנתי)${hasUnits(a)?` · + ${a.perUnit}₪ ל${esc(a.unitLabel||'יחידה')}`:''}${a.description?' · '+esc(a.description):''}</div>
+        </div>
+        <div class="admin-addon-actions">
+          <button class="btn btn-warning" style="padding:6px 12px" onclick="startEdit(${i})">✏️ ערוך</button>
+          <button class="btn btn-danger" style="padding:6px 12px" onclick="deleteAddon(${i})">🗑</button>
+        </div>
+      </div>
+      <div class="admin-addon-edit-form" id="ef-${i}" style="display:none">
+        <div class="field-row"><label>שם</label><input type="text" id="ef-name-${i}" value="${esc(a.name)}"/></div>
+        <div class="field-row"><label>תיאור</label><input type="text" id="ef-desc-${i}" value="${esc(a.description||'')}"/></div>
+        <div class="two-col">
+          <div class="field-row"><label>חודשי (₪)</label><input type="number" id="ef-m-${i}" value="${a.monthly}"/></div>
+          <div class="field-row"><label>שנתי (₪)</label><input type="number" id="ef-a-${i}" value="${a.annual}"/></div>
+        </div>
+        <div class="two-col">
+          <div class="field-row"><label>תוספת ליחידה (₪, אופציונלי)</label><input type="number" id="ef-u-${i}" value="${hasUnits(a)?a.perUnit:''}"/></div>
+          <div class="field-row"><label>שם היחידה</label><input type="text" id="ef-ul-${i}" value="${esc(a.unitLabel||'')}"/></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveInlineEdit(${i})">💾 שמור</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('ef-${i}').style.display='none'">ביטול</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function startEdit(i){
+  document.querySelectorAll('.admin-addon-edit-form').forEach(e=>e.style.display='none');
+  document.getElementById(`ef-name-${i}`).value = addons[i].name;
+  document.getElementById(`ef-desc-${i}`).value = addons[i].description || '';
+  document.getElementById(`ef-m-${i}`).value = addons[i].monthly;
+  document.getElementById(`ef-a-${i}`).value = addons[i].annual;
+  document.getElementById(`ef-u-${i}`).value = hasUnits(addons[i])?addons[i].perUnit:'';
+  document.getElementById(`ef-ul-${i}`).value = addons[i].unitLabel||'';
+  document.getElementById(`ef-${i}`).style.display='block';
+}
+function saveInlineEdit(i){
+  const name=document.getElementById(`ef-name-${i}`).value.trim();
+  if(!name){alert('נא להכניס שם');return;}
+  addons[i]=buildAddonRecord(name,document.getElementById(`ef-desc-${i}`).value.trim(),parseFloat(document.getElementById(`ef-m-${i}`).value)||0,parseFloat(document.getElementById(`ef-a-${i}`).value)||0,
+    parseFloat(document.getElementById(`ef-u-${i}`).value)||0,document.getElementById(`ef-ul-${i}`).value.trim(),addons[i]);
+  if(addonOverrides[i]){const o=addonOverrides[i];delete o.monthly;delete o.annual;delete o.perUnit;delete o.manual;}
+  saveAddons();renderAdminList();renderAddons();refreshDiscountUI();updateSummary();
+}
+function cancelEdit(){
+  editingIdx=null;
+  ['n-name','n-desc','n-monthly','n-annual','n-unit','n-unitlabel'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const btn=document.getElementById('add-addon-btn');if(btn)btn.textContent='+ הוסף';
+  const cb=document.getElementById('cancel-edit-btn');if(cb)cb.style.display='none';
+  const ti=document.getElementById('addon-form-title');if(ti)ti.textContent='➕ הוספת תוסף חדש';
+}
+function saveAddon(){
+  const name=document.getElementById('n-name').value.trim();
+  const desc=document.getElementById('n-desc').value.trim();
+  const monthly=parseFloat(document.getElementById('n-monthly').value)||0;
+  const annual=parseFloat(document.getElementById('n-annual').value)||0;
+  const unit=parseFloat(document.getElementById('n-unit').value)||0;
+  const unitLabel=document.getElementById('n-unitlabel').value.trim();
+  if(!name){alert('נא להכניס שם');return;}
+  if(editingIdx!==null)addons[editingIdx]=buildAddonRecord(name,desc,monthly,annual,unit,unitLabel,addons[editingIdx]);
+  else addons.push(buildAddonRecord(name,desc,monthly,annual,unit,unitLabel));
+  saveAddons();cancelEdit();renderAdminList();renderAddons();refreshDiscountUI();updateSummary();
+}
+// Builds a catalog add-on. perUnit/unitLabel are optional (e.g. "+6₪ per staff member").
+function buildAddonRecord(name,description,monthly,annual,unit,unitLabel,prev){
+  const r={name,description,monthly,annual};
+  if(unit>0){
+    r.perUnit=unit; r.unitLabel=unitLabel||'יחידות';
+    if(prev&&prev.unitLabelEn&&prev.unitLabel===r.unitLabel)r.unitLabelEn=prev.unitLabelEn;
+  }
+  return r;
+}
+function deleteAddon(i){
+  if(!confirm(`למחוק את "${addons[i].name}"?`))return;
+  const ns=new Set();selAddons.forEach(idx=>{if(idx<i)ns.add(idx);else if(idx>i)ns.add(idx-1);});selAddons=ns;
+  const no={};Object.keys(addonOverrides).forEach(k=>{const idx=+k;if(idx<i)no[idx]=addonOverrides[k];else if(idx>i)no[idx-1]=addonOverrides[k];});addonOverrides=no;
+  addons.splice(i,1);saveAddons();renderAdminList();renderAddons();refreshDiscountUI();updateSummary();
+}
+function saveAddons(){localStorage.setItem('arbox_addons',JSON.stringify(addons));}
+function saveFeatures(){localStorage.setItem('arbox_features',JSON.stringify(features));}
+function exportConfig(){document.getElementById('export-text').value=JSON.stringify({addons,features},null,2);document.getElementById('export-box').style.display='block';document.getElementById('import-box').style.display='none';}
+function toggleImport(){const b=document.getElementById('import-box');b.style.display=b.style.display==='none'?'block':'none';document.getElementById('export-box').style.display='none';}
+function importConfig(){
+  try{
+    const data=JSON.parse(document.getElementById('import-text').value.trim());
+    if(Array.isArray(data)){ addons=data; } // backward-compatible: old export format (addons array only)
+    else if(data&&Array.isArray(data.addons)){ addons=data.addons; if(Array.isArray(data.features))features=data.features; }
+    else throw 0;
+    selAddons=new Set();addonOverrides={};saveAddons();saveFeatures();renderAdminList();renderAdminFeatureTable();renderAddons();refreshDiscountUI();updateSummary();
+    document.getElementById('import-box').style.display='none';document.getElementById('import-text').value='';alert('✅ יובא!');
+  }catch(_){alert('❌ JSON לא תקין');}
+}
+function publishForAll(){
+  try{
+    let html=document.documentElement.outerHTML;
+    html=html.replace(/const INITIAL_ADDONS = \[[\s\S]*?\];/,`const INITIAL_ADDONS = ${JSON.stringify(addons,null,2)};`);
+    html=html.replace(/const INITIAL_FEATURES = \[[\s\S]*?\];/,`const INITIAL_FEATURES = ${JSON.stringify(features,null,2)};`);
+    const blob=new Blob(['<!DOCTYPE html>\n'+html],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='arbox-pricing.html';document.body.appendChild(a);a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+    alert('✅ הקובץ הורד!\nעדכן אותו ב-GitHub כדי שכולם יראו.');
+  }catch(e){alert('שגיאה: '+e.message);}
+}
+
+/* ══════════════════════════════════════ ADMIN: FEATURE TABLE ══ */
+function renderAdminFeatureTable(){
+  const body=document.getElementById('admin-feat-body');
+  if(!body)return;
+  body.innerHTML=features.map((f,i)=>{
+    const cell=(pkgKey)=>{
+      if(f.type==='text'){
+        return `<td><input type="text" value="${esc(f[pkgKey])}" oninput="updateAdminFeatureValue(${i},'${pkgKey}',this.value)"/></td>`;
+      }
+      return `<td><input type="checkbox" ${f[pkgKey]?'checked':''} onchange="updateAdminFeatureValue(${i},'${pkgKey}',this.checked)"/></td>`;
+    };
+    return `<tr>
+      <td><input type="text" value="${esc(f.label_he)}" oninput="updateAdminFeatureLabel(${i},'label_he',this.value)" style="margin-bottom:4px"/><input type="text" value="${esc(f.label_en)}" oninput="updateAdminFeatureLabel(${i},'label_en',this.value)" style="direction:ltr;font-size:11.5px;color:#94a3b8"/></td>
+      ${cell('basic')}${cell('standard')}${cell('professional')}
+      <td><button class="del-feat-btn" onclick="deleteFeatureRow(${i})">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+function updateAdminFeatureValue(i,pkgKey,val){ features[i][pkgKey]=val; saveFeatures(); }
+function updateAdminFeatureLabel(i,field,val){ features[i][field]=val; saveFeatures(); }
+function addFeatureRow(){
+  features.push({key:'custom_'+Date.now(),type:'bool',label_he:'פיצ׳ר חדש',label_en:'New feature',basic:false,standard:false,professional:false});
+  saveFeatures();renderAdminFeatureTable();
+}
+function deleteFeatureRow(i){ features.splice(i,1); saveFeatures(); renderAdminFeatureTable(); }
+
+function resetAddonsToDefaults(){
+  if(!confirm('זה ימחק כל שינוי שנשמר בדפדפן הזה ברשימת התוספים, ויחזיר בדיוק את מה שכתוב בקובץ. להמשיך?'))return;
+  localStorage.removeItem('arbox_addons');
+  addons=[...INITIAL_ADDONS];
+  selAddons=new Set();addonOverrides={};
+  saveAddons();
+  renderAdminList();renderAddons();refreshDiscountUI();updateSummary();
+  alert('✅ אופס לברירת המחדל של הקובץ.');
+}
+function resetFeaturesToDefaults(){
+  if(!confirm('זה ימחק כל שינוי שנשמר בדפדפן הזה בטבלת הפיצ׳רים, ויחזיר בדיוק את מה שכתוב בקובץ. להמשיך?'))return;
+  localStorage.removeItem('arbox_features');
+  features=[...INITIAL_FEATURES];
+  saveFeatures();
+  renderAdminFeatureTable();
+  alert('✅ אופסה לברירת המחדל של הקובץ.');
+}
+
+/* ══════════════════════════════════════ PROPOSAL COMPOSER ══ */
+function openProposalComposer(){
+  const hasPkg=!!selPkg;
+  document.getElementById('composer-no-pkg').style.display=hasPkg?'none':'block';
+  document.getElementById('composer-body-wrap').style.display=hasPkg?'flex':'none';
+  document.querySelector('.composer-footer').style.display=hasPkg?'flex':'none';
+  if(hasPkg){
+    proposalLang='he';
+    payDisplay='selected';
+    customFeatureRows=[];
+    document.getElementById('lang-btn-he').classList.add('active');
+    document.getElementById('lang-btn-en').classList.remove('active');
+    const selRadio=document.querySelector('input[name="pay-display"][value="selected"]');
+    if(selRadio)selRadio.checked=true;
+    document.getElementById('cf-include-addons').checked=false;
+    document.getElementById('cf-show-vat').checked=false;
+    ['intro','why','clients','value','workplan','small'].forEach(f=>resetContentField(f,true));
+    initFeatureOverridesFromPackage();
+    renderFeatureChecklist();
+    renderProposalPreview();
+  }
+  document.getElementById('overlay-composer').classList.add('open');
+  setTimeout(scalePreview,30);
+}
+function closeProposalComposer(){
+  document.getElementById('overlay-composer').classList.remove('open');
+}
+function setProposalLang(lang){
+  proposalLang=lang;
+  document.getElementById('lang-btn-he').classList.toggle('active',lang==='he');
+  document.getElementById('lang-btn-en').classList.toggle('active',lang==='en');
+  ['intro','why','clients','value','workplan','small'].forEach(f=>resetContentField(f,true));
+  renderFeatureChecklist();
+  renderProposalPreview();
+}
+function setPayDisplay(v){ payDisplay=v; renderProposalPreview(); }
+
+function initFeatureOverridesFromPackage(){
+  featureOverrides={};
+  features.forEach(f=>{ featureOverrides[f.key]=f[selPkg]; });
+}
+function renderFeatureChecklist(){
+  const wrap=document.getElementById('feature-checklist');
+  const L=proposalLang;
+  wrap.innerHTML=features.map(f=>{
+    const label=L==='he'?f.label_he:f.label_en;
+    if(f.type==='text'){
+      const val=featureOverrides[f.key]!==undefined?featureOverrides[f.key]:f[selPkg];
+      return `<div class="feature-row"><span>${esc(label)}</span><input type="text" style="width:110px;border:1.5px solid var(--border);border-radius:8px;padding:4px 8px;font-size:12.5px;text-align:center;direction:rtl;font-family:'Heebo',sans-serif" value="${esc(val)}" oninput="updateFeatureOverrideText('${f.key}',this.value)"/></div>`;
+    }
+    const checked=featureOverrides[f.key]?'checked':'';
+    return `<div class="feature-row"><span>${esc(label)}</span><input type="checkbox" ${checked} onchange="updateFeatureOverrideBool('${f.key}',this.checked)"/></div>`;
+  }).join('');
+  renderCustomFeatureRows();
+}
+function updateFeatureOverrideBool(key,val){ featureOverrides[key]=val; renderProposalPreview(); }
+function updateFeatureOverrideText(key,val){ featureOverrides[key]=val; renderProposalPreview(); }
+
+function renderCustomFeatureRows(){
+  const wrap=document.getElementById('custom-feature-rows');
+  if(!wrap)return;
+  wrap.innerHTML=customFeatureRows.map((r,i)=>`
+    <div class="feature-row" style="gap:6px">
+      <input type="text" placeholder="שם הפיצ'ר" style="flex:1;border:1.5px solid var(--border);border-radius:8px;padding:5px 9px;font-size:12.5px;direction:rtl;font-family:'Heebo',sans-serif" value="${esc(r.label)}" oninput="updateCustomFeatureRow(${i},'label',this.value)"/>
+      <input type="checkbox" ${r.checked?'checked':''} onchange="updateCustomFeatureRow(${i},'checked',this.checked)"/>
+      <button class="del-feat-btn" onclick="deleteCustomFeatureRow(${i})">✕</button>
+    </div>`).join('');
+}
+function addCustomFeatureRow(){ customFeatureRows.push({label:'',checked:true}); renderCustomFeatureRows(); renderProposalPreview(); }
+function updateCustomFeatureRow(i,field,val){ customFeatureRows[i][field]=val; renderProposalPreview(); }
+function deleteCustomFeatureRow(i){ customFeatureRows.splice(i,1); renderCustomFeatureRows(); renderProposalPreview(); }
+
+function resetContentField(field,silent){
+  const map={intro:'cf-intro',why:'cf-why',clients:'cf-clients',value:'cf-value',workplan:'cf-workplan',small:'cf-small'};
+  const el=document.getElementById(map[field]);
+  el.value=DEFAULT_CONTENT[proposalLang][field];
+  if(!silent)renderProposalPreview();
+}
+
+function scalePreview(){
+  const pane=document.getElementById('composer-preview-pane');
+  const wrap=document.getElementById('proposal-scale-wrap');
+  if(!pane||!wrap)return;
+  const avail=pane.clientWidth-32;
+  const scale=Math.min(1,avail/794);
+  wrap.style.transform=`scale(${scale})`;
+}
+window.addEventListener('resize',()=>{ const o=document.getElementById('overlay-composer'); if(o&&o.classList.contains('open'))scalePreview(); });
+
+/* Generalized totals calculator for the PROPOSAL only (does not touch the live calculator's calcTotals).
+   billingOverride: 'monthly'|'annual'.  includeAddons: whether selected catalog add-ons count toward the total. */
+function calcProposalVariant(billingOverride,includeAddons){
+  if(!selPkg)return null;
+  const pkg=PACKAGES[selPkg];
+  const pkgPrice=billingOverride==='monthly'?pkg.monthly:pkg.annual;
+  const pay=PAYMENT[selPay];
+  const payPrice=selPay==='none'?0:(billingOverride==='monthly'?pay.monthly:pay.annual);
+  const pelecardExtra=selPay==='pelecard'?145:0;
+  const setupFee=selPay==='pelecard'?400:0;
+  const D=billingOverride==='monthly'?discM:discA; // each discount ONLY ever applies to its own matching billing type
+
+  const addonLines=buildAddonLines(billingOverride,proposalLang);
+  const setupLines=getSetupLines(proposalLang);
+  const setupTotal=setupLines.reduce((s,l)=>s+l.price,0);
+  const addonsSum=addonLines.reduce((s,a)=>s+a.price,0);
+
+  const recurringCustomAll=customItems.filter(c=>c.type==='recurring'&&(c.name||c.price));
+  const recurringCustomSum=recurringCustomAll.reduce((s,c)=>s+(c.price||0),0);
+  const onetimeCustom=customItems.filter(c=>c.type==='onetime'&&(c.name||c.price));
+  const onetimeTotal=onetimeCustom.reduce((s,c)=>s+(c.price||0),0);
+
+  const planPrice=pkgPrice+payPrice; // headline "package + payment" combined price, always
+
+  let discountableMonthly=0,nonDiscountableMonthly=0;
+  const addP=(key,price)=>{if(D.enabled&&!D.unchecked.has(key))discountableMonthly+=price;else nonDiscountableMonthly+=price;};
+  addP('pkg',pkgPrice);
+  if(selPay!=='none')addP('pay',payPrice);
+  if(includeAddons)addonLines.forEach(a=>addP(a.key,a.price));
+  nonDiscountableMonthly+=recurringCustomSum; // custom deal-specific line items always counted, regardless of the add-ons toggle
+
+  const baseMonthly=pkgPrice+payPrice+(includeAddons?addonsSum:0)+recurringCustomSum;
+
+  // discM.period is in months; discA.period is in years
+  const discMonthsCount=billingOverride==='annual'?D.period*12:D.period;
+  let discountedMonthly,discSavingsPerDiscUnit=0;
+  if(D.enabled&&D.pct>0){
+    const discAmt=discountableMonthly*(D.pct/100);
+    discountedMonthly=(discountableMonthly-discAmt)+nonDiscountableMonthly;
+    discSavingsPerDiscUnit=billingOverride==='annual'?discAmt*12:discAmt;
+  }else discountedMonthly=baseMonthly;
+
+  let arboxBase;
+  if(billingOverride==='annual'){
+    if(D.enabled&&D.pct>0){
+      const discMonthsCapped=Math.min(discMonthsCount,12);
+      arboxBase=discountedMonthly*discMonthsCapped+baseMonthly*(12-discMonthsCapped)+onetimeTotal;
+    }else arboxBase=baseMonthly*12+onetimeTotal;
+  }else{
+    arboxBase=(D.enabled&&D.pct>0?discountedMonthly:baseMonthly)+onetimeTotal;
+  }
+  const vatAmt=Math.round(arboxBase*VAT);
+  const arboxGross=arboxBase+vatAmt;
+  const pelecardTotal=billingOverride==='annual'?pelecardExtra*12+setupFee:pelecardExtra+setupFee;
+
+  return {pkg,pkgPrice,pay,payPrice,planPrice,addonLines,addonsSum,recurringCustomAll,recurringCustomSum,
+    onetimeCustom,onetimeTotal,baseMonthly,discountedMonthly,discSavingsPerDiscUnit,discMonthsCount,
+    arboxBase,vatAmt,arboxGross,pelecardTotal,setupLines,setupTotal,
+    discActive:(D.enabled&&D.pct>0),discPct:D.pct,discPeriod:D.period};
+}
+
+/* Builds the full branded proposal document HTML, as an array of block-strings (each becomes one
+   non-splittable .pb-block for PDF pagination), joined together. Shared by live preview and PDF export. */
+function buildProposalHTML(){
+  if(!selPkg)return '';
+  const L=proposalLang,U=UI_STRINGS[L];
+  const dir=U.dir,rtl=dir==='rtl';
+  const client=(document.getElementById('pdf-client').value||'').trim()||(L==='he'?'לקוח':'Client');
+  const contact=(document.getElementById('pdf-contact').value||'').trim();
+  const rep=(document.getElementById('pdf-rep').value||'').trim()||U.repDefault;
+  const validity=(document.getElementById('pdf-validity').value||'').trim();
+  const dealNote=(document.getElementById('cf-note').value||'').trim();
+  const introTxt=document.getElementById('cf-intro').value;
+  const whyTxt=document.getElementById('cf-why').value;
+  const clientsTxt=document.getElementById('cf-clients').value;
+  const valueLines=document.getElementById('cf-value').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const workplanLines=document.getElementById('cf-workplan').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const smallLines=document.getElementById('cf-small').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const includeAddons=document.getElementById('cf-include-addons').checked;
+  const showVat=document.getElementById('cf-show-vat').checked;
+
+  const mM=calcProposalVariant('monthly',includeAddons);
+  const mA=calcProposalVariant('annual',includeAddons);
+  const today=new Date().toLocaleDateString(L==='he'?'he-IL':'en-GB',{year:'numeric',month:'long',day:'numeric'});
+  const moWord=L==='he'?'חודש':'mo';
+  const S='₪';
+  const blocks=[];
+
+  // ── head + client box ──
+  blocks.push(`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #4F87FF;padding-bottom:18px;margin-bottom:26px;">
+      <img src="${LOGO_GRADIENT}" style="height:32px;display:block;"/>
+      <div style="text-align:${rtl?'left':'right'};font-size:13px;color:#64748b;">
+        <div style="font-size:16px;font-weight:800;color:#081838;margin-bottom:4px;">${U.quoteWord}</div>
+        <div>${U.dateLabel}: ${today}</div>
+      </div>
+    </div>
+    <div style="font-size:20px;font-weight:800;margin-bottom:16px;color:#081838;">${esc(U.docTitle)}</div>
+    <div style="background:#f5f5f5;border-${rtl?'right':'left'}:4px solid #4F87FF;padding:12px 16px;border-radius:8px;">
+      <div style="font-size:11px;color:#64748b;font-weight:700;margin-bottom:5px;text-transform:uppercase;">${U.clientDetails}</div>
+      <div style="font-size:15px;font-weight:700;color:#081838;">${esc(client)}</div>
+      ${contact?`<div style="font-size:13px;color:#475569;margin-top:3px;">${U.contactLabel}: ${esc(contact)}</div>`:''}
+    </div>`);
+
+  if(introTxt.trim())blocks.push(`<div style="font-size:13.5px;line-height:1.8;color:#334155;">${esc(introTxt).replace(/\n/g,'<br>')}</div>`);
+
+  if(whyTxt.trim())blocks.push(`<div style="font-size:15px;font-weight:800;margin-bottom:8px;color:#081838;">${esc(U.whyTitle)}</div>
+    <div style="font-size:13px;line-height:1.8;color:#334155;">${esc(whyTxt).replace(/\n/g,'<br><br>')}</div>`);
+
+  if(clientsTxt.trim())blocks.push(`<div style="background:#f5f5f5;border-radius:10px;padding:12px 16px;font-size:12px;color:#475569;line-height:1.7;"><strong style="color:#081838;">${esc(U.clientsTitle)}:</strong> ${esc(clientsTxt)}</div>`);
+
+  if(valueLines.length){
+    let vhtml=`<div style="font-size:15px;font-weight:800;margin:0 0 10px;color:#081838;">${esc(U.valueTitle)}</div>`;
+    valueLines.forEach(line=>{
+      const idx=line.search(/[-—]/);
+      const head=idx>-1?line.slice(0,idx).trim():line;
+      const rest=idx>-1?line.slice(idx+1).trim():'';
+      vhtml+=`<div style="display:flex;gap:8px;padding:5px 0;font-size:13px;line-height:1.6;color:#334155;"><span style="color:#4F87FF;font-weight:800;flex-shrink:0;">✓</span><span><strong style="color:#081838;">${esc(head)}</strong>${rest?' — '+esc(rest):''}</span></div>`;
+    });
+    blocks.push(vhtml);
+  }
+
+  // ── plan headline: package + payment combined, monthly AND annual shown together ──
+  const planLabel=`${esc(mM.pkg.name)}${selPay!=='none'?(L==='he'?' + סליקה וחשבוניות':' + payment processing'):''} ${esc(U.planFor)}`;
+  let planHtml=`<div style="font-size:15px;font-weight:800;margin:4px 0 8px;color:#081838;">${planLabel}</div>
+    <div style="display:flex;gap:26px;margin-bottom:16px;flex-wrap:wrap;">
+      <div><div style="font-size:22px;font-weight:900;color:#4F87FF;">${fmt(mM.planPrice)}${S}<span style="font-size:12px;color:#64748b;font-weight:500;"> ${moWord}${L==='he'?' · חיוב חודשי':' · monthly'}</span></div></div>
+      <div><div style="font-size:22px;font-weight:900;color:#4F87FF;">${fmt(mA.planPrice)}${S}<span style="font-size:12px;color:#64748b;font-weight:500;"> ${moWord}${L==='he'?' · בחיוב שנתי מראש':' · billed annually'}</span></div></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;margin:0 0 6px;">${esc(U.planDetails)}</div>`;
+
+  const featRows=features.map(f=>{
+    const val=featureOverrides[f.key];
+    const label=L==='he'?f.label_he:f.label_en;
+    const display=f.type==='text'?esc(val):(val?'<span style="color:#16a34a;font-weight:800;">✓</span>':'<span style="color:#cbd5e1;">—</span>');
+    return `<tr><td style="padding:7px 10px;border-bottom:1px solid #e2e8f0;font-size:12.5px;color:#334155;">${esc(label)}</td><td style="padding:7px 10px;border-bottom:1px solid #e2e8f0;font-size:12.5px;text-align:center;">${display}</td></tr>`;
+  }).join('') + customFeatureRows.filter(r=>r.label.trim()).map(r=>{
+    const display=r.checked?'<span style="color:#16a34a;font-weight:800;">✓</span>':'<span style="color:#cbd5e1;">—</span>';
+    return `<tr><td style="padding:7px 10px;border-bottom:1px solid #e2e8f0;font-size:12.5px;color:#334155;">${esc(r.label)}</td><td style="padding:7px 10px;border-bottom:1px solid #e2e8f0;font-size:12.5px;text-align:center;">${display}</td></tr>`;
+  }).join('');
+  planHtml+=`<table style="width:100%;border-collapse:collapse;"><tbody>${featRows}</tbody></table>`;
+  blocks.push(planHtml);
+
+  // ── selected add-ons / custom items (renamed "פירוט תוספים"; NOT summed unless includeAddons is checked) ──
+  let svcRows='';
+  const td0='padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:12.5px;color:#081838;';
+  const tdP=`padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:12.5px;font-weight:700;color:#4F87FF;text-align:${rtl?'left':'right'};`;
+  mM.addonLines.forEach(a=>{svcRows+=`<tr><td style="${td0}">${esc(a.name)}${a.detail?`<div style="font-size:11px;color:#64748b;margin-top:2px;">${esc(a.detail)}</div>`:''}</td><td style="${tdP}">+${fmt(a.price)}${S}/${moWord}</td></tr>`;});
+  mM.recurringCustomAll.forEach(c=>{svcRows+=`<tr><td style="${td0}">${esc(c.name)||(L==='he'?'שירות':'Service')}</td><td style="${tdP}">+${fmt(c.price)}${S}/${moWord}</td></tr>`;});
+  mM.onetimeCustom.forEach(c=>{svcRows+=`<tr><td style="${td0}">${esc(c.name)||(L==='he'?'שירות':'Service')} (${U.onetimeWord})</td><td style="${tdP}">+${fmt(c.price)}${S}</td></tr>`;});
+  if(svcRows){
+    const noteHtml=includeAddons
+      ? `<div style="font-size:11px;color:#16a34a;margin-top:6px;">✓ ${L==='he'?'סכומים אלו כלולים בסה"כ למטה':'These amounts are included in the total below'}</div>`
+      : `<div style="font-size:11px;color:#c2410c;margin-top:6px;">${L==='he'?'* תוספים אופציונליים — לא כלולים בסה"כ למטה, אלא אם יאושרו בנפרד':'* Optional add-ons — not included in the total below unless agreed separately'}</div>`;
+    blocks.push(`<div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;margin:0 0 6px;">${esc(U.serviceDetailTitle)}</div>
+      <table style="width:100%;border-collapse:collapse;"><tbody>${svcRows}</tbody></table>${noteHtml}`);
+  }
+
+  // ── payment detail cards ──
+  if(payDisplay!=='none'){
+    const mkPayCard=(key)=>{
+      const p=PAYMENT[key];
+      const isSelected=(key===selPay);
+      let extra='';
+      if(key==='grow')extra=`<div style="font-size:11.5px;color:#4F87FF;margin-top:4px;">✅ ${L==='he'?`ללא עלות הקמה · עמלה ${GROW_FEE_PCT[selPkg]}% לעסקה מעל 100 עסקאות/חודש`:`No setup fee · ${GROW_FEE_PCT[selPkg]}% fee per transaction above 100/month`}</div><div style="font-size:11.5px;color:#dc2626;margin-top:2px;">${U.directly}: 59${S}/${moWord}</div>`;
+      if(key==='pelecard')extra=`<div style="font-size:11.5px;color:#dc2626;margin-top:4px;">${U.directly}: 145${S}/${moWord} + ${L==='he'?'הקמה':'setup'} 400${S}</div>`;
+      if(key==='icredit')extra=`<div style="font-size:11.5px;color:#4F87FF;margin-top:4px;">✅ ${L==='he'?'פתרון סליקה משולב':'Integrated payment solution'}</div>`;
+      const priceLine=isSelected
+        ? `<div style="font-size:12.5px;font-weight:700;color:#16a34a;">✓ ${L==='he'?'כלול במחיר החבילה למעלה':'Included in the plan price above'}</div>`
+        : `<div style="font-size:16px;font-weight:900;color:#4F87FF;">+${fmt(p.monthly)}${S}/${moWord}</div>`;
+      return `<div style="border:1.5px solid ${isSelected?'#4F87FF':'#e2e8f0'};border-radius:12px;padding:14px 16px;flex:1;min-width:150px;"><div style="font-weight:800;font-size:14px;margin-bottom:4px;">${p.name}</div>${priceLine}${extra}</div>`;
+    };
+    let keys=[];
+    if(payDisplay==='both')keys=['grow','pelecard','icredit'];
+    else if(selPay!=='none')keys=[selPay];
+    if(keys.length)blocks.push(`<div style="font-size:15px;font-weight:800;margin-bottom:10px;color:#081838;">${esc(U.payTitle)}</div><div style="display:flex;gap:12px;flex-wrap:wrap;">${keys.map(mkPayCard).join('')}</div>`);
+  }
+
+  // ── cost summary: monthly + annual side by side, always ──
+  const buildCol=(variant,title,billingType)=>{
+    const rows=[];
+    const trow=(bg,clr,fw,fs,l,r)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:${bg};border-bottom:1px solid #e2e8f0;font-size:${fs};font-weight:${fw};color:${clr};"><span>${l}</span><span>${r}</span></div>`;
+    if(variant.discActive)rows.push(trow('#eff6ff','#2563eb','700','12.5px',`${L==='he'?'הנחה':'Discount'} ${variant.discPct}%`,`-${fmt(Math.round(variant.discSavingsPerDiscUnit))}${S}`));
+    if(variant.onetimeTotal>0)rows.push(trow('#fefce8','#854d0e','400','12px',L==='he'?'חד-פעמי':'One-time',`${fmt(variant.onetimeTotal)}${S}`));
+
+    const showDuringAfter=billingType==='monthly'&&variant.discActive;
+    if(showDuringAfter){
+      const duringVal=showVat?variant.arboxGross:variant.arboxBase;
+      const afterVal=showVat?Math.round(variant.baseMonthly*(1+VAT)):variant.baseMonthly;
+      const periodLabel=variant.discPeriod===1?(L==='he'?'החודש הראשון':'The first month'):(L==='he'?`${variant.discPeriod} החודשים הראשונים`:`The first ${variant.discPeriod} months`);
+      const afterLabel=L==='he'?`החל מהחודש ה-${variant.discPeriod+1}`:`From month ${variant.discPeriod+1} onward`;
+      rows.push(trow('#081838','#ffffff','800','15px',periodLabel,`${fmt(duringVal)}${S}`));
+      rows.push(trow('#f8fafc','#334155','700','13px',afterLabel,`${fmt(afterVal)}${S}/${L==='he'?'חודש':'mo'}`));
+    }else if(showVat){
+      rows.push(trow('#f8fafc','#081838','600','13px',U.totalBeforeVat,`${fmt(variant.arboxBase)}${S}`));
+      rows.push(trow('#f0f0f0','#64748b','400','12px',U.vat,`+${fmt(variant.vatAmt)}${S}`));
+      rows.push(trow('#081838','#ffffff','800','16px',U.totalWithVat,`${fmt(variant.arboxGross)}${S}`));
+    }else{
+      rows.push(trow('#081838','#ffffff','800','16px',L==='he'?'סה"כ לתשלום':'Total due',`${fmt(variant.arboxBase)}${S}`));
+    }
+    return `<div style="flex:1;min-width:230px;border:2px solid #e2e8f0;border-radius:10px;overflow:hidden;">
+      <div style="background:#f8fafc;color:#64748b;padding:9px 14px;font-size:12px;font-weight:800;border-bottom:1px solid #e2e8f0;">${title}</div>
+      ${rows.join('')}
+    </div>`;
+  };
+  blocks.push(`<div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;margin:0 0 8px;">${esc(U.costSummaryTitle)}</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+      ${buildCol(mM,U.monthly,'monthly')}
+      ${buildCol(mA,U.annualPrepaid,'annual')}
+    </div>`);
+
+  // ── one-time setup costs: shown after the prices, as its own block ──
+  if(mM.setupLines.length){
+    const sTotal=mM.setupTotal, sVat=Math.round(sTotal*VAT);
+    const free=`<span style="color:#16a34a;">${esc(U.freeWord)}</span>`;
+    const itemRows=mM.setupLines.map(l=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:11px 18px;border-bottom:1px solid #f3e3cc;font-size:13.5px;color:#081838;">
+        <span style="display:flex;align-items:center;gap:9px;"><span style="width:7px;height:7px;border-radius:50%;background:#4F87FF;display:inline-block;"></span>${esc(l.name)}</span>
+        <span style="font-weight:800;">${l.price?fmt(l.price)+S:free}</span></div>`).join('');
+    const tr=(bg,clr,fw,fs,l,r)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 18px;background:${bg};color:${clr};font-weight:${fw};font-size:${fs};"><span>${l}</span><span>${r}</span></div>`;
+    let totalRows='';
+    if(!sTotal) totalRows=tr('#081838','#ffffff','800','15px',esc(U.setupTotal),esc(U.freeWord));
+    else if(showVat) totalRows=tr('#fffaf3','#081838','600','13px',esc(U.totalBeforeVat),`${fmt(sTotal)}${S}`)
+      +tr('#fffaf3','#64748b','400','12px',esc(U.vat),`+${fmt(sVat)}${S}`)
+      +tr('#081838','#ffffff','800','16px',esc(U.totalWithVat),`${fmt(sTotal+sVat)}${S}`);
+    else totalRows=tr('#081838','#ffffff','800','16px',esc(U.setupTotal),`${fmt(sTotal)}${S}`);
+    blocks.push(`<div style="border:1.5px solid #f3c98f;border-radius:12px;overflow:hidden;">
+      <div style="background:linear-gradient(135deg,#FADAB3 0%,#fdeedb 100%);padding:13px 18px;">
+        <div style="font-size:15px;font-weight:800;color:#081838;">${esc(U.setupTitle)}</div>
+        <div style="font-size:11.5px;color:#8a5a1f;margin-top:2px;">${esc(U.setupSub)}</div>
+      </div>
+      <div style="background:#fffaf3;">${itemRows}</div>
+      ${totalRows}
+    </div>`);
+  }
+
+  if(dealNote)blocks.push(`<div style="background:#eff6ff;border:1.5px solid #93c5fd;border-radius:8px;padding:12px 16px;font-size:13px;color:#1e3a8a;line-height:1.7;"><strong>${esc(U.noteLabel)}:</strong> ${esc(dealNote).replace(/\n/g,'<br>')}</div>`);
+  if(validity)blocks.push(`<div style="background:#fef9c3;border:1px solid #fde047;border-radius:8px;padding:10px 14px;font-size:13px;color:#854d0e;">⏳ ${esc(U.validityLabel)}: ${esc(validity)}</div>`);
+
+  if(workplanLines.length)blocks.push(`<div style="font-size:15px;font-weight:800;margin-bottom:10px;color:#081838;">${esc(U.workplanTitle)}</div><ol style="margin:0;padding-${rtl?'right':'left'}:18px;font-size:13px;line-height:2;color:#334155;">${workplanLines.map(l=>`<li>${esc(l)}</li>`).join('')}</ol>`);
+  if(smallLines.length)blocks.push(`<div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:8px;">${esc(U.smallTitle)}</div><ul style="margin:0;padding-${rtl?'right':'left'}:16px;font-size:11px;line-height:1.9;color:#64748b;">${smallLines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul>`);
+
+  blocks.push(`<div style="border-top:2px solid #e2e8f0;padding-top:16px;">
+      <div style="font-size:13px;color:#334155;margin-bottom:14px;">${esc(U.signOff)}</div>
+      <div style="font-size:14px;font-weight:800;color:#081838;">${esc(rep)}</div>
+      <div style="font-size:12px;color:#64748b;">Arbox</div>
+    </div>
+    <div style="margin-top:18px;font-size:10px;color:#94a3b8;">${esc(U.vatNote)}</div>`);
+
+  const inner=blocks.map((b,i)=>{
+    const topPad=i===0?'40px':'0';
+    const botPad=i===blocks.length-1?'40px':'14px';
+    return `<div class="pb-block" style="width:794px;box-sizing:border-box;padding:${topPad} 48px ${botPad} 48px;font-family:Arial,sans-serif;color:#081838;font-size:14px;direction:${dir};line-height:1.5;">${b}</div>`;
+  }).join('');
+  return `<div style="direction:${dir};">${inner}</div>`;
+}
+
+function renderProposalPreview(){
+  const paper=document.getElementById('proposal-paper');
+  if(!paper)return;
+  paper.innerHTML=buildProposalHTML();
+  setTimeout(scalePreview,10);
+}
+
+/* Waits for web fonts AND every <img> inside el to fully finish loading/decoding, plus two animation
+   frames for layout to settle — so that whatever we measure next is guaranteed to be EXACTLY what
+   html2canvas captures a moment later. A fixed timeout can't guarantee this (fonts/images may load
+   at different speeds depending on network conditions), and any mismatch here silently corrupts the
+   page-break math (measured positions no longer match the actual rendered content). */
+async function waitForRenderSettled(el){
+  if(document.fonts&&document.fonts.ready){
+    try{ await document.fonts.ready; }catch(e){}
+  }
+  const imgs=Array.from(el.querySelectorAll('img'));
+  await Promise.all(imgs.map(img=>{
+    if(img.complete&&img.naturalWidth>0)return Promise.resolve();
+    return new Promise(res=>{
+      img.addEventListener('load',res,{once:true});
+      img.addEventListener('error',res,{once:true});
+      setTimeout(res,2000); // safety net so one broken image can't hang PDF export forever
+    });
+  }));
+  await new Promise(res=>requestAnimationFrame(()=>requestAnimationFrame(res)));
+}
+
+async function generateProposalPDF(){
+  if(!selPkg)return;
+  const btn=document.getElementById('gen-pdf-btn');
+  const original=btn.textContent;
+  btn.textContent=proposalLang==='he'?'⏳ מייצר PDF...':'⏳ Generating PDF...';
+  btn.disabled=true;
+  const client=(document.getElementById('pdf-client').value||'').trim()||'proposal';
+  const safeName=client.replace(/[^a-zA-Zא-ת0-9\s]/g,'').trim()||'proposal';
+
+  const el=document.createElement('div');
+  el.innerHTML=buildProposalHTML();
+  el.style.cssText=`position:absolute;left:-9999px;top:0;background:#ffffff;`;
+  document.body.appendChild(el);
+  void el.offsetHeight;
+  await waitForRenderSettled(el);
+
+  try{
+    const pageW_mm=210,pageH_mm=297,scale=2;
+    const canvasPxPerMm=(794*scale)/pageW_mm;
+    const pageHeightPx=pageH_mm*canvasPxPerMm;
+
+    // Capture EACH content block as its OWN image. This is the key fix: there is no separate
+    // "measure the DOM, hope the canvas matches" step anymore — html2canvas's own output for a
+    // block IS its true height, by construction, so a mismatch between measurement and render
+    // (from font loading, RTL text-wrapping quirks, etc.) simply cannot happen anymore.
+    const blockEls=Array.from(el.querySelectorAll('.pb-block'));
+    const blockCanvases=[];
+    for(const bEl of blockEls){
+      const c=await html2canvas(bEl,{scale,backgroundColor:'#ffffff',useCORS:true,allowTaint:true,logging:false});
+      blockCanvases.push(c);
+    }
+    document.body.removeChild(el);
+
+    if(!blockCanvases.length)throw new Error('לא נמצא תוכן להצעה');
+    const canvasWidthPx=blockCanvases[0].width;
+
+    // Group blocks into pages, never splitting a block. If a single block is itself taller than
+    // one page (rare), it simply gets its own (over-height) page rather than being cut.
+    const pages=[];
+    let current=[],currentH=0;
+    for(const c of blockCanvases){
+      if(current.length&&currentH+c.height>pageHeightPx){ pages.push(current); current=[]; currentH=0; }
+      current.push(c); currentH+=c.height;
+    }
+    if(current.length)pages.push(current);
+
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
+
+    pages.forEach((group,pageIdx)=>{
+      const totalH=group.reduce((s,c)=>s+c.height,0);
+      const pageCanvas=document.createElement('canvas');
+      pageCanvas.width=canvasWidthPx;
+      pageCanvas.height=totalH;
+      const ctx=pageCanvas.getContext('2d');
+      ctx.fillStyle='#ffffff';
+      ctx.fillRect(0,0,pageCanvas.width,pageCanvas.height);
+      let y=0;
+      group.forEach(c=>{ ctx.drawImage(c,0,y); y+=c.height; });
+      const imgData=pageCanvas.toDataURL('image/jpeg',0.95);
+      const heightMm=totalH/canvasPxPerMm;
+      if(pageIdx>0)pdf.addPage();
+      pdf.addImage(imgData,'JPEG',0,0,pageW_mm,heightMm);
+    });
+
+    pdf.save(`arbox-${safeName}.pdf`);
+  }catch(e){
+    if(document.body.contains(el))document.body.removeChild(el);
+    alert((proposalLang==='he'?'שגיאה:\n':'Error:\n')+e.message);console.error(e);
+  }finally{
+    btn.textContent=original;
+    btn.disabled=false;
+  }
+}
+
+/* ══════════════════════════════════════ DEAL SUMMARY (סיכום עסקה סגורה) ══ */
+function openDealSummary(){
+  const hasPkg=!!selPkg;
+  document.getElementById('ds-no-pkg').style.display=hasPkg?'none':'block';
+  document.getElementById('ds-body-wrap').style.display=hasPkg?'flex':'none';
+  document.querySelector('#overlay-dealsummary .composer-footer').style.display=hasPkg?'flex':'none';
+  if(hasPkg){
+    if(!document.getElementById('ds-close-date').value){
+      const today=new Date().toISOString().slice(0,10);
+      document.getElementById('ds-close-date').value=today;
+      document.getElementById('ds-start-date').value=today;
+    }
+    // Pre-fill client/contact/rep from the proposal composer fields, if already filled there.
+    const pc=document.getElementById('pdf-client'), pk=document.getElementById('ds-client');
+    if(pc&&pk&&!pk.value)pk.value=pc.value;
+    const pcon=document.getElementById('pdf-contact'), dcon=document.getElementById('ds-contact');
+    if(pcon&&dcon&&!dcon.value)dcon.value=pcon.value;
+    const prep=document.getElementById('pdf-rep'), drep=document.getElementById('ds-rep');
+    if(prep&&drep&&!drep.value)drep.value=prep.value;
+    // Pre-fill deal notes from the main calculator's note field (step 8), if not already filled here.
+    const mainNote=document.getElementById('deal-note'), dsNotes=document.getElementById('ds-notes');
+    if(mainNote&&dsNotes&&!dsNotes.value)dsNotes.value=mainNote.value;
+    renderDealSummaryPreview();
+  }
+  document.getElementById('overlay-dealsummary').classList.add('open');
+  setTimeout(scaleDealPreview,30);
+}
+function closeDealSummary(){
+  document.getElementById('overlay-dealsummary').classList.remove('open');
+}
+function scaleDealPreview(){
+  const wrap=document.getElementById('ds-scale-wrap');
+  const pane=document.getElementById('ds-preview-pane');
+  if(!wrap||!pane)return;
+  const availW=pane.clientWidth-32;
+  const scale=Math.min(1,availW/794);
+  wrap.style.transform=`scale(${scale})`;
+  wrap.style.width=`${794*scale}px`;
+}
+window.addEventListener('resize',()=>{
+  const ov=document.getElementById('overlay-dealsummary');
+  if(ov&&ov.classList.contains('open'))scaleDealPreview();
+});
+
+// Commitment is derived automatically from the billing type selected in the calculator (step 1):
+// annual billing = paid upfront for the year = 12-month commitment; monthly billing = no fixed
+// commitment, subject to a 30-day advance cancellation notice.
+function getCommitmentInfo(){
+  if(billing==='annual'){
+    return {label:'התחייבות ל-12 חודשים', sub:'התשלום מתבצע מראש עבור שנה שלמה (חיוב שנתי).'};
+  }
+  return {label:'ללא התחייבות קבועה', sub:'ביטול ההתקשרות כפוף להודעה מוקדמת של 30 יום מראש.'};
+}
+function fmtDsDate(d){
+  if(!d)return '—';
+  const p=d.split('-');
+  return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d;
+}
+function dsRowHtml(label,priceStr,color){
+  color=color||'#081838';
+  return `<tr>
+    <td style="padding:9px 0;border-bottom:1px solid #F1F5F9;color:${color};font-size:14px;">${esc(label)}</td>
+    <td style="padding:9px 0;border-bottom:1px solid #F1F5F9;text-align:left;color:${color};font-weight:700;font-size:14px;white-space:nowrap;">${priceStr}</td>
+  </tr>`;
+}
+// Amount paid directly to the payment processor (not through Arbox's own invoice) — same figures
+// used in the client proposal's payment cards. Returns '' when there's nothing to note.
+function dsDirectPayNote(period){
+  if(selPay==='pelecard')return `תשלום ישיר לפלאכארד (לא דרך Arbox): ${fmt(145)}₪/חודש + הקמה חד-פעמית ${fmt(400)}₪`;
+  if(selPay==='grow')return `תשלום ישיר ל-Grow (לא דרך Arbox): ${fmt(59)}₪/חודש`;
+  return '';
+}
+function sanitizeFilename(s){
+  return s.replace(/[\\/:*?"<>|]/g,'').trim();
+}
+
+// Splits the closed deal into three separate payment groups:
+//   A. subscription (package + payment processing)  B. add-ons (+ recurring custom lines)  C. one-time costs.
+// All per-line prices are per month (annual billing shows the per-month price of the annual plan).
+function dealBreakdown(){
+  const t=calcTotals(); if(!t)return null;
+  const annual=billing==='annual';
+  const planLabel=selPay!=='none'?`חבילת ${t.pkg.name} + סליקה וחשבוניות (${t.pay.name})`:`חבילת ${t.pkg.name}`;
+  const planPrice=t.pkgPrice+(selPay!=='none'?t.payPrice:0);
+  const addons=[
+    ...t.addonLines.map(a=>({name:a.detail?`${a.name} (${a.detail})`:a.name,price:a.price})),
+    ...t.recurringCustomLines.map(c=>({name:c.name||'שורה מותאמת',price:c.price||0})),
+  ];
+  const addonsSum=addons.reduce((s,x)=>s+x.price,0);
+  const onetime=[
+    ...t.setupLines.map(l=>({name:l.name,price:l.price})),
+    ...t.onetimeCustom.map(c=>({name:c.name||'תשלום חד פעמי',price:c.price||0})),
+  ];
+  const onetimeSum=onetime.reduce((s,x)=>s+x.price,0);
+  // Recurring charge for the billing period (one month, or the full year) — excludes one-time items.
+  const recurring=t.arboxBase-t.onetimeTotal;
+  const D=annual?discA:discM;
+  let disc=null;
+  if(D.enabled&&D.pct>0&&t.discSavingsPerDiscUnit>0){
+    const unit=annual?(D.period===1?'שנה':`${D.period} שנים`):(D.period===1?'חודש':`${D.period} חודשים`);
+    disc={label:`הנחה ${D.pct}% למשך ${unit}`,amount:Math.round(t.discSavingsPerDiscUnit),per:annual?'לשנה':'לחודש',
+          after:!annual?{label:`החל מהחודש ה-${D.period+1}`,amount:t.baseMonthly}:null};
+  }
+  return {t,annual,planLabel,planPrice,addons,addonsSum,onetime,onetimeSum,recurring,disc,
+    period:annual?'לשנה':'לחודש', directNote:dsDirectPayNote()};
+}
+const withVat=n=>Math.round(n*(1+VAT));
+
+function buildDealSummaryHTML(){
+  const B=dealBreakdown();
+  if(!B)return '';
+  const client=(document.getElementById('ds-client').value||'').trim()||'—';
+  const contact=(document.getElementById('ds-contact').value||'').trim();
+  const rep=(document.getElementById('ds-rep').value||'').trim()||'צוות Arbox';
+  const closeDate=document.getElementById('ds-close-date').value;
+  const startDate=document.getElementById('ds-start-date').value;
+  const commit=getCommitmentInfo();
+  const showVat=document.getElementById('ds-show-vat').checked;
+  const notes=document.getElementById('ds-notes')?document.getElementById('ds-notes').value.trim():'';
+  const perMo=B.annual?'₪ לחודש (בחיוב שנתי)':'₪ לחודש';
+  const vatTag=showVat?'(כולל מע"מ)':'(לפני מע"מ)';
+  const v=n=>showVat?withVat(n):n;
+
+  // One visually separate card per payment group.
+  const section=(num,title,sub,accent,headBg,rowsHtml,subLabel,subVal,extra)=>`
+    <div style="margin-top:18px;border:1.5px solid ${accent};border-radius:14px;overflow:hidden;">
+      <div style="background:${headBg};padding:11px 18px;display:flex;align-items:center;gap:10px;">
+        <span style="width:24px;height:24px;border-radius:50%;background:#081838;color:#fff;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">${num}</span>
+        <span style="font-weight:800;font-size:15px;color:#081838;">${title}</span>
+        <span style="font-size:11.5px;color:#64748b;margin-right:auto;">${sub}</span>
+      </div>
+      <div style="padding:2px 18px 0;"><table style="width:100%;border-collapse:collapse;"><tbody>${rowsHtml}</tbody></table>${extra||''}</div>
+      <div style="padding:11px 18px;display:flex;justify-content:space-between;font-weight:800;font-size:14.5px;color:#081838;background:#fafbfc;border-top:1px solid #E2E8F0;"><span>${subLabel}</span><span>${subVal}</span></div>
+    </div>`;
+
+  // A. subscription
+  const secA=section(1,'מנוי — חבילה וסליקה',B.annual?'חיוב שנתי מראש':'חיוב חודשי','#c7d7fe','#eef3ff',
+    dsRowHtml(B.planLabel,`${fmt(B.planPrice)}${perMo}`),
+    'סה"כ מנוי',B.annual?`${fmt(B.planPrice)}₪ לחודש · ${fmt(B.planPrice*12)}₪ לשנה`:`${fmt(B.planPrice)}₪ לחודש`,
+    B.directNote?`<div style="font-size:11.5px;color:#64748b;padding:2px 0 10px;">* ${esc(B.directNote)}</div>`:'');
+
+  // B. add-ons
+  const secB=B.addons.length?section(2,'תוספים','חיוב קבוע, בנוסף למנוי','#e2e8f0','#f5f5f5',
+    B.addons.map(x=>dsRowHtml(x.name,`${fmt(x.price)}${perMo}`)).join(''),
+    'סה"כ תוספים',B.annual?`${fmt(B.addonsSum)}₪ לחודש · ${fmt(B.addonsSum*12)}₪ לשנה`:`${fmt(B.addonsSum)}₪ לחודש`):'';
+
+  // C. one-time
+  const nC=B.addons.length?3:2;
+  const secC=B.onetime.length?section(nC,'עלויות חד-פעמיות','משולמות פעם אחת','#f3c98f','#FADAB3',
+    B.onetime.map(x=>dsRowHtml(x.name,x.price?`${fmt(x.price)}₪`:'ללא עלות')).join(''),
+    'סה"כ חד-פעמי',`${fmt(B.onetimeSum)}₪`):'';
+
+  // Payment summary: recurring and one-time kept apart, never summed into one "per month" figure.
+  const sumRow=(l,r,big,clr)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:${big?'10px':'6px'} 0;font-size:${big?'17px':'13.5px'};font-weight:${big?'900':'600'};color:${clr||'#081838'};"><span>${l}</span><span>${r}</span></div>`;
+  let summary='';
+  summary+=sumRow(`תשלום קבוע — מנוי${B.addons.length?' + תוספים':''} ${vatTag}`,`${fmt(v(B.recurring))}₪ ${B.period}`,true);
+  if(B.disc){
+    summary+=sumRow(`כולל ${B.disc.label}`,`-${fmt(v(B.disc.amount))}₪ ${B.disc.per}`,false,'#15803d');
+    if(B.disc.after)summary+=sumRow(`${B.disc.after.label} ${vatTag}`,`${fmt(v(B.disc.after.amount))}₪ לחודש`,false,'#475569');
+  }
+  if(B.onetime.length){
+    summary+=`<div style="height:1px;background:#E2E8F0;margin:6px 0;"></div>`;
+    summary+=sumRow(`תשלום חד-פעמי ${vatTag}`,`${fmt(v(B.onetimeSum))}₪`,true);
+    summary+=sumRow(`סה"כ בחיוב הראשון ${vatTag}`,`${fmt(v(B.recurring)+v(B.onetimeSum))}₪`,false,'#475569');
+  }
+  summary+=`<div style="font-size:11.5px;color:#64748b;margin-top:4px;">${showVat
+    ?`לפני מע"מ: קבוע ${fmt(B.recurring)}₪ ${B.period}${B.onetime.length?` · חד-פעמי ${fmt(B.onetimeSum)}₪`:''}`
+    :`כולל מע"מ: קבוע ${fmt(withVat(B.recurring))}₪ ${B.period}${B.onetime.length?` · חד-פעמי ${fmt(withVat(B.onetimeSum))}₪`:''}`}</div>`;
+
+  return `
+  <div style="padding:44px 48px;font-family:Arial,sans-serif;color:#081838;direction:rtl;width:794px;box-sizing:border-box;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #081838;padding-bottom:16px;margin-bottom:24px;">
+      <div>
+        <div style="font-size:24px;font-weight:900;color:#081838;">Arbox</div>
+        <div style="font-size:13px;color:#64748b;margin-top:2px;">סיכום עסקה</div>
+      </div>
+      <div style="text-align:left;font-size:12px;color:#64748b;line-height:1.8;">
+        <div>תאריך סגירה: ${fmtDsDate(closeDate)}</div>
+        <div>תחילת התקשרות: ${fmtDsDate(startDate)}</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:28px;margin-bottom:8px;font-size:14px;">
+      <div><div style="color:#64748b;font-size:12px;margin-bottom:3px;">לקוח</div><div style="font-weight:700;">${esc(client)}</div></div>
+      ${contact?`<div><div style="color:#64748b;font-size:12px;margin-bottom:3px;">איש קשר</div><div style="font-weight:700;">${esc(contact)}</div></div>`:''}
+      <div><div style="color:#64748b;font-size:12px;margin-bottom:3px;">נציג מכירות</div><div style="font-weight:700;">${esc(rep)}</div></div>
+      <div><div style="color:#64748b;font-size:12px;margin-bottom:3px;">התחייבות</div><div style="font-weight:700;">${esc(commit.label)}</div></div>
+    </div>
+    <div style="font-size:11.5px;color:#94a3b8;margin-bottom:6px;">${esc(commit.sub)}</div>
+
+    ${secA}
+    ${secB}
+    ${secC}
+
+    <div style="background:#F5F5F5;border-radius:14px;padding:14px 20px;margin-top:20px;">
+      <div style="font-size:12px;font-weight:800;color:#64748b;margin-bottom:4px;">סיכום תשלומים</div>
+      ${summary}
+    </div>
+
+    ${notes?`<div style="margin-top:20px;font-size:13px;color:#334155;background:#FEF9C3;border:1px solid #FDE047;border-radius:10px;padding:12px 16px;line-height:1.6;"><strong>הערות לעסקה:</strong> ${esc(notes).replace(/\n/g,'<br>')}</div>`:''}
+
+    <div style="margin-top:32px;font-size:11px;color:#94a3b8;border-top:1px solid #E2E8F0;padding-top:12px;">
+      מסמך זה מסכם את תנאי העסקה כפי שסוכמו עם הלקוח. כל המחירים בש"ח.
+    </div>
+  </div>`;
+}
+
+function renderDealSummaryPreview(){
+  const paper=document.getElementById('ds-paper');
+  const info=document.getElementById('ds-commit-info');
+  if(info){
+    const commit=getCommitmentInfo();
+    info.innerHTML=`<div style="font-weight:800;">${esc(commit.label)}</div><div style="color:var(--text-muted);margin-top:3px;">${esc(commit.sub)}</div>`;
+  }
+  if(!paper)return;
+  paper.innerHTML=buildDealSummaryHTML();
+  setTimeout(scaleDealPreview,10);
+}
+
+function buildDealSummaryText(){
+  const B=dealBreakdown();
+  if(!B)return '';
+  const client=(document.getElementById('ds-client').value||'').trim()||'—';
+  const contact=(document.getElementById('ds-contact').value||'').trim();
+  const rep=(document.getElementById('ds-rep').value||'').trim()||'צוות Arbox';
+  const closeDate=document.getElementById('ds-close-date').value;
+  const startDate=document.getElementById('ds-start-date').value;
+  const commit=getCommitmentInfo();
+  const showVat=document.getElementById('ds-show-vat').checked;
+  const notes=document.getElementById('ds-notes')?document.getElementById('ds-notes').value.trim():'';
+  const perMo=B.annual?'₪ לחודש (בחיוב שנתי)':'₪ לחודש';
+  const vatTag=showVat?'(כולל מע"מ)':'(לפני מע"מ)';
+  const v=n=>showVat?withVat(n):n;
+
+  const lines=[];
+  lines.push(`📋 סיכום עסקה — ${client}`);
+  lines.push('');
+  lines.push(`🏢 לקוח: ${client}`);
+  if(contact)lines.push(`👤 איש קשר: ${contact}`);
+  lines.push(`🧑‍💼 נציג מכירות: ${rep}`);
+  lines.push(`📅 תאריך סגירה: ${fmtDsDate(closeDate)}`);
+  lines.push(`📅 תחילת התקשרות: ${fmtDsDate(startDate)}`);
+  lines.push(`🔒 ${commit.label} — ${commit.sub}`);
+  lines.push('');
+  lines.push(`1️⃣ מנוי — חבילה וסליקה (${B.annual?'חיוב שנתי מראש':'חיוב חודשי'}):`);
+  lines.push(`• ${B.planLabel} — ${fmt(B.planPrice)}${perMo}`);
+  if(B.directNote)lines.push(`  (${B.directNote})`);
+  lines.push(`סה"כ מנוי: ${fmt(B.planPrice)}₪ לחודש${B.annual?` · ${fmt(B.planPrice*12)}₪ לשנה`:''}`);
+  if(B.addons.length){
+    lines.push('');
+    lines.push('2️⃣ תוספים (חיוב קבוע, בנוסף למנוי):');
+    B.addons.forEach(x=>lines.push(`• ${x.name} — ${fmt(x.price)}${perMo}`));
+    lines.push(`סה"כ תוספים: ${fmt(B.addonsSum)}₪ לחודש${B.annual?` · ${fmt(B.addonsSum*12)}₪ לשנה`:''}`);
+  }
+  if(B.onetime.length){
+    lines.push('');
+    lines.push(`${B.addons.length?'3️⃣':'2️⃣'} עלויות חד-פעמיות:`);
+    B.onetime.forEach(x=>lines.push(`• ${x.name} — ${x.price?fmt(x.price)+'₪':'ללא עלות'}`));
+    lines.push(`סה"כ חד-פעמי: ${fmt(B.onetimeSum)}₪`);
+  }
+  lines.push('');
+  lines.push('💰 סיכום תשלומים:');
+  lines.push(`✅ תשלום קבוע ${vatTag}: ${fmt(v(B.recurring))}₪ ${B.period}`);
+  if(B.disc){
+    lines.push(`   כולל ${B.disc.label}: -${fmt(v(B.disc.amount))}₪ ${B.disc.per}`);
+    if(B.disc.after)lines.push(`   ${B.disc.after.label}: ${fmt(v(B.disc.after.amount))}₪ לחודש`);
+  }
+  if(B.onetime.length){
+    lines.push(`✅ תשלום חד-פעמי ${vatTag}: ${fmt(v(B.onetimeSum))}₪`);
+    lines.push(`   סה"כ בחיוב הראשון: ${fmt(v(B.recurring)+v(B.onetimeSum))}₪`);
+  }
+  if(notes){
+    lines.push('');
+    lines.push(`📝 הערות לעסקה: ${notes}`);
+  }
+  lines.push('');
+  lines.push(`נשלח ואושר עם הלקוח — ${fmtDsDate(closeDate)}`);
+  return lines.join('\n');
+}
+
+function copyDealSummaryText(){
+  const text=buildDealSummaryText();
+  if(!text)return;
+  const btn=document.getElementById('copy-ds-btn');
+  const original=btn.textContent;
+  const done=()=>{ btn.textContent='✅ הועתק!'; setTimeout(()=>{btn.textContent=original;},1800); };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(()=>{
+      copyDsFallback(text); done();
+    });
+  } else {
+    copyDsFallback(text); done();
+  }
+}
+function copyDsFallback(text){
+  const ta=document.createElement('textarea');
+  ta.value=text; ta.style.position='fixed'; ta.style.left='-9999px';
+  document.body.appendChild(ta); ta.select();
+  try{document.execCommand('copy');}catch(e){alert('שגיאה בהעתקה, נסה שוב');}
+  document.body.removeChild(ta);
+}
+
+async function generateDealSummaryPDF(){
+  if(!selPkg)return;
+  const btn=document.getElementById('gen-ds-pdf-btn');
+  const original=btn.textContent;
+  btn.textContent='⏳ מייצר PDF...';
+  btn.disabled=true;
+  const client=(document.getElementById('ds-client').value||'').trim()||'לקוח';
+  const filename=sanitizeFilename(`סיכום עסקה - ${client}`)+'.pdf';
+
+  const el=document.createElement('div');
+  el.innerHTML=buildDealSummaryHTML();
+  el.style.cssText='position:absolute;left:-9999px;top:0;background:#ffffff;width:794px;';
+  document.body.appendChild(el);
+  void el.offsetHeight;
+  await waitForRenderSettled(el);
+
+  try{
+    const pageW_mm=210,pageH_mm=297,scale=2;
+    const canvasPxPerMm=(794*scale)/pageW_mm;
+    const pageHeightPx=pageH_mm*canvasPxPerMm;
+    const canvas=await html2canvas(el,{scale,backgroundColor:'#ffffff',useCORS:true,allowTaint:true,logging:false});
+    document.body.removeChild(el);
+
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
+    let y=0,pageIdx=0;
+    while(y<canvas.height){
+      const sliceH=Math.min(pageHeightPx,canvas.height-y);
+      const pageCanvas=document.createElement('canvas');
+      pageCanvas.width=canvas.width; pageCanvas.height=sliceH;
+      const ctx=pageCanvas.getContext('2d');
+      ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,pageCanvas.width,pageCanvas.height);
+      ctx.drawImage(canvas,0,y,canvas.width,sliceH,0,0,canvas.width,sliceH);
+      const imgData=pageCanvas.toDataURL('image/jpeg',0.95);
+      const heightMm=sliceH/canvasPxPerMm;
+      if(pageIdx>0)pdf.addPage();
+      pdf.addImage(imgData,'JPEG',0,0,pageW_mm,heightMm);
+      y+=sliceH; pageIdx++;
+    }
+    pdf.save(filename);
+  }catch(e){
+    if(document.body.contains(el))document.body.removeChild(el);
+    alert('שגיאה:\n'+e.message);console.error(e);
+  }finally{
+    btn.textContent=original;
+    btn.disabled=false;
+  }
+}
+
+/* ══════════════════════════════════════ UTILS ══ */
+function fmt(n){return Number(n).toLocaleString('he-IL');}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+</script>
+</body>
+</html>
