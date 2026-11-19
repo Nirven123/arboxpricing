@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>הצעת מחיר אישית מ-Arbox</title>
+<meta property="og:title" content="הצעת מחיר אישית מ-Arbox">
+<meta property="og:description" content="ההצעה שהכנו בשבילך. אפשר לבחור בה סוג חיוב, סליקה ותוספים, והמחיר מתעדכן.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<style>
+:root{
+  --navy:#081838;
+  --blue:#4F87FF;
+  --blue-ink:#2A5FD9;
+  --peach:#FADAB3;
+  --peach-soft:#FDF1E2;
+  --paper:#F4F6FA;
+  --line:#E1E6EF;
+  --muted:#5A6377;
+  --white:#FFFFFF;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit;margin:0;padding:0}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 16px);-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{font-family:'Heebo',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;background:var(--paper);color:var(--navy);font-size:16px;line-height:1.6}
+img{max-width:100%;display:block}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2.5px solid var(--blue);outline-offset:3px;border-radius:6px}
+
+.wrap{max-width:1160px;margin:0 auto;padding-inline:24px}
+
+/* top */
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:24px 0}
+.logo{height:30px;width:auto}
+.top-meta{font-size:14px;color:var(--muted);text-align:end;line-height:1.5}
+
+.expired{background:var(--navy);color:#fff;padding:12px 24px;text-align:center;font-weight:500}
+
+/* hero: the client's name carries the page */
+.hero{padding-block:56px 44px}
+.hero h1{font-size:clamp(40px,7.2vw,88px);font-weight:900;line-height:1.02;letter-spacing:-.03em;max-width:16ch;text-wrap:balance}
+.hero-people{margin-top:18px;font-size:17px;color:var(--muted)}
+.hero-people strong{color:var(--navy);font-weight:700}
+.intro{margin-top:22px;font-size:19px;line-height:1.7;max-width:62ch;color:#26314d}
+
+/* deal area */
+.deal{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:48px;align-items:start;padding-bottom:72px}
+.block{padding-block:32px;border-top:1px solid var(--line)}
+.block:first-child{border-top:none;padding-top:0}
+.block h2{font-size:26px;font-weight:800;letter-spacing:-.01em;line-height:1.25}
+.block .sub{color:var(--muted);margin-top:4px}
+.block-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+
+/* billing switch */
+.seg{display:inline-flex;background:var(--white);border:1px solid var(--line);border-radius:999px;padding:4px}
+.seg label{position:relative;display:block}
+.seg input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.seg span{display:block;padding:9px 20px;border-radius:999px;font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,color .2s;white-space:nowrap}
+.seg input:checked+span{background:var(--navy);color:#fff}
+.seg input:focus-visible+span{outline:2.5px solid var(--blue);outline-offset:2px}
+.save-note{font-size:14px;color:var(--blue-ink);font-weight:500;margin-top:8px}
+
+/* package */
+.pkg{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:26px 28px}
+.pkg-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.pkg-head h3{font-size:30px;font-weight:900;letter-spacing:-.02em}
+.pkg-price{font-size:22px;font-weight:800}
+.pkg-price .u{font-size:14px;font-weight:500;color:var(--muted)}
+.feats-title{font-size:15px;font-weight:700;margin-bottom:10px}
+.feats{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px 28px}
+.feats li{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.45}
+.feats li.off{color:#98a0b3}
+.feats .ic{flex-shrink:0;width:20px;height:20px;margin-top:1px}
+.feats .val{font-weight:700;color:var(--navy);margin-inline-start:4px}
+
+/* option cards (payment + add-ons) */
+.opts{display:grid;gap:12px}
+.opts.two{grid-template-columns:1fr 1fr}
+.opt{position:relative;display:flex;gap:14px;align-items:flex-start;background:var(--white);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.opt:hover{border-color:#b9c6e4}
+.opt input{position:absolute;opacity:0;width:1px;height:1px}
+.opt.is-on{border-color:var(--navy);box-shadow:0 0 0 1px var(--navy)}
+.opt:has(input:focus-visible){outline:2.5px solid var(--blue);outline-offset:3px}
+.opt-main{flex:1;min-width:0}
+.opt-name{font-weight:700;font-size:16px;line-height:1.35}
+.opt-note{font-size:13.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.opt-price{font-weight:800;white-space:nowrap;font-size:16px}
+.opt-price .u{font-weight:500;font-size:13px;color:var(--muted)}
+.opt.static{cursor:default}
+/* radio dot and check box drawn by hand so they read the same everywhere */
+.mark{flex-shrink:0;width:22px;height:22px;border:1.5px solid #b5bfd3;margin-top:1px;display:grid;place-items:center;transition:background .2s,border-color .2s}
+.mark.radio{border-radius:50%}
+.mark.check{border-radius:7px}
+.opt.is-on .mark{background:var(--navy);border-color:var(--navy)}
+.mark svg{width:13px;height:13px;opacity:0;transition:opacity .15s}
+.opt.is-on .mark svg{opacity:1}
+.mark.radio::after{content:"";width:8px;height:8px;border-radius:50%;background:#fff;opacity:0}
+.opt.is-on .mark.radio::after{opacity:1}
+
+/* fixed lines + one-time */
+.lines{background:var(--white);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.lines .ln{display:flex;justify-content:space-between;gap:12px;padding:14px 18px;border-top:1px solid var(--line)}
+.lines .ln:first-child{border-top:none}
+.lines .ln b{font-weight:800;white-space:nowrap}
+.onetime{background:var(--peach-soft);border-color:#F1D6B4}
+.onetime .ln{border-color:#F1D6B4}
+.onetime .tot{background:var(--peach);font-weight:800}
+.note{background:var(--white);border-inline-start:4px solid var(--blue);border-radius:4px 14px 14px 4px;padding:16px 20px;line-height:1.7}
+[dir=rtl] .note{border-radius:14px 4px 4px 14px}
+
+/* summary card: the one loud object on the page, lit by the logo's own gradient */
+.sum-wrap{position:sticky;top:calc(env(safe-area-inset-top,0px) + 24px)}
+.sum{position:relative;overflow:hidden;isolation:isolate;background:var(--navy);color:#fff;border-radius:28px;padding:30px 28px 26px}
+.sum::before{content:"";position:absolute;z-index:-1;width:300px;height:300px;inset-block-start:-185px;inset-inline-end:-175px;background:radial-gradient(circle at center,#FADAB3 0%,#F6C9A0 20%,#4F87FF 55%,rgba(79,135,255,0) 72%);opacity:.85;filter:blur(4px)}
+.sum-plan{font-size:15px;color:#c9d4ee;font-weight:500}
+.sum-price{display:flex;align-items:baseline;gap:8px;margin-top:10px;flex-wrap:wrap}
+.sum-price .num{font-size:60px;font-weight:900;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.sum-price .unit{font-size:15px;color:#c9d4ee}
+.sum-was{font-size:15px;color:#9fb0d6;text-decoration:line-through;margin-top:6px}
+.sum-deal{margin-top:10px;font-size:15px;line-height:1.5;color:var(--peach);font-weight:500}
+.sum-annual{margin-top:8px;font-size:15px;color:#dbe3f5}
+.sum-list{margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);display:grid;gap:8px;font-size:14.5px}
+.sum-list .r{display:flex;justify-content:space-between;gap:12px;color:#dbe3f5}
+.sum-list .r span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.sum-list .r.disc{color:var(--peach)}
+.sum-extra{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.14);font-size:14px;color:#c9d4ee;display:grid;gap:6px}
+.sum-extra strong{color:#fff;font-weight:700}
+.vat-row{margin-top:18px;display:flex;align-items:center;gap:10px;font-size:14.5px;color:#dbe3f5;cursor:pointer;width:fit-content}
+.vat-row input{position:absolute;opacity:0;width:1px;height:1px}
+.toggle{width:40px;height:24px;border-radius:999px;background:rgba(255,255,255,.22);position:relative;transition:background .2s;flex-shrink:0}
+.toggle::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
+.vat-row input:checked+.toggle{background:var(--blue)}
+.vat-row input:checked+.toggle::after{transform:translateX(16px)}
+[dir=rtl] .vat-row input:checked+.toggle::after{transform:translateX(-16px)}
+.vat-row input:focus-visible+.toggle{outline:2.5px solid var(--peach);outline-offset:2px}
+.cta{display:block;margin-top:22px;background:var(--peach);color:var(--navy);text-align:center;text-decoration:none;font-weight:800;font-size:18px;padding:16px 20px;border-radius:16px;transition:transform .15s,background .2s}
+.cta:hover{background:#fde6c9}
+.cta:active{transform:scale(.98)}
+.cta:focus-visible{outline-color:#fff}
+.cta-sub{font-size:13px;color:#9fb0d6;text-align:center;margin-top:8px}
+.pdf-btn{display:block;width:100%;margin-top:12px;background:transparent;border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:14px;padding:11px;font-weight:700;font-size:15px;cursor:pointer}
+.pdf-btn:hover{background:rgba(255,255,255,.08)}
+
+/* content sections */
+.story{background:var(--white);border-top:1px solid var(--line)}
+.story .wrap{max-width:900px}
+.part{padding-block:56px;border-top:1px solid var(--line)}
+.part:first-child{border-top:none}
+.part h2{font-size:clamp(26px,3.4vw,36px);font-weight:900;letter-spacing:-.02em;line-height:1.2;margin-bottom:22px}
+.why p{font-size:17.5px;line-height:1.8;color:#26314d;max-width:66ch}
+.why p+p{margin-top:14px}
+.why h2+p{font-size:20px;color:var(--navy)}
+.values{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:26px 40px}
+.values li{border-top:2px solid var(--navy);padding-top:14px}
+.values h3{font-size:18px;font-weight:800;margin-bottom:4px}
+.values p{color:var(--muted);line-height:1.6}
+.clients{font-size:clamp(20px,2.4vw,26px);font-weight:700;line-height:1.55;letter-spacing:-.01em;text-wrap:pretty}
+.clients .nm{white-space:nowrap}
+.clients .sep{color:#b5bfd3;font-weight:400}
+.clients .more{color:var(--muted);font-weight:500}
+.steps{list-style:none;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:16px;counter-reset:st}
+.steps li{counter-increment:st;position:relative;padding-top:52px;font-weight:700;font-size:16.5px;line-height:1.4}
+.steps li::before{content:counter(st);position:absolute;top:0;inset-inline-start:0;width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:800;font-size:16px}
+.steps li::after{content:"";position:absolute;top:19px;inset-inline-start:48px;inset-inline-end:-6px;height:2px;background:var(--line)}
+.steps li:last-child::after{display:none}
+details.small{border-top:1px solid var(--line);padding-block:22px}
+details.small summary{cursor:pointer;font-weight:800;font-size:18px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.small summary::-webkit-details-marker{display:none}
+details.small summary::after{content:"+";font-size:24px;font-weight:400;color:var(--muted)}
+details.small[open] summary::after{content:"−"}
+details.small ul{margin-top:14px;padding-inline-start:20px;color:var(--muted);font-size:14.5px;line-height:1.8;display:grid;gap:4px}
+
+.closing{background:var(--navy);color:#fff}
+.closing .wrap{max-width:900px;padding-block:64px;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:end}
+.closing p{color:#c9d4ee}
+.closing .sign{font-size:24px;font-weight:800;color:#fff;margin-top:6px}
+.closing .logo{height:26px;margin-top:22px}
+.closing .cta{margin-top:0;padding-inline:32px}
+
+/* mobile price bar */
+.bar{display:none}
+
+.invalid{min-height:100vh;display:grid;place-items:center;text-align:center;padding:32px}
+.invalid p{margin-top:20px;font-size:18px;max-width:30ch}
+
+@media (max-width:980px){
+  .deal{grid-template-columns:1fr;gap:8px}
+  .sum-wrap{position:static}
+  .bar{display:flex;position:fixed;inset-inline:0;bottom:0;z-index:20;background:var(--navy);color:#fff;padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -8px 30px rgba(8,24,56,.25);transition:transform .25s}
+  .bar.hide{transform:translateY(110%)}
+  .bar .p{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.1}
+  .bar .p small{font-size:13px;font-weight:500;color:#c9d4ee}
+  .bar button{background:var(--peach);color:var(--navy);border:none;border-radius:12px;padding:10px 18px;font-weight:800;cursor:pointer}
+  .closing .wrap{padding-bottom:140px}
+}
+@media (max-width:640px){
+  .wrap{padding-inline:18px}
+  .hero{padding-block:40px 32px}
+  .intro{font-size:17px}
+  .feats,.values,.opts.two{grid-template-columns:1fr}
+  .pkg{padding:22px 20px}
+  .steps{grid-auto-flow:row;gap:18px}
+  .steps li{padding-top:4px;padding-inline-start:54px;min-height:38px}
+  .steps li::after{display:none}
+  .closing .wrap{grid-template-columns:1fr}
+  .sum-price .num{font-size:52px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+@media print{
+  @page{size:A4;margin:14mm}
+  :root{padding:0}
+  body{background:#fff;font-size:12.5px;padding:0!important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .bar,.seg,.vat-row,.cta,.cta-sub,.pdf-btn,.no-print,.opt:not(.is-on),.feats li.off{display:none!important}
+  .print-only{display:block!important}
+  .hero{padding-block:18px 14px}
+  .hero h1{font-size:34px}
+  .intro{font-size:13.5px}
+  .deal{display:block;padding-bottom:0}
+  .sum-wrap{position:static;margin-top:16px;break-inside:avoid}
+  .sum{border-radius:16px;padding:20px}
+  .sum-price .num{font-size:40px}
+  .block{padding-block:16px;break-inside:avoid}
+  .opt,.pkg,.lines{break-inside:avoid}
+  .part{padding-block:22px;break-inside:avoid}
+  .part h2{font-size:22px;margin-bottom:12px}
+  .why p,.why h2+p{font-size:13px}
+  .save-note,.closing .logo{display:none}
+  .clients{font-size:16px}
+  .closing{background:#fff;color:var(--navy);border-top:2px solid var(--navy)}
+  .closing .wrap{padding-block:20px}
+  .closing p{color:var(--muted)}
+  .closing .sign{color:var(--navy);font-size:18px}
+}
+.print-only{display:none}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript><p style="padding:40px;text-align:center">כדי לראות את ההצעה צריך להפעיל JavaScript בדפדפן.</p></noscript>
+<script>
+const LOGO = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgMzM1LjA3IDEzNC40OSI+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5jbHMtMSB7CiAgICAgICAgZmlsbDogdXJsKCNyYWRpYWwtZ3JhZGllbnQpOwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6ICMwODE4Mzg7CiAgICAgIH0KICAgIDwvc3R5bGU+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9InJhZGlhbC1ncmFkaWVudCIgY3g9Ijk5OS45MiIgY3k9Ijg0LjA1IiBmeD0iOTk5LjkyIiBmeT0iODQuMDUiIHI9IjUwLjA1IiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKC0zMjk3Ljk1IC0xNTYuOTEpIHNjYWxlKDMuMzMpIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iLjIzIiBzdG9wLWNvbG9yPSIjZmFkYWIzIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iLjczIiBzdG9wLWNvbG9yPSIjNGY4N2ZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iLjk5IiBzdG9wLWNvbG9yPSIjMDgxODM4Ii8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0yOTYuNjgsMTExLjQzbDExLjU0LTE5LjEyLTEwLjkxLTE3LjU3aDEyLjY4bDUuODgsMTAuNDEsNS44OC0xMC40MWgxMi42MWwtMTAuOTEsMTcuNTcsMTEuNjIsMTkuMTJoLTEyLjgybC02LjUyLTExLjU0LTYuNTIsMTEuNTRoLTEyLjU0WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTI3Ni43LDExMi41N2MtMTEuNjIsMC0xOS42Mi04LjcxLTE5LjYyLTE5LjQ4czgtMTkuNTUsMTkuNTUtMTkuNTUsMTkuNjIsOC43OCwxOS42MiwxOS41NS04LDE5LjQ4LTE5LjU1LDE5LjQ4Wk0yNjcuODUsOTMuMDljMCw1LjUyLDMuNjEsOS40Miw4Ljg1LDkuNDJzOC43MS0zLjksOC43MS05LjQyLTMuNjEtOS40OS04LjcxLTkuNDktOC44NSwzLjktOC44NSw5LjQ5WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTIzNS41MSwxMTIuNTdjLTUuMDMsMC05LjE0LTIuMjctMTEuNjItNS44MXY0LjY3aC0xMC4zNHYtNDkuOTNoMTAuOTF2MTIuOTZsLS4yOCw0LjY3YzIuNDEtMy42MSw2LjU5LTUuNiwxMS4xOS01LjYsMTAuMiwwLDE3LjM1LDguODUsMTcuMzUsMTkuNTVzLTcuMjIsMTkuNDgtMTcuMjEsMTkuNDhaTTIyNC4zMiw5My4xNmMwLDUuNiw0LjExLDkuNDIsOC45OSw5LjQyLDQuNTMsMCw4LjY0LTMuMzMsOC42NC05LjQycy00LjA0LTkuNTYtOC42NC05LjU2Yy01LjEsMC04Ljk5LDQuMTgtOC45OSw5LjU2WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTE4NS4yNywxMTEuNDN2LTM2LjY5aDEwLjQxdjUuMTdjMS42My0zLjA1LDQuMzktNS4xNyw5LjQyLTUuMTdoMy42OHY5LjIxaC0zLjYxYy01LjY3LDAtOSwzLjc1LTksMTAuNTV2MTYuOTNoLTEwLjkxWiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTE1NS4wNSwxMTIuNTdjLTEwLjI3LDAtMTcuMzUtOC43OC0xNy4zNS0xOS40OHM3LjA4LTE5LjU1LDE3LjM1LTE5LjU1YzQuODksMCw5LjIxLDIuMTIsMTEuNDcsNS44OHYtNC42N2gxMC4zNHYzNi42OWgtMTAuNDF2LTQuNjdjLTIuMiwzLjc1LTYuNTksNS44MS0xMS40LDUuODFaTTE0OC40Nyw5My4xNmMwLDYuMTYsNC4xMSw5LjQyLDguNjQsOS40Miw1LjEsMCw4LjkyLTQuMTEsOC45Mi05LjQycy0zLjgyLTkuNTYtOC45Mi05LjU2Yy00LjY3LDAtOC42NCwzLjU0LTguNjQsOS41NloiLz4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik00Ny43MSw1MC4yQzY0LjE5LDE0LjI5LDk0LjE4LTcuMiwxMTQuNjksMi4yMWMyMC41MSw5LjQxLDIzLjc4LDQ2LjE2LDcuMyw4Mi4wNy0xNi40OCwzNS45Mi00Ni40Nyw1Ny40LTY2Ljk4LDQ3Ljk5LTYuMjMtMi44Ni0xMC44Ny04LjI1LTEzLjg1LTE1LjM3LS45OC0yLjMzLTMuOTYtMi45OC01LjgzLTEuMjgtMywyLjczLTYuNDEsNC4zMi0xMC4wNyw0LjQ1QzEyLjE3LDEyMC41NC44OCwxMDIuMTUuMDUsNzguOThjLS44My0yMy4xNyw5LjExLTQyLjMzLDIyLjItNDIuOCw3LjMzLS4yNiwxNC4wOSw1LjM4LDE4Ljc3LDE0LjQ3LDEuNCwyLjcxLDUuMywyLjU5LDYuNTctLjE4LjA0LS4wOS4wOC0uMTguMTItLjI3WiIvPgo8L3N2Zz4=";
+const LOGO_WHITE = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgMzM1LjA3IDEzNC40OSI+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5jbHMtMSB7CiAgICAgICAgZmlsbDogdXJsKCNyYWRpYWwtZ3JhZGllbnQpOwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6ICNmZmY7CiAgICAgIH0KICAgIDwvc3R5bGU+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9InJhZGlhbC1ncmFkaWVudCIgY3g9IjY0Ni4wNyIgY3k9Ijg0LjA1IiBmeD0iNjQ2LjA3IiBmeT0iODQuMDUiIHI9IjUwLjA1IiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMTE4LjQ2IC0xNTYuOTEpIHNjYWxlKDMuMzMpIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iLjIzIiBzdG9wLWNvbG9yPSIjZmFkYWIzIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iLjczIiBzdG9wLWNvbG9yPSIjNGY4N2ZmIi8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0yOTYuNjgsMTExLjQzbDExLjU0LTE5LjEyLTEwLjkxLTE3LjU3aDEyLjY4bDUuODgsMTAuNDEsNS44OC0xMC40MWgxMi42MWwtMTAuOTEsMTcuNTcsMTEuNjIsMTkuMTJoLTEyLjgybC02LjUyLTExLjU0LTYuNTIsMTEuNTRoLTEyLjU0WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTI3Ni43LDExMi41N2MtMTEuNjIsMC0xOS42Mi04LjcxLTE5LjYyLTE5LjQ4czgtMTkuNTUsMTkuNTUtMTkuNTUsMTkuNjIsOC43OCwxOS42MiwxOS41NS04LDE5LjQ4LTE5LjU1LDE5LjQ4Wk0yNjcuODUsOTMuMDljMCw1LjUyLDMuNjEsOS40Miw4Ljg1LDkuNDJzOC43MS0zLjksOC43MS05LjQyLTMuNjEtOS40OS04LjcxLTkuNDktOC44NSwzLjktOC44NSw5LjQ5WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTIzNS41MSwxMTIuNTdjLTUuMDMsMC05LjE0LTIuMjctMTEuNjItNS44MXY0LjY3aC0xMC4zNHYtNDkuOTNoMTAuOTF2MTIuOTZsLS4yOCw0LjY3YzIuNDEtMy42MSw2LjU5LTUuNiwxMS4xOS01LjYsMTAuMiwwLDE3LjM1LDguODUsMTcuMzUsMTkuNTVzLTcuMjIsMTkuNDgtMTcuMjEsMTkuNDhaTTIyNC4zMiw5My4xNmMwLDUuNiw0LjExLDkuNDIsOC45OSw5LjQyLDQuNTMsMCw4LjY0LTMuMzMsOC42NC05LjQycy00LjA0LTkuNTYtOC42NC05LjU2Yy01LjEsMC04Ljk5LDQuMTgtOC45OSw5LjU2WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTE4NS4yNywxMTEuNDN2LTM2LjY5aDEwLjQxdjUuMTdjMS42My0zLjA1LDQuMzktNS4xNyw5LjQyLTUuMTdoMy42OHY5LjIxaC0zLjYxYy01LjY3LDAtOSwzLjc1LTksMTAuNTV2MTYuOTNoLTEwLjkxWiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTE1NS4wNSwxMTIuNTdjLTEwLjI3LDAtMTcuMzUtOC43OC0xNy4zNS0xOS40OHM3LjA4LTE5LjU1LDE3LjM1LTE5LjU1YzQuODksMCw5LjIxLDIuMTIsMTEuNDcsNS44OHYtNC42N2gxMC4zNHYzNi42OWgtMTAuNDF2LTQuNjdjLTIuMiwzLjc1LTYuNTksNS44MS0xMS40LDUuODFaTTE0OC40Nyw5My4xNmMwLDYuMTYsNC4xMSw5LjQyLDguNjQsOS40Miw1LjEsMCw4LjkyLTQuMTEsOC45Mi05LjQycy0zLjgyLTkuNTYtOC45Mi05LjU2Yy00LjY3LDAtOC42NCwzLjU0LTguNjQsOS41NloiLz4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik00Ny43MSw1MC4yQzY0LjE5LDE0LjI5LDk0LjE4LTcuMiwxMTQuNjksMi4yMWMyMC41MSw5LjQxLDIzLjc4LDQ2LjE2LDcuMyw4Mi4wNy0xNi40OCwzNS45Mi00Ni40Nyw1Ny40LTY2Ljk4LDQ3Ljk5LTYuMjMtMi44Ni0xMC44Ny04LjI1LTEzLjg1LTE1LjM3LS45OC0yLjMzLTMuOTYtMi45OC01LjgzLTEuMjgtMywyLjczLTYuNDEsNC4zMi0xMC4wNyw0LjQ1QzEyLjE3LDEyMC41NC44OCwxMDIuMTUuMDUsNzguOThjLS44My0yMy4xNyw5LjExLTQyLjMzLDIyLjItNDIuOCw3LjMzLS4yNiwxNC4wOSw1LjM4LDE4Ljc3LDE0LjQ3LDEuNCwyLjcxLDUuMywyLjU5LDYuNTctLjE4LjA0LS4wOS4wOC0uMTguMTItLjI3WiIvPgo8L3N2Zz4=";
+const VAT = 0.18;
+/* Same default texts as the calculator. A link only carries a text if the rep edited it. */
+const DEFAULT_CONTENT = {
+  he: {
+    intro: `אין לי ספק כי הטמעת Arbox בארגון תסייע בשיפור ביצועי המכירות וההכנסות, בהעלאת רמת השירות ושביעות הרצון של הלקוחות שלך ובייעול תהליכי העבודה, הניהול והבקרה.`,
+    why: `Arbox נוסדה לפני למעלה מ-9 שנים מתוך מטרה לתת פתרון טכנולוגי חדיש, זמין ואיכותי בתחום הוולנס בישראל ובעולם. כיום הפלטפורמה נחשבת למובילה בתחום מבחינת נראות, חווית משתמש, שירות ותמיכה, יכולות, אבטחת מידע, ייעול תהליכים וחיסכון כספי.
+אנו מעניקים כיום שירות ב-25 מדינות ללמעלה מ-6,000 עסקים ומעסיקים כ-60 עובדים, אשר מחויבים לשיפור וקידום חווית המשתמש, המוצר והשירות.
+בסקר שביעות הרצון האחרון שערכנו לקהל לקוחותינו שמחנו לגלות כי 96.5% מהם ציינו כי ימליצו על פלטפורמת הניהול של Arbox לעמיתים ולקולגות.`,
+    clients: `רשת סטודיו "נעים", מרכז הספורט של אונ' ת"א, קאנטרי רמת רחל, רשת "לוקר-רום", נכסי אריאל, אמות, תעשייה אווירית, האקדמית "אונו", קאנטרי זיכרון, מובילאיי, מגדל, נייס ועוד…`,
+    value: `כלי ניהול חכם — דוחות מדויקים, סטטיסטיקות ודשבורדים ניהוליים שיעזרו בקבלת החלטות.
+חווית משתמש — פלטפורמה אינטואיטיבית ומאוד קלה לתפעול ללא צורך בהכשרות ארוכות.
+שקט נפשי — ליווי בתהליך ההטמעה, כלי תמיכה חכמים ושירות יוצא מן הכלל.
+חיסכון בזמן ובכוח אדם — פלטפורמה זריזה, גישה מהירה לפעולות מרכזיות, כלי שיפור יעילות.
+אוטומציות — הודעות ומשימות אוטומטיות, חיבור ל-Voice Center, ל-Zapier ול-Open API.
+נגישות מכל מקום — גישה מאובטחת לך ולעובדים שלך, מכל מקום, דרך כל מכשיר ובכל זמן.
+אבטחת מידע — עמידה בתקני אבטחת מידע ופרטיות המחמירים ביותר.`,
+    workplan: `אישור ההצעה
+אישור תשלום
+פתיחת משתמש והגדרות ראשוניות
+התחלת עבודה`,
+    small: `לדמי השירות ולרכיבים החד פעמיים יתווסף מע"מ כחוק.
+השירות בחבילה החודשית הינו בהתחייבות לחודש 1. במידה והלקוח יבחר להפסיק את ההתקשרות מסיבה כלשהי, עליו לתת הודעה בכתב (למייל החברה) 30 יום מראש.
+השירות בחבילה השנתית הינו בתשלום מראש ובהתחייבות לשנה.
+תמיכה טכנית: מחלקת שירות טכני ייעודי — ניתן לפנות דרך הצ'אט במערכת. שעות פעילות: ימים א'-ה' 8:00-20:00.`,
+  },
+  en: {
+    intro: `We're confident that implementing Arbox will help grow your sales and revenue, raise your service level and customer satisfaction, and streamline your day-to-day operations, management and oversight.`,
+    why: `Arbox was founded over 9 years ago to bring a modern, reliable and high-quality technology solution to the wellness industry in Israel and worldwide. Today the platform is a market leader in usability, user experience, service and support, capabilities, data security, process efficiency and cost savings.
+We currently serve businesses in 25 countries, with over 6,000 active businesses, and a team of about 60 employees dedicated to improving the product, service and user experience.
+In our most recent customer satisfaction survey, 96.5% of respondents said they would recommend the Arbox management platform to peers and colleagues.`,
+    clients: `Naim Studios, Tel Aviv University Sports Center, Ramat Rachel Country Club, the Locker Room chain, Ariel Properties, Amot, Israel Aerospace Industries, Ono Academic College, Zichron Country Club, Mobileye, Migdal, NICE, and more…`,
+    value: `Smart management tools — accurate reports, statistics and management dashboards to support decision-making.
+Great user experience — an intuitive platform that's very easy to operate, with no need for lengthy training.
+Peace of mind — guided onboarding, smart support tools and outstanding service.
+Save time and manpower — a fast platform with quick access to key actions and efficiency tools.
+Automations — automatic messages and tasks, integration with Voice Center, Zapier and Open API.
+Access from anywhere — secure access for you and your staff, from any device, at any time.
+Data security — compliance with the strictest data security and privacy standards.`,
+    workplan: `Proposal approval
+Payment confirmation
+Account setup and initial configuration
+Go live`,
+    small: `VAT will be added to service fees and one-time charges as required by law.
+The monthly plan requires a minimum commitment of 1 month. To cancel, the customer must provide 30 days' written notice by email to the company.
+The annual plan is paid in advance and requires a one-year commitment.
+Technical support: a dedicated support team is available via in-app chat. Hours: Sun–Thu 8:00-20:00.`,
+  }
+};
+
+const T = {
+  he:{
+    dir:'rtl', locale:'he-IL',
+    title:c=>c?`הצעת מחיר ל${heL(c)}${c} | Arbox`:'הצעת מחיר | Arbox',
+    hero:c=>c?`הצעה ל${heL(c)}${c}`:'ההצעה שלך ל-Arbox',
+    people:(ct,r)=>[ct?`הוכנה עבור <strong>${esc(ct)}</strong>`:'', r?`${ct?'על ידי':'הוכנה על ידי'} <strong>${esc(r)}</strong>, Arbox`:''].filter(Boolean).join(' '),
+    sent:d=>`נשלחה ב-${d}`, validUntil:d=>`בתוקף עד ${d}`, validity:'תוקף ההצעה',
+    expired:(d,r)=>`תוקף ההצעה הסתיים ב-${d}. כדי לקבל הצעה מעודכנת, אפשר לפנות ל${r||'נציג שלך ב-Arbox'}.`,
+    planTitle:'ההצעה שלך', planSub:'אפשר לשנות כאן את סוג החיוב, הסליקה והתוספים. המחיר מתעדכן מיד.',
+    monthly:'חודשי', annual:'שנתי מראש',
+    save:x=>`בתשלום שנתי חוסכים ${x} בשנה`,
+    perMonth:'לחודש',
+    included:n=>`מה כלול ב-${n}`,
+    payTitle:'סליקה', paySub:'גבייה מהלקוחות שלך מתוך Arbox, עם חשבוניות אוטומטיות',
+    payNone:'בלי סליקה כרגע', payNoneNote:'אפשר להוסיף סליקה בכל שלב',
+    payIncluded:'כלול בהצעה',
+    growNote:(x,f)=>`בנוסף ${x} לחודש ישירות ל-Grow, ועמלה של ${f}% לעסקה מעל 100 עסקאות בחודש`,
+    pelecardNote:(x,s)=>`בנוסף ${x} לחודש ו-${s} הקמה, ישירות לפלאכארד`,
+    icreditNote:'פתרון סליקה משולב, תומך במגוון כרטיסי אשראי',
+    addonsTitle:'תוספים', addonsSub:'מסמנים מה שמתאים לך, והמחיר מתעדכן',
+    alsoTitle:'כלול גם בהצעה',
+    onetimeTitle:'תשלום חד-פעמי', onetimeSub:'משולם פעם אחת בתחילת העבודה, בנפרד מהמנוי',
+    onetimeTotal:'סה״כ חד-פעמי', free:'ללא עלות',
+    noteTitle:'הערה',
+    sumPlan:(p,b)=>`חבילת ${p}, חיוב ${b==='annual'?'שנתי מראש':'חודשי'}`,
+    unitM:'לחודש', unitA:'לחודש, בתשלום שנתי מראש',
+    vatEx:'לפני מע״מ', vatIn:'כולל מע״מ', vatToggle:'הצגה כולל מע״מ',
+    was:x=>`במקום ${x}`,
+    dealM:(p,n,after)=>`${p}% הנחה ${n===1?'בחודש הראשון':`ב-${n} החודשים הראשונים`}. אחר כך ${after} לחודש.`,
+    dealA:(p,n,after)=>`${p}% הנחה ${n===1?'בשנה הראשונה':`ב-${n} השנים הראשונות`}. אחר כך ${after} לחודש.`,
+    annualPay:x=>`תשלום שנתי של ${x}`,
+    pkgLine:n=>`חבילת ${n}`, payLine:n=>`סליקה ${n}`, discLine:p=>`הנחה ${p}%`, service:'שירות',
+    directTitle:'משולם ישירות לספק הסליקה',
+    onetimeSum:x=>`<strong>${x}</strong> חד-פעמי בתחילת העבודה`,
+    cta:'אני רוצה להתקדם', ctaSub:r=>`תיפתח הודעת וואטסאפ ${r?`ל${r} `:''}עם מה שבחרת`,
+    pdf:'שמירה כ-PDF', toSummary:'לסיכום',
+    whyTitle:'למה Arbox', valueTitle:'מה Arbox עושה בשבילך', clientsTitle:'עסקים שכבר עובדים עם Arbox',
+    stepsTitle:'איך מתחילים', smallTitle:'האותיות הקטנות',
+    signOff:'לשיתוף פעולה מוצלח,', team:'צוות Arbox',
+    invalid:'הקישור להצעה לא שלם. אפשר לבקש מהנציג לשלוח אותו שוב.',
+    printBilling:b=>`סוג חיוב: ${b==='annual'?'שנתי, תשלום מראש':'חודשי'}`,
+    wa:(o)=>[`היי${o.rep?' '+o.rep:''}, כאן ${o.client||'לקוח'}.`,'עברתי על ההצעה ואני רוצה להתקדם עם:',
+      `חבילת ${o.pkg}, חיוב ${o.billing==='annual'?'שנתי מראש':'חודשי'}`,
+      `סליקה: ${o.pay||'בלי סליקה'}`, `תוספים: ${o.addons.length?o.addons.join(', '):'בלי תוספים'}`,
+      `סה״כ ${o.price} לחודש, ${o.vat?'כולל':'לפני'} מע״מ`,'',o.url].join('\n'),
+  },
+  en:{
+    dir:'ltr', locale:'en-GB',
+    title:c=>c?`Proposal for ${c} | Arbox`:'Proposal | Arbox',
+    hero:c=>c?`A proposal for ${c}`:'Your Arbox proposal',
+    people:(ct,r)=>[ct?`Prepared for <strong>${esc(ct)}</strong>`:'', r?`${ct?'by':'Prepared by'} <strong>${esc(r)}</strong>, Arbox`:''].filter(Boolean).join(' '),
+    sent:d=>`Sent ${d}`, validUntil:d=>`Valid until ${d}`, validity:'Valid for',
+    expired:(d,r)=>`This proposal expired on ${d}. For an updated one, contact ${r||'your Arbox rep'}.`,
+    planTitle:'Your plan', planSub:'Change the billing, payment processing and add-ons here. The price updates right away.',
+    monthly:'Monthly', annual:'Annual, prepaid',
+    save:x=>`Pay annually and save ${x} a year`,
+    perMonth:'/month',
+    included:n=>`What’s included in ${n}`,
+    payTitle:'Payment processing', paySub:'Collect payments from your customers inside Arbox, with automatic invoices',
+    payNone:'No payment processing for now', payNoneNote:'You can add it at any time',
+    payIncluded:'Included in this proposal',
+    growNote:(x,f)=>`Plus ${x}/month paid directly to Grow, and a ${f}% fee per transaction above 100 a month`,
+    pelecardNote:(x,s)=>`Plus ${x}/month and ${s} setup, paid directly to Pelecard`,
+    icreditNote:'Integrated payment solution supporting a wide range of cards',
+    addonsTitle:'Add-ons', addonsSub:'Pick what fits and the price updates',
+    alsoTitle:'Also included',
+    onetimeTitle:'One-time payment', onetimeSub:'Paid once at the start, separately from the subscription',
+    onetimeTotal:'One-time total', free:'Free',
+    noteTitle:'Note',
+    sumPlan:(p,b)=>`${p} plan, ${b==='annual'?'billed annually':'billed monthly'}`,
+    unitM:'/month', unitA:'/month, billed annually',
+    vatEx:'excl. VAT', vatIn:'incl. VAT', vatToggle:'Show prices with VAT',
+    was:x=>`Instead of ${x}`,
+    dealM:(p,n,after)=>`${p}% off ${n===1?'for the first month':`for the first ${n} months`}. Then ${after}/month.`,
+    dealA:(p,n,after)=>`${p}% off ${n===1?'for the first year':`for the first ${n} years`}. Then ${after}/month.`,
+    annualPay:x=>`Annual payment of ${x}`,
+    pkgLine:n=>`${n} plan`, payLine:n=>`${n} payments`, discLine:p=>`${p}% discount`, service:'Service',
+    directTitle:'Paid directly to the payment provider',
+    onetimeSum:x=>`<strong>${x}</strong> one-time at the start`,
+    cta:'I’d like to go ahead', ctaSub:r=>`Opens a WhatsApp message${r?` to ${r}`:''} with your choices`,
+    pdf:'Save as PDF', toSummary:'Summary',
+    whyTitle:'Why Arbox', valueTitle:'What Arbox does for you', clientsTitle:'Businesses already running on Arbox',
+    stepsTitle:'Getting started', smallTitle:'Terms & conditions',
+    signOff:'To a successful partnership,', team:'The Arbox team',
+    invalid:'This proposal link is incomplete. Please ask your rep to send it again.',
+    printBilling:b=>`Billing: ${b==='annual'?'annual, prepaid':'monthly'}`,
+    wa:(o)=>[`Hi${o.rep?' '+o.rep:''}, this is ${o.client||'a client'}.`,'I went over the proposal and I’d like to go ahead with:',
+      `${o.pkg} plan, ${o.billing==='annual'?'billed annually':'billed monthly'}`,
+      `Payment processing: ${o.pay||'none'}`, `Add-ons: ${o.addons.length?o.addons.join(', '):'none'}`,
+      `Total ${o.price}/month, ${o.vat?'incl.':'excl.'} VAT`,'',o.url].join('\n'),
+  }
+};
+
+/* ── helpers ── */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function heL(c){return /^[A-Za-z0-9"'(]/.test(c)?'-':'';}
+const fmt=n=>Math.round(n).toLocaleString('he-IL');
+const money=n=>`${fmt(n)}₪`;
+const CHECK='<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg>';
+const FEAT_ON='<svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#4F87FF"/><path d="M5.8 10.3l2.7 2.7 5.6-6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const FEAT_OFF='<svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9.25" fill="none" stroke="#c9cfdc" stroke-width="1.5"/><path d="M6.5 10h7" stroke="#c9cfdc" stroke-width="1.8" stroke-linecap="round"/></svg>';
+const reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let S=null, U=null, st=null, shownPrice=null;
+
+function readState(){
+  const m=(location.hash.match(/[#&]p=([^&]+)/)||location.search.match(/[?&]p=([^&]+)/));
+  if(!m||!window.LZString)return null;
+  try{const json=LZString.decompressFromEncodedURIComponent(m[1]);return json?JSON.parse(json):null;}catch(e){return null;}
+}
+function fmtDate(d){
+  const x=typeof d==='string'?new Date(d+'T00:00:00'):d;
+  if(!x||isNaN(x))return '';
+  return x.toLocaleDateString(U.locale,{day:'numeric',month:'long',year:'numeric'});
+}
+function expiryDate(){
+  const m=(S.vd||'').match(/(\d+)\s*(יום|ימים|days?)/i);
+  if(!m||!S.d)return null;
+  const d=new Date(S.d+'T00:00:00'); d.setDate(d.getDate()+Number(m[1])); return d;
+}
+function text(f){ return (S.tx&&typeof S.tx[f]==='string')?S.tx[f]:(DEFAULT_CONTENT[S.l][f]||''); }
+function linesOf(f){ return text(f).split('\n').map(s=>s.trim()).filter(Boolean); }
+const vatify=n=>st.vat?n*(1+VAT):n;
+
+/* ── pricing: same rules as the calculator, on the snapshot ── */
+function calc(b){
+  const an=b==='annual', D=an?S.da:S.dm, pct=(D&&D.p>0)?D.p:0;
+  const lines=[]; let base=0, discBase=0;
+  const add=(label,price,discountable,detail)=>{lines.push({label,price,detail});base+=price;if(pct&&discountable)discBase+=price;};
+  add(U.pkgLine(S.pkg.n), an?S.pkg.a:S.pkg.m, D&&D.pkg);
+  if(st.pay!=='none'){const p=S.pay.o[st.pay]; add(U.payLine(p.n), an?p.a:p.m, D&&D.pay);}
+  S.ad.forEach((a,i)=>{ if(st.on[i]) add(a.n, an?a.a:a.m, an?a.da:a.dm, an?a.ua:a.um); });
+  (S.rc||[]).forEach(([n,p])=>add(n||U.service,p,false));
+  const disc=discBase*pct/100;
+  return {an,lines,base,disc,pct,period:D?D.n:0,now:base-disc};
+}
+
+/* ── render once; later changes only update text and classes ── */
+function render(){
+  const app=document.getElementById('app');
+  const exp=expiryDate(); const today=new Date(); today.setHours(0,0,0,0);
+  const expired=exp&&exp<today;
+  const intro=text('intro').trim();
+  const showPay=S.pay.mode==='both'||(S.pay.mode==='selected'&&S.pay.s!=='none');
+  const otTotal=(S.ot||[]).reduce((s,[,p])=>s+(p||0),0);
+
+  const feats=(S.f||[]).map(([label,val])=>{
+    if(typeof val==='string') return `<li>${FEAT_ON}<span>${esc(label)}<span class="val">${esc(val)}</span></span></li>`;
+    return `<li class="${val?'':'off'}">${val?FEAT_ON:FEAT_OFF}<span>${esc(label)}</span></li>`;
+  }).join('');
+
+  const payKeys=S.pay.mode==='both'?['none','grow','pelecard','icredit'].filter(k=>S.pay.o[k]):[S.pay.s];
+  const payNote=k=>{
+    const p=S.pay.o[k];
+    if(k==='none')return U.payNoneNote;
+    if(k==='grow')return U.growNote(money(p.xm),p.fee);
+    if(k==='pelecard')return U.pelecardNote(money(p.xm),money(p.xs));
+    if(k==='icredit')return U.icreditNote;
+    return '';
+  };
+  const payCards=payKeys.map(k=>{
+    const p=S.pay.o[k]; const single=S.pay.mode!=='both';
+    const name=k==='none'?U.payNone:p.n;
+    const price=k==='none'?'':`<span class="opt-price"><bdi>+<span class="js-bp" data-m="${p.m}" data-a="${p.a}"></span></bdi> <span class="u">${U.perMonth}</span></span>`;
+    if(single) return `<div class="opt static is-on"><div class="opt-main"><div class="opt-name">${esc(name)}</div><div class="opt-note">${esc(U.payIncluded)}. ${esc(payNote(k))}</div></div>${price}</div>`;
+    return `<label class="opt" data-pay="${k}"><input type="radio" name="pay" value="${k}"><span class="mark radio"></span><span class="opt-main"><span class="opt-name">${esc(name)}</span><span class="opt-note" style="display:block">${esc(payNote(k))}</span></span>${price}</label>`;
+  }).join('');
+
+  const addonCards=S.ad.map((a,i)=>`<label class="opt" data-ad="${i}"><input type="checkbox" value="${i}"><span class="mark check">${CHECK}</span><span class="opt-main"><span class="opt-name">${esc(a.n)}</span>${(a.um||a.ua)?`<span class="opt-note js-ud" style="display:block" data-m="${esc(a.um||'')}" data-a="${esc(a.ua||'')}"></span>`:''}</span><span class="opt-price"><bdi>+<span class="js-bp" data-m="${a.m}" data-a="${a.a}"></span></bdi> <span class="u">${U.perMonth}</span></span></label>`).join('');
+
+  const rc=(S.rc||[]).map(([n,p])=>`<div class="ln"><span>${esc(n||U.service)}</span><b><bdi>+${money(p)}</bdi> ${U.perMonth}</b></div>`).join('');
+  const ot=(S.ot||[]).map(([n,p])=>`<div class="ln"><span>${esc(n||U.service)}</span><b>${p?money(p):U.free}</b></div>`).join('');
+
+  const why=linesOf('why'), values=linesOf('value'), steps=linesOf('workplan'), small=linesOf('small');
+  const clientsTxt=text('clients').trim();
+  let clientsHtml='';
+  if(clientsTxt){
+    const parts=clientsTxt.split(/[,،]\s*/).map(s=>s.trim()).filter(Boolean);
+    const last=parts[parts.length-1]||'';
+    const tailMatch=last.match(/^(.*?)(\s*(?:ועוד|and more)\s*…?\.*)$/);
+    if(tailMatch){parts[parts.length-1]=tailMatch[1].trim(); if(!parts[parts.length-1])parts.pop();}
+    clientsHtml=parts.map((n,i)=>`<span class="nm">${esc(n)}${i<parts.length-1?'<span class="sep"> /</span>':''}</span>`).join(' ')+(tailMatch?` <span class="more">${esc(tailMatch[2].trim())}</span>`:'');
+  }
+  const valueHtml=values.map(l=>{
+    const m=l.match(/^(.*?)\s[—–-]\s(.*)$/);
+    return m?`<li><h3>${esc(m[1])}</h3><p>${esc(m[2])}</p></li>`:`<li><h3>${esc(l)}</h3></li>`;
+  }).join('');
+
+  app.innerHTML=`
+  ${expired?`<div class="expired" role="status">${esc(U.expired(fmtDate(exp),S.r))}</div>`:''}
+  <header class="top wrap">
+    <img src="${LOGO}" alt="Arbox" class="logo">
+    <div class="top-meta">
+      ${S.d?`<div>${esc(U.sent(fmtDate(S.d)))}</div>`:''}
+      ${exp?`<div>${esc(U.validUntil(fmtDate(exp)))}</div>`:(S.vd?`<div>${esc(U.validity)}: ${esc(S.vd)}</div>`:'')}
+    </div>
+  </header>
+
+  <section class="hero wrap">
+    <h1>${esc(U.hero(S.c))}</h1>
+    ${(S.ct||S.r)?`<p class="hero-people">${U.people(S.ct,S.r)}</p>`:''}
+    ${intro?`<p class="intro">${esc(intro)}</p>`:''}
+  </section>
+
+  <div class="deal wrap">
+    <div class="cfg">
+      <section class="block" aria-labelledby="h-plan">
+        <div class="block-head">
+          <div><h2 id="h-plan">${U.planTitle}</h2><p class="sub">${U.planSub}</p></div>
+          <div>
+            <div class="seg" role="radiogroup" aria-label="${U.planTitle}">
+              <label><input type="radio" name="billing" value="monthly"><span>${U.monthly}</span></label>
+              <label><input type="radio" name="billing" value="annual"><span>${U.annual}</span></label>
+            </div>
+            <p class="save-note" id="save-note"></p>
+          </div>
+        </div>
+        <p class="print-only" id="print-billing"></p>
+        <div class="pkg">
+          <div class="pkg-head">
+            <h3>${esc(S.pkg.n)}</h3>
+            <div class="pkg-price"><span class="js-bp" data-m="${S.pkg.m}" data-a="${S.pkg.a}"></span> <span class="u">${U.perMonth}</span></div>
+          </div>
+          ${feats?`<p class="feats-title">${esc(U.included(S.pkg.n))}</p><ul class="feats">${feats}</ul>`:''}
+        </div>
+      </section>
+
+      ${showPay?`<section class="block" aria-labelledby="h-pay">
+        <div class="block-head"><div><h2 id="h-pay">${U.payTitle}</h2><p class="sub">${U.paySub}</p></div></div>
+        <div class="opts ${S.pay.mode==='both'?'two':''}" role="${S.pay.mode==='both'?'radiogroup':'group'}" aria-labelledby="h-pay">${payCards}</div>
+      </section>`:''}
+
+      ${S.ad.length?`<section class="block" aria-labelledby="h-ad">
+        <div class="block-head"><div><h2 id="h-ad">${U.addonsTitle}</h2><p class="sub">${U.addonsSub}</p></div></div>
+        <div class="opts">${addonCards}</div>
+      </section>`:''}
+
+      ${rc?`<section class="block" aria-labelledby="h-rc">
+        <div class="block-head"><h2 id="h-rc">${U.alsoTitle}</h2></div>
+        <div class="lines">${rc}</div>
+      </section>`:''}
+
+      ${ot?`<section class="block" aria-labelledby="h-ot">
+        <div class="block-head"><div><h2 id="h-ot">${U.onetimeTitle}</h2><p class="sub">${U.onetimeSub}</p></div></div>
+        <div class="lines onetime">${ot}<div class="ln tot"><span>${U.onetimeTotal}</span><b id="ot-total"></b></div></div>
+      </section>`:''}
+
+      ${S.nt?`<section class="block" aria-label="${U.noteTitle}"><div class="note">${esc(S.nt).replace(/\n/g,'<br>')}</div></section>`:''}
+    </div>
+
+    <aside class="sum-wrap" aria-label="${U.planTitle}">
+      <div class="sum" id="sum">
+        <p class="sum-plan" id="sum-plan"></p>
+        <div class="sum-price"><span class="num" id="sum-num" aria-live="polite"></span><span class="unit" id="sum-unit"></span></div>
+        <p class="sum-was" id="sum-was" hidden></p>
+        <p class="sum-deal" id="sum-deal" hidden></p>
+        <p class="sum-annual" id="sum-annual" hidden></p>
+        <div class="sum-list" id="sum-list"></div>
+        <div class="sum-extra" id="sum-extra" hidden></div>
+        <label class="vat-row"><input type="checkbox" id="vat"><span class="toggle"></span>${U.vatToggle}</label>
+        <a class="cta" id="cta" target="_blank" rel="noopener">${U.cta}</a>
+        <p class="cta-sub">${esc(U.ctaSub(S.r))}</p>
+        <button class="pdf-btn" type="button" onclick="printProposal()">${U.pdf}</button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="story">
+    <div class="wrap">
+      ${values.length?`<section class="part"><h2>${U.valueTitle}</h2><ul class="values">${valueHtml}</ul></section>`:''}
+      ${why.length?`<section class="part why"><h2>${U.whyTitle}</h2>${why.map(p=>`<p>${esc(p)}</p>`).join('')}</section>`:''}
+      ${clientsHtml?`<section class="part"><h2>${U.clientsTitle}</h2><p class="clients">${clientsHtml}</p></section>`:''}
+      ${steps.length?`<section class="part"><h2>${U.stepsTitle}</h2><ol class="steps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></section>`:''}
+      ${small.length?`<details class="small"><summary>${U.smallTitle}</summary><ul>${small.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></details>`:''}
+    </div>
+  </div>
+
+  <footer class="closing">
+    <div class="wrap">
+      <div>
+        <p>${U.signOff}</p>
+        <p class="sign">${esc(S.r||U.team)}</p>
+        <img src="${LOGO_WHITE}" alt="Arbox" class="logo">
+      </div>
+      <a class="cta no-print" id="cta2" target="_blank" rel="noopener">${U.cta}</a>
+    </div>
+  </footer>
+
+  <div class="bar" id="bar">
+    <div class="p"><span id="bar-num"></span> <small id="bar-unit"></small></div>
+    <button type="button" onclick="document.getElementById('sum').scrollIntoView({block:'center'})">${U.toSummary}</button>
+  </div>`;
+
+  if(otTotal>=0){const el=document.getElementById('ot-total'); if(el)el.dataset.v=otTotal;}
+}
+
+function bind(){
+  document.querySelectorAll('input[name=billing]').forEach(r=>{r.checked=r.value===st.b; r.addEventListener('change',()=>{st.b=r.value;update();});});
+  document.querySelectorAll('input[name=pay]').forEach(r=>{r.checked=r.value===st.pay; r.addEventListener('change',()=>{st.pay=r.value;update();});});
+  document.querySelectorAll('[data-ad] input').forEach(c=>{const i=+c.value; c.checked=st.on[i]; c.addEventListener('change',()=>{st.on[i]=c.checked;update();});});
+  const v=document.getElementById('vat'); v.checked=st.vat; v.addEventListener('change',()=>{st.vat=v.checked;update();});
+  const bar=document.getElementById('bar'), sum=document.getElementById('sum');
+  if('IntersectionObserver' in window&&bar&&sum){
+    new IntersectionObserver(es=>es.forEach(e=>bar.classList.toggle('hide',e.isIntersecting)),{threshold:.25}).observe(sum);
+  }
+  window.addEventListener('beforeprint',()=>document.querySelectorAll('details').forEach(d=>d.open=true));
+}
+
+function update(animate=true){
+  const c=calc(st.b), an=c.an;
+  const bp=an?'a':'m';
+  // selection states
+  document.querySelectorAll('[data-pay]').forEach(el=>el.classList.toggle('is-on',el.dataset.pay===st.pay));
+  document.querySelectorAll('[data-ad]').forEach(el=>el.classList.toggle('is-on',!!st.on[+el.dataset.ad]));
+  document.querySelectorAll('.js-bp').forEach(el=>el.textContent=money(vatify(+el.dataset[bp])));
+  document.querySelectorAll('.js-ud').forEach(el=>{el.textContent=el.dataset[bp]||'';});
+  const ot=document.getElementById('ot-total'); if(ot){const v=+ot.dataset.v; ot.textContent=v?money(vatify(v)):U.free;}
+  document.getElementById('print-billing').textContent=U.printBilling(st.b);
+
+  // annual saving (list prices, before any discount)
+  const save=(calc('monthly').base-calc('annual').base)*12;
+  const sn=document.getElementById('save-note');
+  sn.textContent=save>0?U.save(money(vatify(save))):'';
+
+  // summary card
+  const headline=c.disc>0?c.now:c.base;
+  const unit=`${an?U.unitA:U.unitM}, ${st.vat?U.vatIn:U.vatEx}`;
+  document.getElementById('sum-plan').textContent=U.sumPlan(S.pkg.n,st.b);
+  animateNum(document.getElementById('sum-num'),vatify(headline),animate);
+  document.getElementById('sum-unit').textContent=unit;
+  const was=document.getElementById('sum-was'), deal=document.getElementById('sum-deal'), ann=document.getElementById('sum-annual');
+  if(c.disc>0){
+    was.hidden=false; was.textContent=U.was(money(vatify(c.base)));
+    deal.hidden=false; deal.textContent=(an?U.dealA:U.dealM)(c.pct,c.period,money(vatify(c.base)));
+  }else{was.hidden=true;deal.hidden=true;}
+  if(an){ann.hidden=false; ann.textContent=U.annualPay(money(vatify(headline*12)));}else ann.hidden=true;
+
+  let rows=c.lines.map(l=>`<div class="r"><span>${esc(l.label)}${l.detail?` <span style="opacity:.7">(${esc(l.detail)})</span>`:''}</span><span>${money(vatify(l.price))}</span></div>`).join('');
+  if(c.disc>0) rows+=`<div class="r disc"><span>${esc(U.discLine(c.pct))}</span><span><bdi>−${money(vatify(c.disc))}</bdi></span></div>`;
+  document.getElementById('sum-list').innerHTML=rows;
+
+  const extra=[]; const p=S.pay.o[st.pay];
+  if(st.pay==='grow'&&p.xm) extra.push(`${esc(U.directTitle)}: <strong>${money(p.xm)}</strong> ${U.perMonth}`);
+  if(st.pay==='pelecard'&&p.xm) extra.push(`${esc(U.directTitle)}: <strong>${money(p.xm)}</strong> ${U.perMonth} + <strong>${money(p.xs)}</strong>`);
+  const otv=(S.ot||[]).reduce((s,[,v])=>s+(v||0),0);
+  if(otv>0) extra.push(U.onetimeSum(money(vatify(otv))));
+  const ex=document.getElementById('sum-extra'); ex.hidden=!extra.length; ex.innerHTML=extra.map(x=>`<div>${x}</div>`).join('');
+
+  // mobile bar
+  document.getElementById('bar-num').textContent=money(vatify(headline));
+  document.getElementById('bar-unit').textContent=U.perMonth;
+
+  // WhatsApp back to the rep
+  const msg=U.wa({rep:S.r,client:S.c,pkg:S.pkg.n,billing:st.b,
+    pay:st.pay==='none'?'':S.pay.o[st.pay].n,
+    addons:S.ad.filter((a,i)=>st.on[i]).map(a=>a.n),
+    price:money(vatify(headline)),vat:st.vat,url:location.href});
+  const href=`https://wa.me/${S.ph||''}?text=${encodeURIComponent(msg)}`;
+  document.getElementById('cta').href=href; document.getElementById('cta2').href=href;
+}
+
+function animateNum(el,to,animate){
+  const from=shownPrice==null?to:shownPrice; shownPrice=to;
+  if(!animate||reduceMotion||from===to){el.textContent=money(to);return;}
+  const t0=performance.now(), dur=380;
+  const step=t=>{const k=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-k,3);
+    el.textContent=money(from+(to-from)*e); if(k<1)requestAnimationFrame(step);};
+  requestAnimationFrame(step);
+}
+
+function printProposal(){ document.querySelectorAll('details').forEach(d=>d.open=true); window.print(); }
+
+function renderInvalid(){
+  document.getElementById('app').innerHTML=`<div class="invalid"><div><img src="${LOGO}" alt="Arbox" class="logo" style="margin:0 auto;height:34px"><p>${T.he.invalid}<br><span style="color:#5A6377;font-size:15px">${T.en.invalid}</span></p></div></div>`;
+}
+
+(function init(){
+  S=readState();
+  if(!S||!S.pkg||!S.pay){renderInvalid();return;}
+  S.l=S.l==='en'?'en':'he';
+  S.ad=S.ad||[];
+  U=T[S.l];
+  document.documentElement.lang=S.l; document.documentElement.dir=U.dir;
+  document.title=U.title(S.c);
+  const payKey=S.pay.o[S.pay.s]?S.pay.s:'none';
+  st={b:S.b==='annual'?'annual':'monthly', pay:payKey, on:S.ad.map(a=>!!a.on), vat:!!S.vat};
+  render(); bind(); update(false);
+})();
+</script>
+</body>
+</html>

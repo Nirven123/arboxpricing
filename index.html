@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
   <style>
     :root{
       --navy:#081838;
@@ -249,7 +250,7 @@
     .composer-body{flex:1;display:flex;overflow:hidden}
     .composer-form{width:440px;flex-shrink:0;overflow-y:auto;padding:20px;border-left:1.5px solid var(--border);background:#fff}
     .composer-preview-pane{flex:1;overflow:auto;background:#e5e9f0;display:flex;justify-content:center;padding:28px 16px}
-    .composer-footer{padding:14px 22px;border-top:1.5px solid var(--border);background:#fff;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0}
+    .composer-footer{padding:14px 22px;border-top:1.5px solid var(--border);background:#fff;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;flex-wrap:wrap}
     .cf-section{margin-bottom:18px}
     .cf-section-title{font-size:13px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--border)}
     .radio-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:14px;cursor:pointer;color:var(--navy)}
@@ -589,7 +590,9 @@
           <div class="cf-section-title">פרטי לקוח והצעה</div>
           <div class="pdf-field"><label>שם עסק / לקוח</label><input type="text" id="pdf-client" placeholder="לדוג׳: מכון כושר הגבעה" oninput="renderProposalPreview()"/></div>
           <div class="pdf-field"><label>איש קשר (אופציונלי)</label><input type="text" id="pdf-contact" placeholder="שם ותפקיד" oninput="renderProposalPreview()"/></div>
-          <div class="pdf-field"><label>שם איש/אשת המכירות</label><input type="text" id="pdf-rep" placeholder="לדוג׳: ניר ונטורה" oninput="renderProposalPreview()"/></div>
+          <div class="pdf-field"><label>שם איש/אשת המכירות</label><input type="text" id="pdf-rep" placeholder="לדוג׳: ניר ונטורה" oninput="renderProposalPreview();saveRepInfo()"/></div>
+          <div class="pdf-field"><label>הטלפון שלך (לכפתור "אני רוצה להתקדם" בהצעה האינטראקטיבית)</label><input type="tel" id="pdf-rep-phone" placeholder="050-0000000" oninput="saveRepInfo()"/></div>
+          <div class="pdf-field"><label>טלפון הלקוח (לשליחה בוואטסאפ, לא חובה)</label><input type="tel" id="pdf-client-phone" placeholder="050-0000000"/></div>
           <div class="pdf-field"><label>תוקף ההצעה</label><input type="text" id="pdf-validity" value="30 יום ממועד ההצעה" oninput="renderProposalPreview()"/></div>
         </div>
 
@@ -604,6 +607,11 @@
           <div class="cf-section-title">תצוגת מחיר</div>
           <label class="radio-row"><input type="checkbox" id="cf-include-addons" onchange="renderProposalPreview()"/> כלול את התוספים שנבחרו בסכום הכולל (אחרת יוצגו כתוספים אופציונליים בלבד)</label>
           <label class="radio-row"><input type="checkbox" id="cf-show-vat" onchange="renderProposalPreview()"/> הצג מחירים כולל מע"מ (ברירת מחדל: לפני מע"מ)</label>
+        </div>
+
+        <div class="cf-section">
+          <div class="cf-section-title">תוספים שהלקוח יוכל להוסיף בעצמו (רק בקישור האינטראקטיבי)</div>
+          <div id="offer-addons-list"></div>
         </div>
 
         <div class="cf-section">
@@ -647,6 +655,9 @@
     </div>
     <div class="composer-footer">
       <button class="btn btn-ghost" onclick="closeProposalComposer()">ביטול</button>
+      <button class="btn btn-ghost" onclick="previewProposalLink()">👁️ תצוגה מקדימה</button>
+      <button class="btn btn-ghost" onclick="copyProposalLink()" id="copy-link-btn">🔗 העתק קישור ללקוח</button>
+      <button class="btn btn-ghost" onclick="sendProposalWhatsApp()">💬 שליחה בוואטסאפ</button>
       <button class="btn btn-primary" onclick="generateProposalPDF()" id="gen-pdf-btn">⬇️ ייצוא PDF</button>
     </div>
   </div>
@@ -1512,6 +1523,9 @@ function openProposalComposer(){
     ['intro','why','clients','value','workplan','small'].forEach(f=>resetContentField(f,true));
     initFeatureOverridesFromPackage();
     renderFeatureChecklist();
+    offerAddons=new Set();
+    renderOfferAddons();
+    loadRepInfo();
     renderProposalPreview();
   }
   document.getElementById('overlay-composer').classList.add('open');
@@ -1942,6 +1956,101 @@ async function generateProposalPDF(){
 }
 
 /* ══════════════════════════════════════ DEAL SUMMARY (סיכום עסקה סגורה) ══ */
+/* ══════════════════════════════════════ INTERACTIVE PROPOSAL LINK ══
+   The link carries a snapshot of the prices as they are in this calculator right now
+   (including per-deal overrides), so proposal.html never reads catalog prices or localStorage.
+   Default texts are not sent; proposal.html has its own copy and only edited texts travel in the link. */
+let offerAddons=new Set();
+function renderOfferAddons(){
+  const wrap=document.getElementById('offer-addons-list'); if(!wrap)return;
+  const items=addons.map((a,i)=>({a,i})).filter(x=>!selAddons.has(x.i)&&!hasUnits(x.a));
+  if(!items.length){wrap.innerHTML='<div style="font-size:13px;color:var(--text-muted)">אין תוספים נוספים להציע</div>';return;}
+  wrap.innerHTML=`<div style="font-size:12.5px;color:var(--text-muted);margin-bottom:6px;line-height:1.6">התוספים שבחרת במחשבון כבר מופיעים בהצעה. כאן מסמנים עוד תוספים שהלקוח יוכל להוסיף בעצמו, במחיר המחירון.</div>`+
+    items.map(({a,i})=>`<label class="radio-row"><input type="checkbox" ${offerAddons.has(i)?'checked':''} onchange="toggleOfferAddon(${i},this.checked)"/> ${esc(a.name)} <span style="color:var(--text-muted);font-size:12.5px">(${fmt(a.monthly)}₪ חודשי, ${fmt(a.annual)}₪ בשנתי)</span></label>`).join('');
+}
+function toggleOfferAddon(i,on){ if(on)offerAddons.add(i); else offerAddons.delete(i); }
+
+function saveRepInfo(){
+  try{localStorage.setItem('arbox_rep_info',JSON.stringify({name:document.getElementById('pdf-rep').value,phone:document.getElementById('pdf-rep-phone').value}));}catch(e){}
+}
+function loadRepInfo(){
+  try{
+    const r=JSON.parse(localStorage.getItem('arbox_rep_info')||'null'); if(!r)return;
+    const n=document.getElementById('pdf-rep'), p=document.getElementById('pdf-rep-phone');
+    if(n&&!n.value&&r.name)n.value=r.name;
+    if(p&&!p.value&&r.phone)p.value=r.phone;
+  }catch(e){}
+}
+function normPhone(s){
+  let d=String(s||'').replace(/\D/g,'');
+  if(d.startsWith('00'))d=d.slice(2);
+  if(d.startsWith('0'))d='972'+d.slice(1);
+  return d.length>=11?d:'';
+}
+
+function buildProposalSnapshot(){
+  const L=proposalLang;
+  const v=id=>{const el=document.getElementById(id);return el?(el.value||'').trim():'';};
+  const includeAddons=document.getElementById('cf-include-addons').checked;
+  const dOn=D=>D.enabled&&D.pct>0;
+  const dSnap=D=>dOn(D)?{p:D.pct,n:D.period,pkg:!D.unchecked.has('pkg'),pay:!D.unchecked.has('pay')}:null;
+  const ad=[];
+  selAddons.forEach(i=>{
+    const a=addons[i]; if(!a)return; const k=`addon-${i}`;
+    const o={n:a.name,m:addonTotal(i,'monthly'),a:addonTotal(i,'annual'),on:includeAddons?1:0,
+      dm:(dOn(discM)&&!discM.unchecked.has(k))?1:0, da:(dOn(discA)&&!discA.unchecked.has(k))?1:0};
+    if(hasUnits(a)){o.um=addonDetail(i,'monthly',L);o.ua=addonDetail(i,'annual',L);}
+    ad.push(o);
+  });
+  offerAddons.forEach(i=>{const a=addons[i]; if(!a||selAddons.has(i))return; ad.push({n:a.name,m:a.monthly,a:a.annual,on:0,dm:0,da:0});});
+  const payOpt={};
+  Object.keys(PAYMENT).forEach(k=>{const p=PAYMENT[k];payOpt[k]={n:k==='none'?'':p.name,m:p.monthly,a:p.annual,xm:p.extraMonthly||0,xs:p.setupFee||0};});
+  if(payOpt.grow)payOpt.grow.fee=GROW_FEE_PCT[selPkg];
+  const feats=features.map(f=>[L==='he'?f.label_he:f.label_en,featureOverrides[f.key]!==undefined?featureOverrides[f.key]:f[selPkg]])
+    .concat(customFeatureRows.filter(r=>r.label.trim()).map(r=>[r.label.trim(),!!r.checked]));
+  const tx={}, map={intro:'cf-intro',why:'cf-why',clients:'cf-clients',value:'cf-value',workplan:'cf-workplan',small:'cf-small'};
+  Object.keys(map).forEach(f=>{const val=document.getElementById(map[f]).value; if(val.trim()!==String(DEFAULT_CONTENT[L][f]).trim())tx[f]=val;});
+  return {v:1,l:L,
+    c:v('pdf-client'),ct:v('pdf-contact'),r:v('pdf-rep'),ph:normPhone(v('pdf-rep-phone')),
+    vd:v('pdf-validity'),d:new Date().toISOString().slice(0,10),nt:v('cf-note'),
+    vat:document.getElementById('cf-show-vat').checked?1:0,
+    b:billing,
+    pkg:{n:PACKAGES[selPkg].name,m:PACKAGES[selPkg].monthly,a:PACKAGES[selPkg].annual},
+    pay:{s:selPay,mode:payDisplay,o:payOpt},
+    ad,
+    rc:customItems.filter(c=>c.type==='recurring'&&(c.name||c.price)).map(c=>[c.name||'',c.price||0]),
+    ot:getSetupLines(L).map(l=>[l.name,l.price]).concat(customItems.filter(c=>c.type==='onetime'&&(c.name||c.price)).map(c=>[c.name||'',c.price||0])),
+    dm:dSnap(discM),da:dSnap(discA),
+    f:feats,tx};
+}
+function buildProposalLink(){
+  if(!selPkg){alert('יש לבחור חבילה לפני יצירת קישור');return null;}
+  if(!window.LZString){alert('ספריית הקישורים לא נטענה. רענן את הדף ונסה שוב.');return null;}
+  if(!document.getElementById('pdf-client').value.trim()){
+    alert('חסר שם לקוח. הוא מופיע בכותרת של ההצעה.');
+    document.getElementById('pdf-client').focus(); return null;
+  }
+  const packed=LZString.compressToEncodedURIComponent(JSON.stringify(buildProposalSnapshot()));
+  const base=new URL('proposal.html',location.href); base.hash=''; base.search='';
+  return base.href+'#p='+packed;
+}
+function previewProposalLink(){ const u=buildProposalLink(); if(u)window.open(u,'_blank'); }
+async function copyProposalLink(){
+  const u=buildProposalLink(); if(!u)return;
+  try{await navigator.clipboard.writeText(u);}catch(e){copyDsFallback(u);}
+  const b=document.getElementById('copy-link-btn'), t=b.textContent;
+  b.textContent='✓ הקישור הועתק'; setTimeout(()=>b.textContent=t,2000);
+}
+function sendProposalWhatsApp(){
+  const u=buildProposalLink(); if(!u)return;
+  const contact=(document.getElementById('pdf-contact').value||'').trim().split(/[\s,]+/)[0]||'';
+  const msg=proposalLang==='en'
+    ? `Hi${contact?' '+contact:''}, here's the proposal I put together for you at Arbox. You can choose the billing, payment processing and add-ons, and the price updates:\n${u}`
+    : `היי${contact?' '+contact:''}, זאת ההצעה שהכנתי בשבילכם ב-Arbox. אפשר לבחור בה סוג חיוב, סליקה ותוספים, והמחיר מתעדכן:\n${u}`;
+  const ph=normPhone(document.getElementById('pdf-client-phone').value);
+  window.open(`https://wa.me/${ph}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
 function openDealSummary(){
   const hasPkg=!!selPkg;
   document.getElementById('ds-no-pkg').style.display=hasPkg?'none':'block';
