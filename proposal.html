@@ -22,6 +22,8 @@
   --line:#E1E6EF;
   --muted:#5A6377;
   --white:#FFFFFF;
+  --wa:#0B6E5F;
+  --wa-bg:#EFE8DE;
   color-scheme:light;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
@@ -40,7 +42,6 @@ button,input{font:inherit;color:inherit}
 .top{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:24px 0}
 .logo{height:30px;width:auto}
 .top-meta{font-size:14px;color:var(--muted);text-align:end;line-height:1.5}
-
 .expired{background:var(--navy);color:#fff;padding:12px 24px;text-align:center;font-weight:500}
 
 /* hero: the client's name carries the page */
@@ -67,18 +68,21 @@ button,input{font:inherit;color:inherit}
 .seg input:focus-visible+span{outline:2.5px solid var(--blue);outline-offset:2px}
 .save-note{font-size:14px;color:var(--blue-ink);font-weight:500;margin-top:8px}
 
-/* package */
+/* package + explained features */
 .pkg{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:26px 28px}
-.pkg-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.pkg-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:20px}
 .pkg-head h3{font-size:30px;font-weight:900;letter-spacing:-.02em}
 .pkg-price{font-size:22px;font-weight:800}
 .pkg-price .u{font-size:14px;font-weight:500;color:var(--muted)}
-.feats-title{font-size:15px;font-weight:700;margin-bottom:10px}
-.feats{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px 28px}
-.feats li{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.45}
-.feats li.off{color:#98a0b3}
-.feats .ic{flex-shrink:0;width:20px;height:20px;margin-top:1px}
-.feats .val{font-weight:700;color:var(--navy);margin-inline-start:4px}
+.feats-title{font-size:16px;font-weight:800;margin-bottom:14px}
+.feats{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:18px 32px}
+.feats li{display:flex;gap:12px;align-items:flex-start}
+.feats .ic{flex-shrink:0;width:22px;height:22px;margin-top:1px}
+.feat-t{font-weight:700;font-size:15.5px;line-height:1.35}
+.feat-t .val{color:var(--blue-ink)}
+.feat-d{font-size:14px;color:var(--muted);line-height:1.5;margin-top:3px}
+.not-incl{margin-top:22px;padding-top:14px;border-top:1px dashed var(--line);font-size:14px;color:var(--muted)}
+.not-incl strong{color:var(--navy);font-weight:700}
 
 /* option cards (payment + add-ons) */
 .opts{display:grid;gap:12px}
@@ -89,12 +93,12 @@ button,input{font:inherit;color:inherit}
 .opt.is-on{border-color:var(--navy);box-shadow:0 0 0 1px var(--navy)}
 .opt:has(input:focus-visible){outline:2.5px solid var(--blue);outline-offset:3px}
 .opt-main{flex:1;min-width:0}
-.opt-name{font-weight:700;font-size:16px;line-height:1.35}
-.opt-note{font-size:13.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.opt-name{display:block;font-weight:700;font-size:16px;line-height:1.35}
+.opt-note{display:block;font-size:14px;color:var(--muted);margin-top:3px;line-height:1.5}
+.opt-unit{display:block;font-size:13px;color:var(--blue-ink);margin-top:3px}
 .opt-price{font-weight:800;white-space:nowrap;font-size:16px}
 .opt-price .u{font-weight:500;font-size:13px;color:var(--muted)}
 .opt.static{cursor:default}
-/* radio dot and check box drawn by hand so they read the same everywhere */
 .mark{flex-shrink:0;width:22px;height:22px;border:1.5px solid #b5bfd3;margin-top:1px;display:grid;place-items:center;transition:background .2s,border-color .2s}
 .mark.radio{border-radius:50%}
 .mark.check{border-radius:7px}
@@ -103,6 +107,8 @@ button,input{font:inherit;color:inherit}
 .opt.is-on .mark svg{opacity:1}
 .mark.radio::after{content:"";width:8px;height:8px;border-radius:50%;background:#fff;opacity:0}
 .opt.is-on .mark.radio::after{opacity:1}
+.bill-note{display:flex;gap:10px;align-items:flex-start;background:var(--peach-soft);border:1px solid #F1D6B4;border-radius:14px;padding:12px 16px;font-size:14.5px;line-height:1.55;margin-bottom:14px}
+.bill-note svg{flex-shrink:0;margin-top:2px}
 
 /* fixed lines + one-time */
 .lines{background:var(--white);border:1px solid var(--line);border-radius:16px;overflow:hidden}
@@ -127,12 +133,17 @@ button,input{font:inherit;color:inherit}
 .sum-deal{margin-top:10px;font-size:15px;line-height:1.5;color:var(--peach);font-weight:500}
 .sum-annual{margin-top:8px;font-size:15px;color:#dbe3f5}
 .sum-list{margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);display:grid;gap:8px;font-size:14.5px}
-.sum-list .r{display:flex;justify-content:space-between;gap:12px;color:#dbe3f5}
-.sum-list .r span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
-.sum-list .r.disc{color:var(--peach)}
+.r{display:flex;justify-content:space-between;gap:12px;color:#dbe3f5}
+.r span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.r.disc{color:var(--peach)}
+.sum-ad{margin-top:18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:14px 16px;display:grid;gap:7px;font-size:14px}
+.sum-ad h4{font-size:15px;font-weight:800;color:#fff}
+.sum-ad .hint{font-size:12.5px;color:#9fb0d6;margin-top:-4px;margin-bottom:2px}
+.sum-ad .tot{color:#fff;font-weight:800;border-top:1px solid rgba(255,255,255,.14);padding-top:8px;margin-top:2px}
+.sum-ad .grand{color:var(--peach);font-weight:700}
 .sum-extra{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.14);font-size:14px;color:#c9d4ee;display:grid;gap:6px}
 .sum-extra strong{color:#fff;font-weight:700}
-.vat-row{margin-top:18px;display:flex;align-items:center;gap:10px;font-size:14.5px;color:#dbe3f5;cursor:pointer;width:fit-content}
+.vat-row{position:relative;margin-top:18px;display:flex;align-items:center;gap:10px;font-size:14.5px;color:#dbe3f5;cursor:pointer;width:fit-content}
 .vat-row input{position:absolute;opacity:0;width:1px;height:1px}
 .toggle{width:40px;height:24px;border-radius:999px;background:rgba(255,255,255,.22);position:relative;transition:background .2s;flex-shrink:0}
 .toggle::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
@@ -147,6 +158,158 @@ button,input{font:inherit;color:inherit}
 .cta-sub{font-size:13px;color:#9fb0d6;text-align:center;margin-top:8px}
 .pdf-btn{display:block;width:100%;margin-top:12px;background:transparent;border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:14px;padding:11px;font-weight:700;font-size:15px;cursor:pointer}
 .pdf-btn:hover{background:rgba(255,255,255,.08)}
+
+/* ── showcases ── */
+.showcase{padding-block:80px 40px;border-top:1px solid var(--line)}
+.showcase-head h2{font-size:clamp(30px,4.4vw,48px);font-weight:900;letter-spacing:-.025em;line-height:1.1;max-width:18ch}
+.showcase-head p{color:var(--muted);font-size:18px;margin-top:12px;max-width:52ch}
+.show{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:64px;align-items:center;padding-block:64px;border-top:1px solid var(--line)}
+.showcase-head+.show{border-top:none}
+.show.flip .show-dev{order:-1}
+.tag{display:inline-block;font-size:13.5px;font-weight:700;color:var(--blue-ink);background:#E5EDFF;border-radius:999px;padding:3px 12px;margin-bottom:14px}
+.tag.add{color:#8a5a1f;background:var(--peach-soft)}
+.show h3{font-size:clamp(24px,3vw,32px);font-weight:900;letter-spacing:-.02em;line-height:1.2;max-width:20ch}
+.show .lead{font-size:17px;color:#26314d;margin-top:12px;max-width:46ch;line-height:1.7}
+.show ul{list-style:none;margin-top:18px;display:grid;gap:9px}
+.show li{display:flex;gap:10px;font-size:15.5px;line-height:1.5}
+.show li::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue);margin-top:9px;flex-shrink:0}
+.show-actions{display:flex;gap:8px 16px;flex-wrap:wrap;margin-top:24px;align-items:center}
+.chip-btn{border:1.5px solid var(--navy);background:transparent;border-radius:999px;padding:9px 18px;font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,color .2s}
+.chip-btn.on{background:var(--navy);color:#fff}
+.link-btn{background:none;border:none;color:var(--blue-ink);font-weight:700;font-size:15px;cursor:pointer;padding:6px 0;text-decoration:underline;text-underline-offset:3px}
+.try{font-size:14.5px;color:var(--blue-ink);font-weight:500}
+.demo-note{font-size:12.5px;color:#98a0b3;margin-top:14px}
+.swatches{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.swatch{width:38px;height:38px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px var(--line);cursor:pointer;transition:transform .15s}
+.swatch[aria-pressed=true]{box-shadow:0 0 0 2.5px var(--navy);transform:scale(1.08)}
+
+/* phone */
+.show-dev{display:flex;justify-content:center}
+.phone{width:290px;height:600px;background:#0D1526;border-radius:46px;padding:11px;position:relative;flex-shrink:0;box-shadow:0 46px 80px -34px rgba(8,24,56,.55),inset 0 0 0 1.5px #2b3858}
+.scr{position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:#fff;display:flex;flex-direction:column;font-size:13.5px;line-height:1.4}
+.island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:88px;height:26px;border-radius:20px;background:#000;z-index:20}
+.sbar{direction:ltr;height:46px;flex-shrink:0;display:flex;justify-content:space-between;align-items:flex-end;padding:0 26px 6px;font-size:13px;font-weight:700;position:relative;z-index:2}
+.sbar svg{height:11px;width:auto}
+.tap{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(8,24,56,.22);pointer-events:none;opacity:0;transform:scale(.4);z-index:30}
+.tap.go{animation:tap .55s ease-out}
+@keyframes tap{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(.8)}100%{opacity:0;transform:scale(1.4)}}
+
+/* booking app */
+.ab-head{padding:6px 18px 10px}
+.ab-studio{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ab-title{font-size:22px;font-weight:900;letter-spacing:-.02em}
+.ab-days{display:flex;gap:6px;padding:0 14px 12px}
+.ab-day{flex:1;text-align:center;border-radius:12px;padding:6px 0;background:#F1F4F9;font-size:11.5px;color:var(--muted)}
+.ab-day b{display:block;font-size:16px;color:var(--navy)}
+.ab-day.on{background:var(--navy);color:#c9d4ee}
+.ab-day.on b{color:#fff}
+.ab-list{flex:1;padding:0 12px;display:grid;gap:9px;align-content:start}
+.cls{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px 11px}
+.cls-time{font-weight:800;font-size:14px;width:42px;flex-shrink:0;text-align:center}
+.cls-main{flex:1;min-width:0}
+.cls-name{font-weight:700;font-size:13.5px}
+.cls-meta{font-size:11.5px;color:var(--muted)}
+.cls-btn{border:none;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:800;background:var(--blue);color:#fff;cursor:pointer;white-space:nowrap;transition:background .2s}
+.cls-btn.done{background:#E3F6EA;color:#137a3a}
+.cls-btn:disabled{background:#EEF0F4;color:#98a0b3;cursor:default}
+.toast{position:absolute;inset-inline:12px;bottom:18px;background:var(--navy);color:#fff;border-radius:14px;padding:11px 13px;font-size:12.5px;display:flex;gap:9px;align-items:center;transform:translateY(130%);transition:transform .35s cubic-bezier(.2,.8,.2,1);z-index:10}
+.toast.show{transform:none}
+.toast i{width:22px;height:22px;border-radius:50%;background:#2fb760;display:grid;place-items:center;flex-shrink:0;font-style:normal}
+
+/* whatsapp-style chat */
+.wa-head{background:var(--wa);color:#fff;display:flex;align-items:center;gap:9px;padding:8px 12px 10px;margin-top:-46px;padding-top:54px}
+.wa-av{width:34px;height:34px;border-radius:50%;background:var(--peach);color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:13px;flex-shrink:0}
+.wa-name{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wa-sub{font-size:11px;opacity:.8}
+.wa-body{flex:1;background:var(--wa-bg);padding:12px 10px;display:flex;flex-direction:column;gap:7px;overflow:hidden}
+.wa-day{align-self:center;background:#fff;border-radius:8px;padding:2px 10px;font-size:11px;color:var(--muted);box-shadow:0 1px 1px rgba(0,0,0,.06)}
+.bub{max-width:84%;background:#fff;border-radius:12px;padding:7px 10px 5px;font-size:13px;box-shadow:0 1px 1px rgba(0,0,0,.08);align-self:flex-start;animation:pop .28s ease-out}
+.bub.me{background:#DCF8C6;align-self:flex-end}
+.bub time{display:block;text-align:end;font-size:10px;color:#8a94a6;margin-top:2px}
+.bub .lnk{display:block;margin-top:6px;background:#F2F5F9;border-radius:9px;padding:8px 10px;font-weight:700;color:var(--navy);text-align:center;border:none;width:100%;cursor:pointer}
+.typing{align-self:flex-start;background:#fff;border-radius:12px;padding:9px 12px;display:flex;gap:4px}
+.typing span{width:6px;height:6px;border-radius:50%;background:#9aa3b5;animation:dot 1s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{transform:none;opacity:.5}30%{transform:translateY(-3px);opacity:1}}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+
+/* payment sheet */
+.sheet{position:absolute;inset-inline:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;padding:10px 16px 20px;box-shadow:0 -12px 40px rgba(8,24,56,.22);transform:translateY(105%);transition:transform .4s cubic-bezier(.2,.8,.2,1);z-index:12}
+.sheet.open{transform:none}
+.grab{width:38px;height:4px;border-radius:4px;background:#d5dbe6;margin:0 auto 12px}
+.sh-merchant{font-size:12px;color:var(--muted);text-align:center}
+.sh-amt{font-size:34px;font-weight:900;text-align:center;letter-spacing:-.02em;line-height:1.15}
+.sh-desc{font-size:12.5px;color:var(--muted);text-align:center;margin-bottom:12px}
+.sh-m{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:9px 11px;margin-bottom:7px;cursor:pointer;width:100%;background:#fff;text-align:start;font-size:13px;font-weight:700}
+.sh-m.on{border-color:var(--navy)}
+.sh-m .ico{width:30px;height:20px;border-radius:5px;display:grid;place-items:center;font-size:10px;font-weight:900;flex-shrink:0}
+.sh-m .rd{margin-inline-start:auto;width:16px;height:16px;border-radius:50%;border:1.5px solid #b5bfd3}
+.sh-m.on .rd{border:5px solid var(--navy)}
+.sh-pay{width:100%;margin-top:6px;border:none;border-radius:12px;background:var(--navy);color:#fff;font-weight:800;padding:12px;font-size:14.5px;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:8px}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sh-done{position:absolute;inset:0;background:#fff;border-radius:22px 22px 0 0;display:grid;place-items:center;text-align:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.sh-done.show{opacity:1;pointer-events:auto}
+.ok-ring{width:62px;height:62px;border-radius:50%;background:#2fb760;display:grid;place-items:center;margin:0 auto 12px;transform:scale(.5);transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.show .ok-ring.go,.sh-done.show .ok-ring{transform:none}
+.sh-done b{display:block;font-size:17px}
+.sh-done span{font-size:12.5px;color:var(--muted)}
+
+/* access card */
+.acc{flex:1;display:flex;flex-direction:column;align-items:center;padding:4px 20px 20px;background:linear-gradient(180deg,#fff 0%,#F3F6FB 100%)}
+.acc-title{font-size:20px;font-weight:900;align-self:stretch}
+.acc-sub{font-size:12px;color:var(--muted);align-self:stretch;margin-bottom:22px}
+.qr-box{position:relative;width:196px;height:196px;padding:14px;background:#fff;border-radius:22px;box-shadow:0 10px 30px -12px rgba(8,24,56,.3);overflow:hidden}
+.qr-box svg{width:100%;height:100%}
+.beam{position:absolute;inset-inline:10px;height:3px;top:14px;border-radius:3px;background:var(--blue);box-shadow:0 0 14px 3px rgba(79,135,255,.55);opacity:0}
+.beam.go{opacity:1;animation:beam 1.5s ease-in-out 2}
+@keyframes beam{0%{top:14px}50%{top:178px}100%{top:14px}}
+.acc-name{margin-top:20px;font-weight:800;font-size:16px}
+.acc-plan{font-size:12.5px;color:var(--muted)}
+.acc-ok{position:absolute;inset:0;background:#1f9d55;color:#fff;display:grid;place-items:center;text-align:center;opacity:0;pointer-events:none;transition:opacity .35s;z-index:15}
+.acc-ok.show{opacity:1}
+.acc-ok .ok-ring{background:#fff}
+.acc-ok.show .ok-ring{transform:none}
+.acc-ok b{display:block;font-size:22px;font-weight:900}
+.acc-ok span{font-size:13.5px;opacity:.9}
+
+/* branded app */
+.br{--brand:#4F87FF;flex:1;display:flex;flex-direction:column;background:#F5F7FB;transition:--brand .3s}
+.br-head{background:var(--brand);color:#fff;padding:54px 18px 22px;margin-top:-46px;border-radius:0 0 26px 26px;transition:background .35s}
+.br-logo{width:40px;height:40px;border-radius:12px;background:#fff;color:var(--brand);display:grid;place-items:center;font-weight:900;font-size:15px;transition:color .35s}
+.br-row{display:flex;gap:10px;align-items:center}
+.br-name{font-weight:800;font-size:15px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.br-hi{margin-top:16px;font-size:20px;font-weight:900}
+.br-next{margin:-14px 14px 0;background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 8px 24px -10px rgba(8,24,56,.25);position:relative}
+.br-next small{font-size:11px;color:var(--muted)}
+.br-next b{display:block;font-size:14px}
+.br-next .pill{position:absolute;inset-inline-end:12px;top:14px;background:var(--brand);color:#fff;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:800;transition:background .35s}
+.br-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}
+.br-tile{background:#fff;border-radius:14px;padding:12px;font-weight:700;font-size:12.5px}
+.br-tile i{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:color-mix(in srgb,var(--brand) 15%,#fff);color:var(--brand);margin-bottom:8px;transition:background .35s,color .35s}
+.br-tile i svg{width:17px;height:17px}
+.br-tabs{margin-top:auto;display:flex;justify-content:space-around;padding:10px 0 16px;background:#fff;border-top:1px solid var(--line)}
+.br-tabs span{width:22px;height:4px;border-radius:4px;background:#d5dbe6}
+.br-tabs span:first-child{background:var(--brand)}
+
+/* dashboard tablet */
+.tab{width:min(560px,100%);aspect-ratio:4/3;background:#0D1526;border-radius:30px;padding:12px;box-shadow:0 46px 80px -34px rgba(8,24,56,.55),inset 0 0 0 1.5px #2b3858}
+.dash{width:100%;height:100%;background:#fff;border-radius:20px;padding:20px 22px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.dash-top{display:flex;justify-content:space-between;align-items:baseline}
+.dash-top b{font-size:18px;font-weight:900}
+.dash-top span{font-size:12px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi{background:#F4F6FA;border-radius:14px;padding:10px 12px}
+.kpi small{display:block;font-size:11.5px;color:var(--muted)}
+.kpi b{font-size:21px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.kpi em{display:block;font-style:normal;font-size:11px;color:#1f9d55;font-weight:700}
+.chart{flex:1;display:flex;align-items:flex-end;gap:12px;padding:8px 4px 0;border-bottom:1.5px solid var(--line);min-height:0}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}
+.bar i{display:block;width:100%;max-width:38px;height:0;border-radius:8px 8px 3px 3px;background:#C9D8FF;transition:height .9s cubic-bezier(.2,.8,.2,1)}
+.bar:last-child i{background:var(--blue)}
+.bar span{font-size:10.5px;color:var(--muted)}
+.chart-l{display:flex;gap:12px;padding:0 4px}
+.chart-l span{flex:1;text-align:center;font-size:10.5px;color:var(--muted)}
 
 /* content sections */
 .story{background:var(--white);border-top:1px solid var(--line)}
@@ -184,20 +347,21 @@ details.small ul{margin-top:14px;padding-inline-start:20px;color:var(--muted);fo
 .closing .logo{height:26px;margin-top:22px}
 .closing .cta{margin-top:0;padding-inline:32px}
 
-/* mobile price bar */
-.bar{display:none}
-
+.bar-m{display:none}
 .invalid{min-height:100vh;display:grid;place-items:center;text-align:center;padding:32px}
 .invalid p{margin-top:20px;font-size:18px;max-width:30ch}
 
 @media (max-width:980px){
   .deal{grid-template-columns:1fr;gap:8px}
   .sum-wrap{position:static}
-  .bar{display:flex;position:fixed;inset-inline:0;bottom:0;z-index:20;background:var(--navy);color:#fff;padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -8px 30px rgba(8,24,56,.25);transition:transform .25s}
-  .bar.hide{transform:translateY(110%)}
-  .bar .p{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.1}
-  .bar .p small{font-size:13px;font-weight:500;color:#c9d4ee}
-  .bar button{background:var(--peach);color:var(--navy);border:none;border-radius:12px;padding:10px 18px;font-weight:800;cursor:pointer}
+  .show{grid-template-columns:1fr;gap:36px;padding-block:52px}
+  .show.flip .show-dev{order:0}
+  .bar-m{display:flex;position:fixed;inset-inline:0;bottom:0;z-index:40;background:var(--navy);color:#fff;padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -8px 30px rgba(8,24,56,.25);transition:transform .25s}
+  .bar-m.hide{transform:translateY(110%)}
+  .bar-m .p{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.1}
+  .bar-m .p small{font-size:13px;font-weight:500;color:#c9d4ee}
+  .bar-m .p .ad{display:block;font-size:12.5px;font-weight:500;color:var(--peach)}
+  .bar-m button{background:var(--peach);color:var(--navy);border:none;border-radius:12px;padding:10px 18px;font-weight:800;cursor:pointer}
   .closing .wrap{padding-bottom:140px}
 }
 @media (max-width:640px){
@@ -211,15 +375,20 @@ details.small ul{margin-top:14px;padding-inline-start:20px;color:var(--muted);fo
   .steps li::after{display:none}
   .closing .wrap{grid-template-columns:1fr}
   .sum-price .num{font-size:52px}
+  .showcase{padding-top:56px}
+  .dash{padding:12px;gap:10px}
+  .kpi b{font-size:15px}
+  .kpi small{font-size:10px}
+  .tab{aspect-ratio:3/3.2;border-radius:24px;padding:9px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 
 @media print{
   @page{size:A4;margin:14mm}
   :root{padding:0}
   body{background:#fff;font-size:12.5px;padding:0!important}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .bar,.seg,.vat-row,.cta,.cta-sub,.pdf-btn,.no-print,.opt:not(.is-on),.feats li.off{display:none!important}
+  .bar-m,.seg,.vat-row,.cta,.cta-sub,.pdf-btn,.no-print,.opt:not(.is-on),.showcase,.save-note,.closing .logo{display:none!important}
   .print-only{display:block!important}
   .hero{padding-block:18px 14px}
   .hero h1{font-size:34px}
@@ -228,12 +397,12 @@ details.small ul{margin-top:14px;padding-inline-start:20px;color:var(--muted);fo
   .sum-wrap{position:static;margin-top:16px;break-inside:avoid}
   .sum{border-radius:16px;padding:20px}
   .sum-price .num{font-size:40px}
-  .block{padding-block:16px;break-inside:avoid}
-  .opt,.pkg,.lines{break-inside:avoid}
+  .block{padding-block:16px}
+  .opt,.pkg,.lines,.feats li{break-inside:avoid}
+  .feats{gap:10px 24px}
   .part{padding-block:22px;break-inside:avoid}
   .part h2{font-size:22px;margin-bottom:12px}
   .why p,.why h2+p{font-size:13px}
-  .save-note,.closing .logo{display:none}
   .clients{font-size:16px}
   .closing{background:#fff;color:var(--navy);border-top:2px solid var(--navy)}
   .closing .wrap{padding-block:20px}
@@ -298,6 +467,63 @@ Technical support: a dedicated support team is available via in-app chat. Hours:
   }
 };
 
+/* ══════════════ EXPLANATIONS SHOWN TO THE CLIENT — edit freely ══════════════
+   Features are matched by their key in the calculator (labels are a fallback for older links).
+   Add-ons are matched by a pattern on their name. Add-on descriptions in the calculator are
+   internal notes and are never shown to the client — these texts are. */
+const FEATURE_INFO = {
+  users:        {l:['מספר משתמשים','Users'],
+                 he:'כל הצוות עובד במערכת, כל אחד עם משתמש והרשאות משלו.',
+                 en:'Your whole team works in the system, each with their own login and permissions.'},
+  crm:          {l:['פלטפורמת ניהול לקוחות CRM','CRM platform'],
+                 he:'כל הלקוחות, המנויים, ההיסטוריה והמסמכים במקום אחד, עם חיפוש וסינון מהירים.',
+                 en:'All your customers, memberships, history and documents in one place, easy to search and filter.'},
+  api:          {l:['שימוש ב-API','API access'],
+                 he:'חיבור של Arbox למערכות אחרות שאתם עובדים איתן, דרך API פתוח.',
+                 en:'Connect Arbox to the other tools you use, through an open API.'},
+  brandedApp:   {l:['אפליקציה ממותגת — Arbox Brand','Branded app (Arbox Brand)'],
+                 he:'אפליקציה בחנויות עם השם, הלוגו והצבעים של העסק שלכם.',
+                 en:'An app in the stores with your business name, logo and colors.'},
+  accessControl:{l:['שירות בקרת כניסה','Access control service'],
+                 he:'כניסה חכמה לעסק, שמאשרת רק לקוחות עם מנוי בתוקף.',
+                 en:'Smart entry that only lets in customers with an active membership.'},
+  support:      {l:['תמיכה','Support'],
+                 he:'צוות תמיכה ייעודי שזמין בצ׳אט מתוך המערכת.',
+                 en:'A dedicated support team, available through chat inside the system.'},
+  onlineLinks:  {l:['לינקים און ליין — לו״ז, הרשמות ורכישות','Online links — schedule, signups & purchases'],
+                 he:'קישורים לאתר ולרשתות, שדרכם לקוחות רואים את מערכת השעות, נרשמים ורוכשים בעצמם.',
+                 en:'Links for your website and social pages where customers see the schedule, sign up and buy on their own.'},
+  calendar:     {l:['יומן מותאם לפי סוגי פעילות','Custom calendar by activity type'],
+                 he:'יומן שמותאם לסוגי הפעילות שלכם: שיעורים קבוצתיים, אימונים אישיים ופגישות.',
+                 en:'A calendar built around your activity types: group classes, personal sessions and appointments.'},
+  bookings:     {l:['ניהול רישום לפגישות, חוגים, סדנאות וקורסים','Booking management — sessions, classes & workshops'],
+                 he:'הרשמה עצמית ומעקב אחרי משתתפים בפגישות, חוגים, סדנאות וקורסים.',
+                 en:'Self sign-up and attendee tracking for sessions, classes, workshops and courses.'},
+  reports:      {l:['דו״חות ניהול ובקרת חדרים','Management reports & room control'],
+                 he:'דוחות על הכנסות, נוכחות ומנויים, ובקרה על תפוסת החדרים.',
+                 en:'Reports on revenue, attendance and memberships, plus room occupancy control.'},
+  messaging:    {l:['שליחת הודעות Push ואימיילים','Push notifications & email messaging'],
+                 he:'הודעות Push ומיילים ללקוחות, לאחד או לקבוצה שלמה.',
+                 en:'Push notifications and emails to one customer or a whole group.'},
+  automation:   {l:['אוטומציית משימות והודעות','Task & message automation'],
+                 he:'הודעות ומשימות שיוצאות לבד, למשל לפני שמנוי מסתיים.',
+                 en:'Messages and tasks that go out on their own, for example before a membership ends.'},
+};
+const ADDON_INFO = [
+  {m:/סניף|branch/i,          he:'ניהול סניף נוסף מאותו חשבון, עם יומן, לקוחות ודוחות לכל סניף.', en:'Run another location from the same account, with its own calendar, customers and reports.'},
+  {m:/whatsapp/i, demo:'wa',  he:'הודעות ותזכורות ללקוחות ישירות לוואטסאפ, מתוך המערכת.', en:'Messages and reminders sent to customers on WhatsApp, straight from the system.'},
+  {m:/access|בקרת כניסה/i, demo:'access', he:'כניסה חכמה לעסק, שמאשרת רק לקוחות עם מנוי בתוקף.', en:'Smart entry that only lets in customers with an active membership.'},
+  {m:/חדרים|rooms/i,           he:'שיבוץ שיעורים ופגישות לחדרים, בלי התנגשויות.', en:'Assign classes and sessions to rooms, with no double bookings.'},
+  {m:/חוגים|courses/i,         he:'ניהול חוגים וקבוצות קבועות לאורך תקופה, כולל רישום ותשלומים.', en:'Manage recurring courses and fixed groups, including sign-ups and payments.'},
+  {m:/הוצאות.*בסיסי/,          he:'מעקב אחרי הוצאות העסק, עם מספר וואטסאפ אחד לשליחת קבלות.', en:'Track business expenses, with one WhatsApp number for sending receipts.'},
+  {m:/הוצאות.*פרו/,            he:'מעקב אחרי הוצאות העסק, עם עד 3 מספרי וואטסאפ וחיבור ל-Gmail.', en:'Track business expenses, with up to 3 WhatsApp numbers and a Gmail connection.'},
+  {m:/הוצאות|expense/i,        he:'מעקב אחרי הוצאות העסק במקום אחד.', en:'Track your business expenses in one place.'},
+  {m:/הפקדות|deposit/i,        he:'מעקב אחרי הפקדות לבנק, ותיאום שלהן מול התשלומים במערכת.', en:'Track bank deposits and match them against payments in the system.'},
+  {m:/מלאי|inventory/i,        he:'ניהול מוצרים ומלאי, ומכירה שלהם מתוך המערכת.', en:'Manage products and stock, and sell them from the system.'},
+  {m:/לוקר|locker/i,           he:'ניהול והקצאה של לוקרים ללקוחות.', en:'Manage and assign lockers to customers.'},
+  {m:/שכר|payroll/i,           he:'חישוב שכר לצוות לפי הפעילות שלהם במערכת.', en:'Calculate staff pay based on their activity in the system.'},
+];
+
 const T = {
   he:{
     dir:'rtl', locale:'he-IL',
@@ -310,14 +536,16 @@ const T = {
     monthly:'חודשי', annual:'שנתי מראש',
     save:x=>`בתשלום שנתי חוסכים ${x} בשנה`,
     perMonth:'לחודש',
-    included:n=>`מה כלול ב-${n}`,
-    payTitle:'סליקה', paySub:'גבייה מהלקוחות שלך מתוך Arbox, עם חשבוניות אוטומטיות',
+    included:n=>`מה מקבלים ב-${n}`, notIncluded:n=>`לא כלול ב-${n}:`,
+    payTitle:'סליקה', paySub:'גבייה מהלקוחות שלך מתוך Arbox',
     payNone:'בלי סליקה כרגע', payNoneNote:'אפשר להוסיף סליקה בכל שלב',
     payIncluded:'כלול בהצעה',
     growNote:(x,f)=>`בנוסף ${x} לחודש ישירות ל-Grow, ועמלה של ${f}% לעסקה מעל 100 עסקאות בחודש`,
     pelecardNote:(x,s)=>`בנוסף ${x} לחודש ו-${s} הקמה, ישירות לפלאכארד`,
     icreditNote:'פתרון סליקה משולב, תומך במגוון כרטיסי אשראי',
-    addonsTitle:'תוספים', addonsSub:'מסמנים מה שמתאים לך, והמחיר מתעדכן',
+    addonsTitle:'תוספים', addonsSub:'מסמנים מה שמתאים לך',
+    addonsBill:'התוספים מחויבים בחיוב חודשי נפרד, בנוסף למחיר החבילה.',
+    addonsBillA:'התוספים מחויבים בחיוב חודשי נפרד, ולא נכללים בתשלום השנתי.',
     alsoTitle:'כלול גם בהצעה',
     onetimeTitle:'תשלום חד-פעמי', onetimeSub:'משולם פעם אחת בתחילת העבודה, בנפרד מהמנוי',
     onetimeTotal:'סה״כ חד-פעמי', free:'ללא עלות',
@@ -330,19 +558,69 @@ const T = {
     dealA:(p,n,after)=>`${p}% הנחה ${n===1?'בשנה הראשונה':`ב-${n} השנים הראשונות`}. אחר כך ${after} לחודש.`,
     annualPay:x=>`תשלום שנתי של ${x}`,
     pkgLine:n=>`חבילת ${n}`, payLine:n=>`סליקה ${n}`, discLine:p=>`הנחה ${p}%`, service:'שירות',
+    adTitle:'עלויות נוספות בחיוב חודשי', adHint:'לפי התוספים שבחרת',
+    adTotal:'סה״כ תוספים', adGrand:x=>`סה״כ חודשי עם התוספים: ${x}`,
     directTitle:'משולם ישירות לספק הסליקה',
     onetimeSum:x=>`<strong>${x}</strong> חד-פעמי בתחילת העבודה`,
     cta:'אני רוצה להתקדם', ctaSub:r=>`תיפתח הודעת וואטסאפ ${r?`ל${r} `:''}עם מה שבחרת`,
-    pdf:'שמירה כ-PDF', toSummary:'לסיכום',
+    pdf:'שמירה כ-PDF', toSummary:'לסיכום', barAd:x=>`ועוד ${x} תוספים`,
     whyTitle:'למה Arbox', valueTitle:'מה Arbox עושה בשבילך', clientsTitle:'עסקים שכבר עובדים עם Arbox',
     stepsTitle:'איך מתחילים', smallTitle:'האותיות הקטנות',
     signOff:'לשיתוף פעולה מוצלח,', team:'צוות Arbox',
     invalid:'הקישור להצעה לא שלם. אפשר לבקש מהנציג לשלוח אותו שוב.',
     printBilling:b=>`סוג חיוב: ${b==='annual'?'שנתי, תשלום מראש':'חודשי'}`,
     wa:(o)=>[`היי${o.rep?' '+o.rep:''}, כאן ${o.client||'לקוח'}.`,'עברתי על ההצעה ואני רוצה להתקדם עם:',
-      `חבילת ${o.pkg}, חיוב ${o.billing==='annual'?'שנתי מראש':'חודשי'}`,
-      `סליקה: ${o.pay||'בלי סליקה'}`, `תוספים: ${o.addons.length?o.addons.join(', '):'בלי תוספים'}`,
-      `סה״כ ${o.price} לחודש, ${o.vat?'כולל':'לפני'} מע״מ`,'',o.url].join('\n'),
+      `חבילת ${o.pkg}, חיוב ${o.billing==='annual'?'שנתי מראש':'חודשי'}: ${o.price} לחודש`,
+      `סליקה: ${o.pay||'בלי סליקה'}`,
+      o.addons.length?`תוספים: ${o.addons.join(', ')} (${o.adPrice} לחודש, בחיוב נפרד)`:'בלי תוספים',
+      `המחירים ${o.vat?'כולל':'לפני'} מע״מ`,'',o.url].join('\n'),
+    /* showcase */
+    showTitle:'ככה זה ייראה אצלכם',
+    showSub:'כמה מהדברים שתקבלו, בהדמיה. אפשר ללחוץ ולנסות.',
+    demoNote:'הדמיה להמחשה',
+    replay:'הפעלה מחדש',
+    tagIncluded:'כלול בחבילה', tagPro:'כלול ב-Professional', tagAddon:'תוסף', tagPay:'עם מודול סליקה', tagInOffer:'כלול בהצעה',
+    addAddon:'הוספת התוסף להצעה', addedAddon:'התוסף נוסף להצעה ✓',
+    customer:'נועה', time:'9:41',
+    book:{h:'הלקוחות נרשמים לבד, מהטלפון',
+      lead:'אפליקציית Arbox ללקוחות שלכם: רואים את מערכת השעות, נרשמים לשיעור או לפגישה, בלי לשלוח לכם הודעה.',
+      li:['הרשמה וביטול בלחיצה','מקומות פנויים מתעדכנים מיד','רכישת מנויים וכרטיסיות מהאפליקציה'],
+      try:'נסו ללחוץ על "הרשמה"',
+      title:'מערכת שעות', join:'הרשמה', joined:'רשומה ✓', full:'מלא',
+      spots:n=>n===1?'מקום אחרון':`${n} מקומות פנויים`, coach:n=>`עם ${n}`,
+      toast:(c,t)=>`נרשמת ל${c} מחר ב-${t}`,
+      classes:[['07:00','פילאטיס מכשירים','שירה',3],['08:30','יוגה זרימה','אורי',1],['18:00','אימון פונקציונלי','דני',0],['19:30','פילאטיס מזרן','שירה',6]]},
+    brand:{h:'אפליקציה עם השם שלכם',
+      lead:c=>`ב-Arbox Brand הלקוחות מורידים אפליקציה עם השם, הלוגו והצבעים של ${c||'העסק שלכם'}.`,
+      li:['אייקון ושם משלכם בחנויות','הצבעים והמיתוג שלכם בכל מסך','כל היכולות של אפליקציית Arbox'],
+      try:'בחרו צבע וראו איך זה ייראה', color:'צבע',
+      hi:n=>`בוקר טוב, ${n}`, next:'השיעור הבא שלך', nextCls:'יוגה זרימה, מחר 08:30', pill:'רשומה',
+      tiles:['מערכת שעות','המנוי שלי','חנות','הודעות']},
+    pay:{h:'גבייה בלי לרדוף אחרי אף אחד',
+      lead:'שולחים ללקוח קישור לתשלום, והוא משלם מהנייד תוך שניות. התשלום נרשם במערכת אוטומטית.',
+      li:['קישור תשלום שנשלח מתוך המערכת','תשלום באשראי, Bit או Apple Pay','הוראות קבע למנויים'],
+      try:'נסו לשלם בהדמיה',
+      online:'חשבון עסקי', msg:n=>`היי ${n}, הנה הקישור לחידוש המנוי החודשי שלך 👇`, linkTxt:'לתשלום',
+      amount:450, desc:'מנוי חודשי', card:'כרטיס אשראי', payBtn:x=>`תשלום ${x}`, paying:'מאשר...',
+      done:'התשלום התקבל', doneSub:'הקבלה נשלחה אליך'},
+    wa2:{h:'תזכורות שיוצאות לבד בוואטסאפ',
+      lead:'עם Arbox WhatsApp ההודעות ללקוחות יוצאות מהמערכת ישירות לוואטסאפ, בלי שאף אחד צריך לזכור לשלוח.',
+      li:['תזכורת לפני שיעור או פגישה','הודעה לפני שהמנוי מסתיים','עדכונים לכל הלקוחות בבת אחת'],
+      today:'היום',
+      m1:n=>`היי ${n} 👋 תזכורת: יוגה זרימה מחר ב-08:30. מחכים לך!`,
+      r1:'מעולה, אני מגיעה 💪',
+      m2:n=>`${n}, המנוי שלך מסתיים בעוד 3 ימים. אפשר לחדש אותו כאן בלחיצה`, m2link:'לחידוש המנוי'},
+    access:{h:'נכנסים לעסק עם הטלפון',
+      lead:'בקרת הכניסה של Arbox מאשרת כניסה רק ללקוחות עם מנוי בתוקף, והנוכחות נרשמת לבד.',
+      li:['כניסה עם קוד מהאפליקציה','מנוי שפג תוקפו לא נכנס','נוכחות שנרשמת אוטומטית'],
+      title:'הכניסה שלי', sub:'סרקו את הקוד בכניסה', plan:'מנוי חודשי פעיל',
+      ok:'הכניסה אושרה', okSub:n=>`ברוכה הבאה, ${n}`},
+    dash:{h:'כל המספרים של העסק במסך אחד',
+      lead:'הכנסות, מנויים פעילים ונוכחות, מתעדכנים כל הזמן. ככה רואים מה עובד ומה צריך לשפר.',
+      li:['דוחות הכנסות ונוכחות','מעקב אחרי מנויים שמסתיימים','ייצוא לרואה החשבון'],
+      title:'לוח בקרה', month:'החודש',
+      k:['הכנסות החודש','מנויים פעילים','כניסות השבוע'], kv:[48250,312,1046], up:['12%','8%','5%'],
+      months:['יוני','יולי','אוג׳','ספט׳','אוק׳','נוב׳']},
   },
   en:{
     dir:'ltr', locale:'en-GB',
@@ -355,14 +633,16 @@ const T = {
     monthly:'Monthly', annual:'Annual, prepaid',
     save:x=>`Pay annually and save ${x} a year`,
     perMonth:'/month',
-    included:n=>`What’s included in ${n}`,
-    payTitle:'Payment processing', paySub:'Collect payments from your customers inside Arbox, with automatic invoices',
+    included:n=>`What you get with ${n}`, notIncluded:n=>`Not included in ${n}:`,
+    payTitle:'Payment processing', paySub:'Collect payments from your customers inside Arbox',
     payNone:'No payment processing for now', payNoneNote:'You can add it at any time',
     payIncluded:'Included in this proposal',
     growNote:(x,f)=>`Plus ${x}/month paid directly to Grow, and a ${f}% fee per transaction above 100 a month`,
     pelecardNote:(x,s)=>`Plus ${x}/month and ${s} setup, paid directly to Pelecard`,
     icreditNote:'Integrated payment solution supporting a wide range of cards',
-    addonsTitle:'Add-ons', addonsSub:'Pick what fits and the price updates',
+    addonsTitle:'Add-ons', addonsSub:'Pick what fits',
+    addonsBill:'Add-ons are billed monthly as a separate charge, on top of the plan price.',
+    addonsBillA:'Add-ons are billed monthly as a separate charge, not as part of the annual payment.',
     alsoTitle:'Also included',
     onetimeTitle:'One-time payment', onetimeSub:'Paid once at the start, separately from the subscription',
     onetimeTotal:'One-time total', free:'Free',
@@ -375,19 +655,68 @@ const T = {
     dealA:(p,n,after)=>`${p}% off ${n===1?'for the first year':`for the first ${n} years`}. Then ${after}/month.`,
     annualPay:x=>`Annual payment of ${x}`,
     pkgLine:n=>`${n} plan`, payLine:n=>`${n} payments`, discLine:p=>`${p}% discount`, service:'Service',
+    adTitle:'Additional monthly charges', adHint:'Based on the add-ons you picked',
+    adTotal:'Add-ons total', adGrand:x=>`Monthly total with add-ons: ${x}`,
     directTitle:'Paid directly to the payment provider',
     onetimeSum:x=>`<strong>${x}</strong> one-time at the start`,
     cta:'I’d like to go ahead', ctaSub:r=>`Opens a WhatsApp message${r?` to ${r}`:''} with your choices`,
-    pdf:'Save as PDF', toSummary:'Summary',
+    pdf:'Save as PDF', toSummary:'Summary', barAd:x=>`plus ${x} add-ons`,
     whyTitle:'Why Arbox', valueTitle:'What Arbox does for you', clientsTitle:'Businesses already running on Arbox',
     stepsTitle:'Getting started', smallTitle:'Terms & conditions',
     signOff:'To a successful partnership,', team:'The Arbox team',
     invalid:'This proposal link is incomplete. Please ask your rep to send it again.',
     printBilling:b=>`Billing: ${b==='annual'?'annual, prepaid':'monthly'}`,
     wa:(o)=>[`Hi${o.rep?' '+o.rep:''}, this is ${o.client||'a client'}.`,'I went over the proposal and I’d like to go ahead with:',
-      `${o.pkg} plan, ${o.billing==='annual'?'billed annually':'billed monthly'}`,
-      `Payment processing: ${o.pay||'none'}`, `Add-ons: ${o.addons.length?o.addons.join(', '):'none'}`,
-      `Total ${o.price}/month, ${o.vat?'incl.':'excl.'} VAT`,'',o.url].join('\n'),
+      `${o.pkg} plan, ${o.billing==='annual'?'billed annually':'billed monthly'}: ${o.price}/month`,
+      `Payment processing: ${o.pay||'none'}`,
+      o.addons.length?`Add-ons: ${o.addons.join(', ')} (${o.adPrice}/month, billed separately)`:'No add-ons',
+      `Prices ${o.vat?'incl.':'excl.'} VAT`,'',o.url].join('\n'),
+    showTitle:'Here’s how it will look for you',
+    showSub:'A few of the things you’ll get, as interactive previews. Go ahead and tap.',
+    demoNote:'Illustrative preview',
+    replay:'Play again',
+    tagIncluded:'Included in your plan', tagPro:'Included in Professional', tagAddon:'Add-on', tagPay:'With payment processing', tagInOffer:'In this proposal',
+    addAddon:'Add to proposal', addedAddon:'Added to proposal ✓',
+    customer:'Noa', time:'9:41',
+    book:{h:'Customers book on their own, from their phone',
+      lead:'The Arbox app for your customers: they see the schedule and book a class or session without messaging you.',
+      li:['Book and cancel in one tap','Open spots update instantly','Buy memberships and passes in the app'],
+      try:'Try tapping “Book”',
+      title:'Schedule', join:'Book', joined:'Booked ✓', full:'Full',
+      spots:n=>n===1?'Last spot':`${n} spots left`, coach:n=>`with ${n}`,
+      toast:(c,t)=>`You’re booked for ${c} tomorrow at ${t}`,
+      classes:[['07:00','Reformer Pilates','Shira',3],['08:30','Flow Yoga','Ori',1],['18:00','Functional Training','Danny',0],['19:30','Mat Pilates','Shira',6]]},
+    brand:{h:'An app with your name on it',
+      lead:c=>`With Arbox Brand your customers download an app with ${c?c+'’s':'your'} name, logo and colors.`,
+      li:['Your own icon and name in the app stores','Your colors and branding on every screen','Everything the Arbox app can do'],
+      try:'Pick a color and see how it looks', color:'Color',
+      hi:n=>`Good morning, ${n}`, next:'Your next class', nextCls:'Flow Yoga, tomorrow 08:30', pill:'Booked',
+      tiles:['Schedule','My membership','Shop','Messages']},
+    pay:{h:'Get paid without chasing anyone',
+      lead:'Send a customer a payment link and they pay from their phone in seconds. The payment is recorded in the system automatically.',
+      li:['Payment links sent from the system','Pay by card, Bit or Apple Pay','Recurring payments for memberships'],
+      try:'Try paying in the preview',
+      online:'business account', msg:n=>`Hi ${n}, here’s the link to renew your monthly membership 👇`, linkTxt:'Pay now',
+      amount:450, desc:'Monthly membership', card:'Credit card', payBtn:x=>`Pay ${x}`, paying:'Confirming...',
+      done:'Payment received', doneSub:'Your receipt is on its way'},
+    wa2:{h:'Reminders that send themselves on WhatsApp',
+      lead:'With Arbox WhatsApp, messages to customers go out from the system straight to WhatsApp, without anyone having to remember.',
+      li:['A reminder before each class or session','A heads-up before a membership ends','Updates to all customers at once'],
+      today:'Today',
+      m1:n=>`Hi ${n} 👋 Reminder: Flow Yoga tomorrow at 08:30. See you there!`,
+      r1:'Great, I’ll be there 💪',
+      m2:n=>`${n}, your membership ends in 3 days. You can renew it here in one tap`, m2link:'Renew membership'},
+    access:{h:'Walk in with your phone',
+      lead:'Arbox access control only lets in customers with an active membership, and attendance is recorded on its own.',
+      li:['Entry with a code from the app','Expired memberships don’t get in','Attendance recorded automatically'],
+      title:'My entry pass', sub:'Scan the code at the entrance', plan:'Monthly membership, active',
+      ok:'Entry approved', okSub:n=>`Welcome, ${n}`},
+    dash:{h:'All your numbers on one screen',
+      lead:'Revenue, active memberships and attendance, always up to date. So you can see what works and what to improve.',
+      li:['Revenue and attendance reports','Track memberships about to end','Export for your accountant'],
+      title:'Dashboard', month:'This month',
+      k:['Revenue this month','Active members','Check-ins this week'], kv:[48250,312,1046], up:['12%','8%','5%'],
+      months:['Jun','Jul','Aug','Sep','Oct','Nov']},
   }
 };
 
@@ -397,9 +726,17 @@ function heL(c){return /^[A-Za-z0-9"'(]/.test(c)?'-':'';}
 const fmt=n=>Math.round(n).toLocaleString('he-IL');
 const money=n=>`${fmt(n)}₪`;
 const CHECK='<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg>';
+const BIG_CHECK='<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const FEAT_ON='<svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#4F87FF"/><path d="M5.8 10.3l2.7 2.7 5.6-6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const FEAT_OFF='<svg class="ic" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9.25" fill="none" stroke="#c9cfdc" stroke-width="1.5"/><path d="M6.5 10h7" stroke="#c9cfdc" stroke-width="1.8" stroke-linecap="round"/></svg>';
+const INFO_IC='<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="none" stroke="#8a5a1f" stroke-width="1.6"/><path d="M10 9v5" stroke="#8a5a1f" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="6.2" r="1.1" fill="#8a5a1f"/></svg>';
+const SBAR='<svg viewBox="0 0 64 12" aria-hidden="true"><rect x="0" y="7" width="3" height="5" rx="1" fill="currentColor"/><rect x="5" y="5" width="3" height="7" rx="1" fill="currentColor"/><rect x="10" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="1" fill="currentColor"/><rect x="38" y="1" width="22" height="10" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="40" y="3" width="18" height="6" rx="1.5" fill="currentColor"/><rect x="61" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>';
+const TILE_IC=[
+  '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4.5" width="14" height="12.5" rx="2.5"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>',
+  '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2.5" y="5" width="15" height="10.5" rx="2.5"/><path d="M2.5 9h15M6 12.5h3"/></svg>',
+  '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h12l-1 10.5H5z"/><path d="M7.5 8.5V5.5a2.5 2.5 0 015 0v3"/></svg>',
+  '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5a2 2 0 012-2h9a2 2 0 012 2v6.5a2 2 0 01-2 2H9l-3.5 3v-3h0a2 2 0 01-2-2z"/></svg>'];
 const reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,reduceMotion?0:ms));
 
 let S=null, U=null, st=null, shownPrice=null;
 
@@ -421,33 +758,45 @@ function expiryDate(){
 function text(f){ return (S.tx&&typeof S.tx[f]==='string')?S.tx[f]:(DEFAULT_CONTENT[S.l][f]||''); }
 function linesOf(f){ return text(f).split('\n').map(s=>s.trim()).filter(Boolean); }
 const vatify=n=>st.vat?n*(1+VAT):n;
+function featKey(row){ if(row[2])return row[2]; return Object.keys(FEATURE_INFO).find(k=>FEATURE_INFO[k].l.includes(row[0]))||''; }
+function featVal(key){ const r=(S.f||[]).find(r=>featKey(r)===key); return r?r[1]:undefined; }
+function addonInfo(name){ return ADDON_INFO.find(x=>x.m.test(name||''))||null; }
+function addonIdx(demo){ return S.ad.findIndex(a=>{const i=addonInfo(a.n);return i&&i.demo===demo;}); }
+function initials(name){ const w=String(name||'A').replace(/["'״׳]/g,'').trim().split(/\s+/).filter(Boolean); return (w.length>1?w[0][0]+w[1][0]:(w[0]||'A').slice(0,2)).toUpperCase(); }
 
-/* ── pricing: same rules as the calculator, on the snapshot ── */
+/* ── pricing. Main charge = package + payment + fixed custom lines (discount applies here only).
+      Add-ons are a separate monthly charge: the add-on's annual price on annual billing, its monthly price otherwise. ── */
 function calc(b){
   const an=b==='annual', D=an?S.da:S.dm, pct=(D&&D.p>0)?D.p:0;
   const lines=[]; let base=0, discBase=0;
-  const add=(label,price,discountable,detail)=>{lines.push({label,price,detail});base+=price;if(pct&&discountable)discBase+=price;};
+  const add=(label,price,discountable)=>{lines.push({label,price});base+=price;if(pct&&discountable)discBase+=price;};
   add(U.pkgLine(S.pkg.n), an?S.pkg.a:S.pkg.m, D&&D.pkg);
   if(st.pay!=='none'){const p=S.pay.o[st.pay]; add(U.payLine(p.n), an?p.a:p.m, D&&D.pay);}
-  S.ad.forEach((a,i)=>{ if(st.on[i]) add(a.n, an?a.a:a.m, an?a.da:a.dm, an?a.ua:a.um); });
   (S.rc||[]).forEach(([n,p])=>add(n||U.service,p,false));
+  const ad=[]; let adSum=0;
+  S.ad.forEach((a,i)=>{ if(st.on[i]){const price=an?a.a:a.m; ad.push({label:a.n,price,detail:an?a.ua:a.um}); adSum+=price;} });
   const disc=discBase*pct/100;
-  return {an,lines,base,disc,pct,period:D?D.n:0,now:base-disc};
+  return {an,lines,base,disc,pct,period:D?D.n:0,now:base-disc,ad,adSum};
 }
 
-/* ── render once; later changes only update text and classes ── */
+/* ════════════════ RENDER ════════════════ */
 function render(){
   const app=document.getElementById('app');
   const exp=expiryDate(); const today=new Date(); today.setHours(0,0,0,0);
   const expired=exp&&exp<today;
   const intro=text('intro').trim();
   const showPay=S.pay.mode==='both'||(S.pay.mode==='selected'&&S.pay.s!=='none');
-  const otTotal=(S.ot||[]).reduce((s,[,p])=>s+(p||0),0);
 
-  const feats=(S.f||[]).map(([label,val])=>{
-    if(typeof val==='string') return `<li>${FEAT_ON}<span>${esc(label)}<span class="val">${esc(val)}</span></span></li>`;
-    return `<li class="${val?'':'off'}">${val?FEAT_ON:FEAT_OFF}<span>${esc(label)}</span></li>`;
+  // explained features
+  const rows=(S.f||[]);
+  const on=rows.filter(r=>r[1]!==false&&r[1]!==''&&r[1]!=null);
+  const off=rows.filter(r=>r[1]===false);
+  const feats=on.map(r=>{
+    const k=featKey(r), info=k&&FEATURE_INFO[k]?FEATURE_INFO[k][S.l]:'';
+    const val=typeof r[1]==='string'?`: <span class="val">${esc(r[1])}</span>`:'';
+    return `<li>${FEAT_ON}<div><div class="feat-t">${esc(r[0])}${val}</div>${info?`<div class="feat-d">${esc(info)}</div>`:''}</div></li>`;
   }).join('');
+  const notIncl=off.length?`<p class="not-incl"><strong>${esc(U.notIncluded(S.pkg.n))}</strong> ${off.map(r=>esc(r[0])).join(', ')}</p>`:'';
 
   const payKeys=S.pay.mode==='both'?['none','grow','pelecard','icredit'].filter(k=>S.pay.o[k]):[S.pay.s];
   const payNote=k=>{
@@ -461,15 +810,19 @@ function render(){
   const payCards=payKeys.map(k=>{
     const p=S.pay.o[k]; const single=S.pay.mode!=='both';
     const name=k==='none'?U.payNone:p.n;
-    const price=k==='none'?'':`<span class="opt-price"><bdi>+<span class="js-bp" data-m="${p.m}" data-a="${p.a}"></span></bdi> <span class="u">${U.perMonth}</span></span>`;
+    const price=k==='none'?'':`<span class="opt-price"><bdi dir="ltr">+<span class="js-bp" data-m="${p.m}" data-a="${p.a}"></span></bdi> <span class="u">${U.perMonth}</span></span>`;
     if(single) return `<div class="opt static is-on"><div class="opt-main"><div class="opt-name">${esc(name)}</div><div class="opt-note">${esc(U.payIncluded)}. ${esc(payNote(k))}</div></div>${price}</div>`;
-    return `<label class="opt" data-pay="${k}"><input type="radio" name="pay" value="${k}"><span class="mark radio"></span><span class="opt-main"><span class="opt-name">${esc(name)}</span><span class="opt-note" style="display:block">${esc(payNote(k))}</span></span>${price}</label>`;
+    return `<label class="opt" data-pay="${k}"><input type="radio" name="pay" value="${k}"><span class="mark radio"></span><span class="opt-main"><span class="opt-name">${esc(name)}</span><span class="opt-note">${esc(payNote(k))}</span></span>${price}</label>`;
   }).join('');
 
-  const addonCards=S.ad.map((a,i)=>`<label class="opt" data-ad="${i}"><input type="checkbox" value="${i}"><span class="mark check">${CHECK}</span><span class="opt-main"><span class="opt-name">${esc(a.n)}</span>${(a.um||a.ua)?`<span class="opt-note js-ud" style="display:block" data-m="${esc(a.um||'')}" data-a="${esc(a.ua||'')}"></span>`:''}</span><span class="opt-price"><bdi>+<span class="js-bp" data-m="${a.m}" data-a="${a.a}"></span></bdi> <span class="u">${U.perMonth}</span></span></label>`).join('');
+  const addonCards=S.ad.map((a,i)=>{
+    const info=addonInfo(a.n);
+    return `<label class="opt" data-ad="${i}"><input type="checkbox" value="${i}"><span class="mark check">${CHECK}</span><span class="opt-main"><span class="opt-name">${esc(a.n)}</span>${info?`<span class="opt-note">${esc(info[S.l])}</span>`:''}${(a.um||a.ua)?`<span class="opt-unit js-ud" data-m="${esc(a.um||'')}" data-a="${esc(a.ua||'')}"></span>`:''}</span><span class="opt-price"><bdi dir="ltr">+<span class="js-bp" data-m="${a.m}" data-a="${a.a}"></span></bdi> <span class="u">${U.perMonth}</span></span></label>`;
+  }).join('');
 
-  const rc=(S.rc||[]).map(([n,p])=>`<div class="ln"><span>${esc(n||U.service)}</span><b><bdi>+${money(p)}</bdi> ${U.perMonth}</b></div>`).join('');
-  const ot=(S.ot||[]).map(([n,p])=>`<div class="ln"><span>${esc(n||U.service)}</span><b>${p?money(p):U.free}</b></div>`).join('');
+  const rc=(S.rc||[]).map(([n,p])=>`<div class="ln"><span>${esc(n||U.service)}</span><b><bdi dir="ltr">+${money(p)}</bdi> ${U.perMonth}</b></div>`).join('');
+  const otTotal=(S.ot||[]).reduce((s,[,p])=>s+(p||0),0);
+  const ot=(S.ot||[]).map(([n,p])=>`<div class="ln"><span>${esc(n||U.service)}</span><b class="js-ot" data-v="${p||0}"></b></div>`).join('');
 
   const why=linesOf('why'), values=linesOf('value'), steps=linesOf('workplan'), small=linesOf('small');
   const clientsTxt=text('clients').trim();
@@ -522,6 +875,7 @@ function render(){
             <div class="pkg-price"><span class="js-bp" data-m="${S.pkg.m}" data-a="${S.pkg.a}"></span> <span class="u">${U.perMonth}</span></div>
           </div>
           ${feats?`<p class="feats-title">${esc(U.included(S.pkg.n))}</p><ul class="feats">${feats}</ul>`:''}
+          ${notIncl}
         </div>
       </section>
 
@@ -530,8 +884,9 @@ function render(){
         <div class="opts ${S.pay.mode==='both'?'two':''}" role="${S.pay.mode==='both'?'radiogroup':'group'}" aria-labelledby="h-pay">${payCards}</div>
       </section>`:''}
 
-      ${S.ad.length?`<section class="block" aria-labelledby="h-ad">
+      ${S.ad.length?`<section class="block" aria-labelledby="h-ad" id="addons">
         <div class="block-head"><div><h2 id="h-ad">${U.addonsTitle}</h2><p class="sub">${U.addonsSub}</p></div></div>
+        <p class="bill-note">${INFO_IC}<span id="bill-note-t"></span></p>
         <div class="opts">${addonCards}</div>
       </section>`:''}
 
@@ -542,7 +897,7 @@ function render(){
 
       ${ot?`<section class="block" aria-labelledby="h-ot">
         <div class="block-head"><div><h2 id="h-ot">${U.onetimeTitle}</h2><p class="sub">${U.onetimeSub}</p></div></div>
-        <div class="lines onetime">${ot}<div class="ln tot"><span>${U.onetimeTotal}</span><b id="ot-total"></b></div></div>
+        <div class="lines onetime">${ot}<div class="ln tot"><span>${U.onetimeTotal}</span><b class="js-ot" data-v="${otTotal}"></b></div></div>
       </section>`:''}
 
       ${S.nt?`<section class="block" aria-label="${U.noteTitle}"><div class="note">${esc(S.nt).replace(/\n/g,'<br>')}</div></section>`:''}
@@ -556,6 +911,7 @@ function render(){
         <p class="sum-deal" id="sum-deal" hidden></p>
         <p class="sum-annual" id="sum-annual" hidden></p>
         <div class="sum-list" id="sum-list"></div>
+        <div class="sum-ad" id="sum-ad" hidden></div>
         <div class="sum-extra" id="sum-extra" hidden></div>
         <label class="vat-row"><input type="checkbox" id="vat"><span class="toggle"></span>${U.vatToggle}</label>
         <a class="cta" id="cta" target="_blank" rel="noopener">${U.cta}</a>
@@ -564,6 +920,8 @@ function render(){
       </div>
     </aside>
   </div>
+
+  ${renderShowcase()}
 
   <div class="story">
     <div class="wrap">
@@ -586,14 +944,266 @@ function render(){
     </div>
   </footer>
 
-  <div class="bar" id="bar">
-    <div class="p"><span id="bar-num"></span> <small id="bar-unit"></small></div>
+  <div class="bar-m" id="bar">
+    <div class="p"><span id="bar-num"></span> <small>${U.perMonth}</small><span class="ad" id="bar-ad"></span></div>
     <button type="button" onclick="document.getElementById('sum').scrollIntoView({block:'center'})">${U.toSummary}</button>
   </div>`;
-
-  if(otTotal>=0){const el=document.getElementById('ot-total'); if(el)el.dataset.v=otTotal;}
 }
 
+/* ════════════════ SHOWCASE (phone previews) ════════════════ */
+function phone(inner,cls=''){return `<div class="phone"><div class="scr ${cls}"><div class="island"></div>${inner}<div class="tap"></div></div></div>`;}
+function sbar(light){return `<div class="sbar" style="${light?'color:#fff':''}"><span>${U.time}</span>${SBAR}</div>`;}
+
+function showcaseItems(){
+  const items=[];
+  const studio=S.c||'Arbox';
+  items.push({id:'book',tag:U.tagIncluded});
+  if(featVal('brandedApp')===true) items.push({id:'brand',tag:U.tagPro});
+  if(S.pay.mode==='both'||S.pay.s!=='none') items.push({id:'pay',tag:S.pay.mode==='both'?U.tagPay:U.tagInOffer});
+  const wi=addonIdx('wa'); if(wi>-1) items.push({id:'wa2',tag:U.tagAddon,addon:wi});
+  if(featVal('accessControl')===true) items.push({id:'access',tag:U.tagIncluded});
+  else {const ai=addonIdx('access'); if(ai>-1) items.push({id:'access',tag:U.tagAddon,addon:ai});}
+  if(featVal('reports')===true) items.push({id:'dash',tag:U.tagIncluded});
+  return items;
+}
+
+function renderShowcase(){
+  const items=showcaseItems(); if(!items.length)return '';
+  const rows=items.map((it,n)=>{
+    const C=U[it.id];
+    const lead=typeof C.lead==='function'?C.lead(S.c):C.lead;
+    const isAddon=it.addon!=null;
+    const actions=[
+      isAddon?`<button type="button" class="chip-btn" data-addon-toggle="${it.addon}" aria-pressed="false"></button>`:'',
+      it.id==='brand'?'':`<button type="button" class="link-btn" data-replay="${it.id}">${U.replay}</button>`,
+      C.try?`<span class="try">${esc(C.try)}</span>`:''
+    ].filter(Boolean).join('');
+    const swatches=it.id==='brand'?`<div class="swatches" role="group" aria-label="${esc(C.try)}">${['#4F87FF','#081838','#E4572E','#17A589','#8E44AD','#F2A900'].map((c,i)=>`<button type="button" class="swatch" style="background:${c}" data-color="${c}" aria-pressed="${i===0}" aria-label="${esc(C.color)} ${i+1}"></button>`).join('')}</div>`:'';
+    return `<section class="show ${n%2?'flip':''}" data-demo="${it.id}">
+      <div class="show-text">
+        <span class="tag ${isAddon?'add':''}">${esc(it.tag)}</span>
+        <h3>${esc(C.h)}</h3>
+        <p class="lead">${esc(lead)}</p>
+        <ul>${C.li.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+        ${swatches}
+        <div class="show-actions">${actions}</div>
+        <p class="demo-note">${U.demoNote}</p>
+      </div>
+      <div class="show-dev" id="dev-${it.id}" aria-hidden="true">${deviceHTML(it.id)}</div>
+    </section>`;
+  }).join('');
+  return `<section class="showcase no-print"><div class="wrap"><div class="showcase-head"><h2>${U.showTitle}</h2><p>${U.showSub}</p></div>${rows}</div></section>`;
+}
+
+function deviceHTML(id){
+  const studio=S.c||'Arbox', n=U.customer;
+  if(id==='book'){
+    const C=U.book, days=[];
+    const loc=U.locale, base=new Date();
+    for(let i=0;i<5;i++){const d=new Date(base);d.setDate(d.getDate()+i);days.push(`<div class="ab-day ${i===1?'on':''}">${d.toLocaleDateString(loc,{weekday:'short'})}<b>${d.getDate()}</b></div>`);}
+    return phone(`${sbar()}<div class="ab-head"><div class="ab-studio">${esc(studio)}</div><div class="ab-title">${C.title}</div></div>
+      <div class="ab-days">${days.join('')}</div><div class="ab-list" id="ab-list"></div>
+      <div class="toast" id="ab-toast"><i>${CHECK}</i><span></span></div>`);
+  }
+  if(id==='brand'){
+    const C=U.brand;
+    return phone(`<div class="br" id="br">${sbar(true).replace('class="sbar"','class="sbar" ')}
+      <div class="br-head"><div class="br-row"><div class="br-logo">${esc(initials(studio))}</div><div class="br-name">${esc(studio)}</div></div><div class="br-hi">${esc(C.hi(n))}</div></div>
+      <div class="br-next"><small>${C.next}</small><b>${C.nextCls}</b><span class="pill">${C.pill}</span></div>
+      <div class="br-grid">${C.tiles.map((t,i)=>`<div class="br-tile"><i>${TILE_IC[i]}</i>${t}</div>`).join('')}</div>
+      <div class="br-tabs"><span></span><span></span><span></span><span></span></div></div>`);
+  }
+  if(id==='pay'){
+    const C=U.pay;
+    return phone(`${sbar(true)}<div class="wa-head"><div class="wa-av">${esc(initials(studio))}</div><div style="min-width:0"><div class="wa-name">${esc(studio)}</div><div class="wa-sub">${C.online}</div></div></div>
+      <div class="wa-body"><span class="wa-day">${U.wa2.today}</span>
+        <div class="bub">${esc(C.msg(n))}<button type="button" class="lnk" id="pay-link" tabindex="-1">${C.linkTxt}</button><time>09:40</time></div></div>
+      <div class="sheet" id="pay-sheet"><div class="grab"></div>
+        <div class="sh-merchant">${esc(studio)}</div><div class="sh-amt">${money(C.amount)}</div><div class="sh-desc">${C.desc}</div>
+        <button type="button" class="sh-m on" data-m="card" tabindex="-1"><span class="ico" style="background:#081838;color:#fff">VISA</span>${C.card} •••• 4821<span class="rd"></span></button>
+        <button type="button" class="sh-m" data-m="bit" tabindex="-1"><span class="ico" style="background:#1fb8c4;color:#fff">bit</span>Bit<span class="rd"></span></button>
+        <button type="button" class="sh-m" data-m="apple" tabindex="-1"><span class="ico" style="background:#000;color:#fff"></span>Apple Pay<span class="rd"></span></button>
+        <button type="button" class="sh-pay" id="pay-btn" tabindex="-1">${C.payBtn(money(C.amount))}</button>
+        <div class="sh-done" id="pay-done"><div><div class="ok-ring" style="color:#fff">${BIG_CHECK}</div><b>${C.done}</b><span>${C.doneSub}</span></div></div>
+      </div>`);
+  }
+  if(id==='wa2'){
+    return phone(`${sbar(true)}<div class="wa-head"><div class="wa-av">${esc(initials(studio))}</div><div style="min-width:0"><div class="wa-name">${esc(studio)}</div><div class="wa-sub">${U.pay.online}</div></div></div>
+      <div class="wa-body" id="wa-body"></div>`);
+  }
+  if(id==='access'){
+    const C=U.access;
+    return phone(`${sbar()}<div class="acc"><div class="acc-title">${C.title}</div><div class="acc-sub">${C.sub}</div>
+      <div class="qr-box">${qrSVG(studio)}<div class="beam" id="acc-beam"></div></div>
+      <div class="acc-name">${esc(n)}</div><div class="acc-plan">${C.plan}</div></div>
+      <div class="acc-ok" id="acc-ok"><div><div class="ok-ring" style="color:#1f9d55">${BIG_CHECK}</div><b>${C.ok}</b><span>${esc(C.okSub(n))}</span></div></div>`);
+  }
+  if(id==='dash'){
+    const C=U.dash, h=[52,58,55,67,74,86];
+    return `<div class="tab"><div class="dash">
+      <div class="dash-top"><b>${C.title}</b><span>${esc(studio)}</span></div>
+      <div class="kpis">${C.k.map((k,i)=>`<div class="kpi"><small>${k}</small><b class="js-kpi" data-v="${C.kv[i]}" data-money="${i===0?1:0}">0</b><em>↑ ${C.up[i]}</em></div>`).join('')}</div>
+      <div class="chart">${h.map(v=>`<div class="bar"><i data-h="${v}"></i></div>`).join('')}</div>
+      <div class="chart-l">${C.months.map(m=>`<span>${m}</span>`).join('')}</div>
+    </div></div>`;
+  }
+  return '';
+}
+
+/* QR-looking pattern, seeded by the client's name so every proposal has its own */
+function qrSVG(seedStr){
+  const N=25; let seed=0; for(const ch of String(seedStr))seed=(seed*31+ch.charCodeAt(0))>>>0;
+  const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+  const finder=(x,y)=>x<7&&y<7||x>=N-7&&y<7||x<7&&y>=N-7;
+  let r='';
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){ if(!finder(x,y)&&rnd()<.48) r+=`<rect x="${x}" y="${y}" width="1" height="1"/>`; }
+  const f=(x,y)=>`<rect x="${x}" y="${y}" width="7" height="7" rx="1.6"/><rect x="${x+1}" y="${y+1}" width="5" height="5" rx="1.1" fill="#fff"/><rect x="${x+2}" y="${y+2}" width="3" height="3" rx=".7"/>`;
+  return `<svg viewBox="0 0 ${N} ${N}" shape-rendering="crispEdges" fill="#081838" aria-hidden="true">${r}${f(0,0)}${f(N-7,0)}${f(0,N-7)}</svg>`;
+}
+
+/* ── demo players ── */
+const demos={};
+function tapAt(scrEl,target){
+  if(!scrEl||!target)return;
+  const t=scrEl.querySelector('.tap'); const a=scrEl.getBoundingClientRect(), b=target.getBoundingClientRect();
+  t.style.left=(b.left-a.left+b.width/2)+'px'; t.style.top=(b.top-a.top+b.height/2)+'px';
+  t.classList.remove('go'); void t.offsetWidth; t.classList.add('go');
+}
+function makeDemos(){
+  /* booking */
+  const book={state:[]};
+  book.reset=()=>{
+    const C=U.book; book.state=C.classes.map(c=>({spots:c[3],booked:false}));
+    const list=document.getElementById('ab-list'); if(!list)return;
+    list.innerHTML=C.classes.map((c,i)=>`<div class="cls"><div class="cls-time">${c[0]}</div><div class="cls-main"><div class="cls-name">${esc(c[1])}</div><div class="cls-meta" id="cls-meta-${i}"></div></div><button type="button" class="cls-btn" data-cls="${i}"></button></div>`).join('');
+    C.classes.forEach((c,i)=>book.paint(i));
+    list.querySelectorAll('.cls-btn').forEach(b=>b.addEventListener('click',()=>book.toggle(+b.dataset.cls,true)));
+    document.getElementById('ab-toast').classList.remove('show');
+  };
+  book.paint=i=>{
+    const C=U.book, c=C.classes[i], s=book.state[i];
+    const meta=document.getElementById('cls-meta-'+i), btn=document.querySelector(`[data-cls="${i}"]`);
+    meta.textContent=`${C.coach(c[2])}, ${s.spots>0?C.spots(s.spots):C.full}`;
+    btn.className='cls-btn'+(s.booked?' done':''); btn.disabled=!s.booked&&s.spots<=0;
+    btn.textContent=s.booked?C.joined:(s.spots<=0?C.full:C.join);
+  };
+  book.toggle=(i,user)=>{
+    const s=book.state[i], C=U.book, c=C.classes[i];
+    if(!s.booked&&s.spots<=0)return;
+    s.booked=!s.booked; s.spots+=s.booked?-1:1; book.paint(i);
+    const toast=document.getElementById('ab-toast');
+    if(s.booked){toast.querySelector('span').textContent=C.toast(c[1],c[0]);toast.classList.add('show');clearTimeout(book.tt);book.tt=setTimeout(()=>toast.classList.remove('show'),2600);}
+  };
+  book.run=async stale=>{
+    await sleep(900); if(stale())return;
+    const btn=document.querySelector('[data-cls="1"]'); tapAt(btn.closest('.scr'),btn); await sleep(220); if(stale())return; book.toggle(1);
+  };
+  demos.book=book;
+
+  /* payment */
+  const pay={};
+  pay.reset=()=>{
+    const sh=document.getElementById('pay-sheet'); if(!sh)return;
+    sh.classList.remove('open'); document.getElementById('pay-done').classList.remove('show');
+    pay.method('card'); pay.busy=false;
+    document.getElementById('pay-btn').innerHTML=U.pay.payBtn(money(U.pay.amount));
+  };
+  pay.method=m=>document.querySelectorAll('#pay-sheet .sh-m').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  pay.open=()=>document.getElementById('pay-sheet').classList.add('open');
+  pay.pay=async()=>{
+    if(pay.busy)return; pay.busy=true;
+    document.getElementById('pay-btn').innerHTML=`<span class="spin"></span>${U.pay.paying}`;
+    await sleep(1300);
+    document.getElementById('pay-done').classList.add('show');
+  };
+  pay.run=async stale=>{
+    await sleep(900); if(stale())return;
+    const link=document.getElementById('pay-link'); tapAt(link.closest('.scr'),link); await sleep(250); if(stale())return; pay.open();
+    await sleep(1300); if(stale())return;
+    const btn=document.getElementById('pay-btn'); tapAt(btn.closest('.scr'),btn); await sleep(200); if(stale())return; pay.pay();
+  };
+  demos.pay=pay;
+  const pl=document.getElementById('pay-link');
+  if(pl){
+    pl.addEventListener('click',()=>pay.open());
+    document.querySelectorAll('#pay-sheet .sh-m').forEach(b=>b.addEventListener('click',()=>pay.method(b.dataset.m)));
+    document.getElementById('pay-btn').addEventListener('click',()=>pay.pay());
+  }
+
+  /* whatsapp reminders */
+  const wa={};
+  const C2=U.wa2, n=U.customer;
+  wa.reset=()=>{const b=document.getElementById('wa-body'); if(b)b.innerHTML=`<span class="wa-day">${C2.today}</span>`;};
+  wa.add=html=>{const b=document.getElementById('wa-body'); b.insertAdjacentHTML('beforeend',html); return b.lastElementChild;};
+  wa.typing=async(ms,stale)=>{const t=wa.add('<div class="typing"><span></span><span></span><span></span></div>'); await sleep(ms); t.remove(); return !stale();};
+  wa.run=async stale=>{
+    await sleep(500); if(stale())return;
+    if(!await wa.typing(1100,stale))return;
+    wa.add(`<div class="bub">${esc(C2.m1(n))}<time>20:00</time></div>`);
+    await sleep(1400); if(stale())return;
+    wa.add(`<div class="bub me">${esc(C2.r1)}<time>20:03</time></div>`);
+    await sleep(1200); if(stale())return;
+    if(!await wa.typing(1100,stale))return;
+    wa.add(`<div class="bub">${esc(C2.m2(n))}<span class="lnk">${C2.m2link}</span><time>20:05</time></div>`);
+  };
+  demos.wa2=wa;
+
+  /* access */
+  const acc={};
+  acc.reset=()=>{const b=document.getElementById('acc-beam'); if(!b)return; b.classList.remove('go'); document.getElementById('acc-ok').classList.remove('show');};
+  acc.run=async stale=>{
+    await sleep(600); if(stale())return;
+    const b=document.getElementById('acc-beam'); void b.offsetWidth; b.classList.add('go');
+    await sleep(3000); if(stale())return;
+    const ok=document.getElementById('acc-ok'); ok.classList.add('show');
+    await sleep(2600); if(stale())return;
+    ok.classList.remove('show');
+  };
+  demos.access=acc;
+
+  /* dashboard */
+  const dash={};
+  dash.reset=()=>{
+    document.querySelectorAll('#dev-dash .bar i').forEach(i=>i.style.height='0');
+    document.querySelectorAll('#dev-dash .js-kpi').forEach(k=>k.textContent=k.dataset.money==='1'?money(0):'0');
+  };
+  dash.run=async stale=>{
+    await sleep(300); if(stale())return;
+    document.querySelectorAll('#dev-dash .bar i').forEach((i,ix)=>setTimeout(()=>{i.style.height=i.dataset.h+'%';},reduceMotion?0:ix*90));
+    document.querySelectorAll('#dev-dash .js-kpi').forEach(k=>{
+      const to=+k.dataset.v, isM=k.dataset.money==='1', t0=performance.now(), dur=reduceMotion?0:1100;
+      const step=t=>{const p=dur?Math.min(1,(t-t0)/dur):1, e=1-Math.pow(1-p,3), v=to*e; k.textContent=isM?money(v):fmt(v); if(p<1&&!stale())requestAnimationFrame(step);};
+      requestAnimationFrame(step);
+    });
+  };
+  demos.dash=dash;
+}
+function playDemo(id){
+  const d=demos[id]; if(!d||!d.run)return;
+  d.token=(d.token||0)+1; const tok=d.token;
+  d.reset(); d.run(()=>tok!==d.token);
+}
+function bindShowcase(){
+  makeDemos();
+  Object.keys(demos).forEach(id=>{ if(document.getElementById('dev-'+id)) demos[id].reset(); });
+  document.querySelectorAll('[data-replay]').forEach(b=>b.addEventListener('click',()=>playDemo(b.dataset.replay)));
+  document.querySelectorAll('[data-addon-toggle]').forEach(b=>b.addEventListener('click',()=>{
+    const i=+b.dataset.addonToggle; st.on[i]=!st.on[i];
+    const cb=document.querySelector(`[data-ad="${i}"] input`); if(cb)cb.checked=st.on[i];
+    update();
+  }));
+  document.querySelectorAll('.swatch').forEach(s=>s.addEventListener('click',()=>{
+    document.getElementById('br').style.setProperty('--brand',s.dataset.color);
+    document.querySelectorAll('.swatch').forEach(x=>x.setAttribute('aria-pressed',String(x===s)));
+  }));
+  const devs=document.querySelectorAll('.show-dev');
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); playDemo(e.target.id.slice(4));} }),{threshold:.6});
+    devs.forEach(d=>io.observe(d));
+  }else devs.forEach(d=>playDemo(d.id.slice(4)));
+}
+
+/* ════════════════ BEHAVIOUR ════════════════ */
 function bind(){
   document.querySelectorAll('input[name=billing]').forEach(r=>{r.checked=r.value===st.b; r.addEventListener('change',()=>{st.b=r.value;update();});});
   document.querySelectorAll('input[name=pay]').forEach(r=>{r.checked=r.value===st.pay; r.addEventListener('change',()=>{st.pay=r.value;update();});});
@@ -604,40 +1214,49 @@ function bind(){
     new IntersectionObserver(es=>es.forEach(e=>bar.classList.toggle('hide',e.isIntersecting)),{threshold:.25}).observe(sum);
   }
   window.addEventListener('beforeprint',()=>document.querySelectorAll('details').forEach(d=>d.open=true));
+  bindShowcase();
 }
 
 function update(animate=true){
-  const c=calc(st.b), an=c.an;
-  const bp=an?'a':'m';
-  // selection states
+  const c=calc(st.b), an=c.an, bp=an?'a':'m';
   document.querySelectorAll('[data-pay]').forEach(el=>el.classList.toggle('is-on',el.dataset.pay===st.pay));
   document.querySelectorAll('[data-ad]').forEach(el=>el.classList.toggle('is-on',!!st.on[+el.dataset.ad]));
   document.querySelectorAll('.js-bp').forEach(el=>el.textContent=money(vatify(+el.dataset[bp])));
   document.querySelectorAll('.js-ud').forEach(el=>{el.textContent=el.dataset[bp]||'';});
-  const ot=document.getElementById('ot-total'); if(ot){const v=+ot.dataset.v; ot.textContent=v?money(vatify(v)):U.free;}
+  document.querySelectorAll('.js-ot').forEach(el=>{const v=+el.dataset.v; el.textContent=v?money(vatify(v)):U.free;});
+  document.querySelectorAll('[data-addon-toggle]').forEach(b=>{const on=!!st.on[+b.dataset.addonToggle]; b.classList.toggle('on',on); b.setAttribute('aria-pressed',String(on)); b.textContent=on?U.addedAddon:U.addAddon;});
   document.getElementById('print-billing').textContent=U.printBilling(st.b);
+  const bn=document.getElementById('bill-note-t'); if(bn)bn.textContent=an?U.addonsBillA:U.addonsBill;
 
-  // annual saving (list prices, before any discount)
-  const save=(calc('monthly').base-calc('annual').base)*12;
-  const sn=document.getElementById('save-note');
-  sn.textContent=save>0?U.save(money(vatify(save))):'';
+  // annual saving (list prices, before any discount), including the selected add-ons
+  const cm=calc('monthly'), ca=calc('annual');
+  const save=(cm.base-ca.base+cm.adSum-ca.adSum)*12;
+  document.getElementById('save-note').textContent=save>0?U.save(money(vatify(save))):'';
 
-  // summary card
+  // main charge
   const headline=c.disc>0?c.now:c.base;
-  const unit=`${an?U.unitA:U.unitM}, ${st.vat?U.vatIn:U.vatEx}`;
   document.getElementById('sum-plan').textContent=U.sumPlan(S.pkg.n,st.b);
   animateNum(document.getElementById('sum-num'),vatify(headline),animate);
-  document.getElementById('sum-unit').textContent=unit;
+  document.getElementById('sum-unit').textContent=`${an?U.unitA:U.unitM}, ${st.vat?U.vatIn:U.vatEx}`;
   const was=document.getElementById('sum-was'), deal=document.getElementById('sum-deal'), ann=document.getElementById('sum-annual');
   if(c.disc>0){
     was.hidden=false; was.textContent=U.was(money(vatify(c.base)));
     deal.hidden=false; deal.textContent=(an?U.dealA:U.dealM)(c.pct,c.period,money(vatify(c.base)));
   }else{was.hidden=true;deal.hidden=true;}
   if(an){ann.hidden=false; ann.textContent=U.annualPay(money(vatify(headline*12)));}else ann.hidden=true;
-
-  let rows=c.lines.map(l=>`<div class="r"><span>${esc(l.label)}${l.detail?` <span style="opacity:.7">(${esc(l.detail)})</span>`:''}</span><span>${money(vatify(l.price))}</span></div>`).join('');
-  if(c.disc>0) rows+=`<div class="r disc"><span>${esc(U.discLine(c.pct))}</span><span><bdi>−${money(vatify(c.disc))}</bdi></span></div>`;
+  let rows=c.lines.map(l=>`<div class="r"><span>${esc(l.label)}</span><span>${money(vatify(l.price))}</span></div>`).join('');
+  if(c.disc>0) rows+=`<div class="r disc"><span>${esc(U.discLine(c.pct))}</span><span><bdi dir="ltr">−${money(vatify(c.disc))}</bdi></span></div>`;
   document.getElementById('sum-list').innerHTML=rows;
+
+  // add-ons: separate monthly charge
+  const sa=document.getElementById('sum-ad');
+  if(c.ad.length){
+    sa.hidden=false;
+    sa.innerHTML=`<h4>${U.adTitle}</h4><p class="hint">${U.adHint}</p>`+
+      c.ad.map(a=>`<div class="r"><span>${esc(a.label)}${a.detail?` <span style="opacity:.7">(${esc(a.detail)})</span>`:''}</span><span><bdi dir="ltr">+${money(vatify(a.price))}</bdi></span></div>`).join('')+
+      `<div class="r tot"><span>${U.adTotal}</span><span><bdi dir="ltr">+${money(vatify(c.adSum))}</bdi> ${U.perMonth}</span></div>`+
+      (an?'':`<div class="grand">${U.adGrand(money(vatify(headline+c.adSum)))}</div>`);
+  }else sa.hidden=true;
 
   const extra=[]; const p=S.pay.o[st.pay];
   if(st.pay==='grow'&&p.xm) extra.push(`${esc(U.directTitle)}: <strong>${money(p.xm)}</strong> ${U.perMonth}`);
@@ -646,14 +1265,12 @@ function update(animate=true){
   if(otv>0) extra.push(U.onetimeSum(money(vatify(otv))));
   const ex=document.getElementById('sum-extra'); ex.hidden=!extra.length; ex.innerHTML=extra.map(x=>`<div>${x}</div>`).join('');
 
-  // mobile bar
   document.getElementById('bar-num').textContent=money(vatify(headline));
-  document.getElementById('bar-unit').textContent=U.perMonth;
+  document.getElementById('bar-ad').textContent=c.ad.length?U.barAd(money(vatify(c.adSum))):'';
 
-  // WhatsApp back to the rep
   const msg=U.wa({rep:S.r,client:S.c,pkg:S.pkg.n,billing:st.b,
     pay:st.pay==='none'?'':S.pay.o[st.pay].n,
-    addons:S.ad.filter((a,i)=>st.on[i]).map(a=>a.n),
+    addons:c.ad.map(a=>a.label), adPrice:money(vatify(c.adSum)),
     price:money(vatify(headline)),vat:st.vat,url:location.href});
   const href=`https://wa.me/${S.ph||''}?text=${encodeURIComponent(msg)}`;
   document.getElementById('cta').href=href; document.getElementById('cta2').href=href;

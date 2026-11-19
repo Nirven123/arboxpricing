@@ -2006,7 +2006,7 @@ function buildProposalSnapshot(){
   const payOpt={};
   Object.keys(PAYMENT).forEach(k=>{const p=PAYMENT[k];payOpt[k]={n:k==='none'?'':p.name,m:p.monthly,a:p.annual,xm:p.extraMonthly||0,xs:p.setupFee||0};});
   if(payOpt.grow)payOpt.grow.fee=GROW_FEE_PCT[selPkg];
-  const feats=features.map(f=>[L==='he'?f.label_he:f.label_en,featureOverrides[f.key]!==undefined?featureOverrides[f.key]:f[selPkg]])
+  const feats=features.map(f=>[L==='he'?f.label_he:f.label_en,featureOverrides[f.key]!==undefined?featureOverrides[f.key]:f[selPkg],f.key])
     .concat(customFeatureRows.filter(r=>r.label.trim()).map(r=>[r.label.trim(),!!r.checked]));
   const tx={}, map={intro:'cf-intro',why:'cf-why',clients:'cf-clients',value:'cf-value',workplan:'cf-workplan',small:'cf-small'};
   Object.keys(map).forEach(f=>{const val=document.getElementById(map[f]).value; if(val.trim()!==String(DEFAULT_CONTENT[L][f]).trim())tx[f]=val;});
