@@ -163,6 +163,7 @@ button,input{font:inherit;color:inherit}
 .showcase{padding-block:80px 40px;border-top:1px solid var(--line)}
 .showcase-head h2{font-size:clamp(30px,4.4vw,48px);font-weight:900;letter-spacing:-.025em;line-height:1.1;max-width:18ch}
 .showcase-head p{color:var(--muted);font-size:18px;margin-top:12px;max-width:52ch}
+.show[hidden]{display:none!important}
 .show{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:64px;align-items:center;padding-block:64px;border-top:1px solid var(--line)}
 .showcase-head+.show{border-top:none}
 .show.flip .show-dev{order:-1}
@@ -311,6 +312,40 @@ button,input{font:inherit;color:inherit}
 .chart-l{display:flex;gap:12px;padding:0 4px}
 .chart-l span{flex:1;text-align:center;font-size:10.5px;color:var(--muted)}
 
+.ai{width:100%;height:100%;background:#fff;border-radius:20px;display:flex;flex-direction:column;overflow:hidden;font-size:13.5px}
+.ai-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line)}
+.ai-who{display:flex;gap:9px;align-items:center;font-weight:800;font-size:15px}
+.ai-av{width:28px;height:28px;border-radius:9px;background:var(--navy);color:var(--peach);display:grid;place-items:center;font-weight:900;font-size:14px}
+.ai-conn{display:flex;gap:7px;align-items:center;font-size:11.5px;color:var(--muted);background:#F1F4F9;border-radius:999px;padding:4px 10px 4px 8px;white-space:nowrap}
+.ai-conn img{height:13px;width:auto}
+.ai-conn i{width:7px;height:7px;border-radius:50%;background:#2fb760}
+.ai-body{flex:1;overflow-y:auto;scrollbar-width:none;padding:16px 18px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+.ai-body::-webkit-scrollbar{display:none}
+.ai-u{align-self:flex-end;background:#EEF2F8;border-radius:16px;padding:8px 13px;max-width:82%;animation:pop .25s ease-out}
+.ai-a{max-width:94%;line-height:1.6;animation:pop .25s ease-out}
+.ai-tool{align-self:flex-start;display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:6px 11px;font-size:12px;color:var(--muted);animation:pop .25s ease-out}
+.ai-tool img{height:12px;width:auto}
+.ai-tool .spin{width:12px;height:12px;border-color:#d5dbe6;border-top-color:var(--blue)}
+.ai-tool .ok{color:#1f9d55;font-weight:900}
+.ai-rows{display:grid;gap:5px;margin:6px 0}
+.ai-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;background:#F7F9FC;border-radius:9px;padding:6px 10px;font-size:12.5px}
+.ai-row b{font-weight:700}
+.ai-row span{color:var(--muted)}
+.ai-card{display:flex;gap:11px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:10px 12px;margin-top:7px;max-width:290px}
+.ai-cal{width:50px;height:46px;border-radius:9px;background:var(--navy);color:#fff;display:grid;place-items:center;text-align:center;font-size:10px;line-height:1.1;flex-shrink:0}
+.ai-cal b{display:block;font-size:14px;font-weight:900}
+.ai-card div:last-child b{display:block;font-size:13.5px}
+.ai-card div:last-child span{display:block;font-size:12px;color:var(--muted)}
+.ai-in{margin:0 14px 14px;border:1.5px solid var(--line);border-radius:14px;padding:9px 10px 9px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:46px}
+[dir=rtl] .ai-in{padding:9px 14px 9px 10px}
+.ai-in .t{color:#98a0b3;flex:1}
+.ai-in .t.on{color:var(--navy)}
+.ai-in .t.on::after{content:"";display:inline-block;width:1.5px;height:15px;background:var(--navy);vertical-align:-3px;margin-inline-start:1px;animation:caret 1s steps(1) infinite}
+@keyframes caret{50%{opacity:0}}
+.ai-send{width:30px;height:30px;border-radius:9px;background:var(--navy);display:grid;place-items:center;flex-shrink:0}
+.ai-send svg{width:14px;height:14px}
+[dir=rtl] .ai-send svg{transform:scaleX(-1)}
+
 /* content sections */
 .story{background:var(--white);border-top:1px solid var(--line)}
 .story .wrap{max-width:900px}
@@ -365,6 +400,7 @@ details.small ul{margin-top:14px;padding-inline-start:20px;color:var(--muted);fo
   .closing .wrap{padding-bottom:140px}
 }
 @media (max-width:640px){
+  .ai-top{padding:10px 12px}.ai-body{padding:12px}.ai-in{margin:0 10px 10px}.ai-conn span{display:none}
   .wrap{padding-inline:18px}
   .hero{padding-block:40px 32px}
   .intro{font-size:17px}
@@ -582,6 +618,17 @@ const T = {
     tagIncluded:'כלול בחבילה', tagPro:'כלול ב-Professional', tagAddon:'תוסף', tagPay:'עם מודול סליקה', tagInOffer:'כלול בהצעה',
     addAddon:'הוספת התוסף להצעה', addedAddon:'התוסף נוסף להצעה ✓',
     customer:'נועה', time:'9:41',
+    ai:{tag:'עובד עם Claude', h:'מבקשים מ-Claude, וזה קורה ב-Arbox',
+      lead:'Arbox מתחברת ל-Claude, ה-AI של Anthropic. כותבים לו במילים פשוטות מה צריך, והוא שולף נתונים ומבצע פעולות ישירות במערכת שלכם.',
+      li:['תשובות על לקוחות, מנויים והכנסות, בלי לחפש בדוחות','פעולות במערכת בהודעה אחת','מהמחשב או מהטלפון'],
+      conn:'מחובר ל-', input:'כתבו הודעה ל-Claude',
+      q1:'אילו מנויים מסתיימים השבוע?', tool1:'חיפוש מנויים',
+      a1:'מצאתי 3 מנויים שמסתיימים השבוע:',
+      rows:[['דנה כהן','מנוי חודשי','יום ב׳'],['יואב לוי','כרטיסייה 10','יום ד׳'],['מיכל אברהם','מנוי שנתי','יום ה׳']],
+      a1b:'כדאי לפנות אליהם לפני שהמנוי נגמר.',
+      q2:'תוסיף ליומן שיעור פילאטיס ביום שלישי ב-19:00 עם שירה', tool2:'יצירת שיעור',
+      a2:'הוספתי את השיעור ליומן. הוא כבר פתוח להרשמה באפליקציה.',
+      card:['ג׳','פילאטיס מזרן','19:00-19:50, עם שירה, 12 מקומות']},
     book:{h:'הלקוחות נרשמים לבד, מהטלפון',
       lead:'אפליקציית Arbox ללקוחות שלכם: רואים את מערכת השעות, נרשמים לשיעור או לפגישה, בלי לשלוח לכם הודעה.',
       li:['הרשמה וביטול בלחיצה','מקומות פנויים מתעדכנים מיד','רכישת מנויים וכרטיסיות מהאפליקציה'],
@@ -598,7 +645,7 @@ const T = {
       tiles:['מערכת שעות','המנוי שלי','חנות','הודעות']},
     pay:{h:'גבייה בלי לרדוף אחרי אף אחד',
       lead:'שולחים ללקוח קישור לתשלום, והוא משלם מהנייד תוך שניות. התשלום נרשם במערכת אוטומטית.',
-      li:['קישור תשלום שנשלח מתוך המערכת','תשלום באשראי, Bit או Apple Pay','הוראות קבע למנויים'],
+      li:['קישור תשלום שנשלח מתוך המערכת','תשלום באשראי או ב-Bit','הוראות קבע למנויים'],
       try:'נסו לשלם בהדמיה',
       online:'חשבון עסקי', msg:n=>`היי ${n}, הנה הקישור לחידוש המנוי החודשי שלך 👇`, linkTxt:'לתשלום',
       amount:450, desc:'מנוי חודשי', card:'כרטיס אשראי', payBtn:x=>`תשלום ${x}`, paying:'מאשר...',
@@ -678,6 +725,17 @@ const T = {
     tagIncluded:'Included in your plan', tagPro:'Included in Professional', tagAddon:'Add-on', tagPay:'With payment processing', tagInOffer:'In this proposal',
     addAddon:'Add to proposal', addedAddon:'Added to proposal ✓',
     customer:'Noa', time:'9:41',
+    ai:{tag:'Works with Claude', h:'Ask Claude, and it happens in Arbox',
+      lead:'Arbox connects to Claude, the AI by Anthropic. Tell it what you need in plain words, and it pulls data and takes actions right in your system.',
+      li:['Answers about customers, memberships and revenue, no digging through reports','Actions in the system with one message','From your computer or your phone'],
+      conn:'Connected to ', input:'Write a message to Claude',
+      q1:'Which memberships end this week?', tool1:'Search memberships',
+      a1:'I found 3 memberships ending this week:',
+      rows:[['Dana Cohen','Monthly','Mon'],['Yoav Levi','10-class pass','Wed'],['Michal Avraham','Annual','Thu']],
+      a1b:'Worth reaching out before they run out.',
+      q2:'Add a Pilates class on Tuesday at 19:00 with Shira', tool2:'Create class',
+      a2:'Done, the class is on the calendar and already open for booking in the app.',
+      card:['Tue','Mat Pilates','19:00-19:50, with Shira, 12 spots']},
     book:{h:'Customers book on their own, from their phone',
       lead:'The Arbox app for your customers: they see the schedule and book a class or session without messaging you.',
       li:['Book and cancel in one tap','Open spots update instantly','Buy memberships and passes in the app'],
@@ -694,7 +752,7 @@ const T = {
       tiles:['Schedule','My membership','Shop','Messages']},
     pay:{h:'Get paid without chasing anyone',
       lead:'Send a customer a payment link and they pay from their phone in seconds. The payment is recorded in the system automatically.',
-      li:['Payment links sent from the system','Pay by card, Bit or Apple Pay','Recurring payments for memberships'],
+      li:['Payment links sent from the system','Pay by card or Bit','Recurring payments for memberships'],
       try:'Try paying in the preview',
       online:'business account', msg:n=>`Hi ${n}, here’s the link to renew your monthly membership 👇`, linkTxt:'Pay now',
       amount:450, desc:'Monthly membership', card:'Credit card', payBtn:x=>`Pay ${x}`, paying:'Confirming...',
@@ -722,6 +780,7 @@ const T = {
 
 /* ── helpers ── */
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function nb(t){return esc(t).replace(/(\S+-[A-Za-z][\w.]*)/g,'<span style="white-space:nowrap">$1</span>');}
 function heL(c){return /^[A-Za-z0-9"'(]/.test(c)?'-':'';}
 const fmt=n=>Math.round(n).toLocaleString('he-IL');
 const money=n=>`${fmt(n)}₪`;
@@ -958,11 +1017,11 @@ function showcaseItems(){
   const items=[];
   const studio=S.c||'Arbox';
   items.push({id:'book',tag:U.tagIncluded});
+  items.push({id:'ai',tag:U.ai.tag});
   if(featVal('brandedApp')===true) items.push({id:'brand',tag:U.tagPro});
   if(S.pay.mode==='both'||S.pay.s!=='none') items.push({id:'pay',tag:S.pay.mode==='both'?U.tagPay:U.tagInOffer});
   const wi=addonIdx('wa'); if(wi>-1) items.push({id:'wa2',tag:U.tagAddon,addon:wi});
-  if(featVal('accessControl')===true) items.push({id:'access',tag:U.tagIncluded});
-  else {const ai=addonIdx('access'); if(ai>-1) items.push({id:'access',tag:U.tagAddon,addon:ai});}
+  const acc=addonIdx('access'); if(acc>-1) items.push({id:'access',tag:U.tagAddon,showIf:acc});
   if(featVal('reports')===true) items.push({id:'dash',tag:U.tagIncluded});
   return items;
 }
@@ -979,10 +1038,10 @@ function renderShowcase(){
       C.try?`<span class="try">${esc(C.try)}</span>`:''
     ].filter(Boolean).join('');
     const swatches=it.id==='brand'?`<div class="swatches" role="group" aria-label="${esc(C.try)}">${['#4F87FF','#081838','#E4572E','#17A589','#8E44AD','#F2A900'].map((c,i)=>`<button type="button" class="swatch" style="background:${c}" data-color="${c}" aria-pressed="${i===0}" aria-label="${esc(C.color)} ${i+1}"></button>`).join('')}</div>`:'';
-    return `<section class="show ${n%2?'flip':''}" data-demo="${it.id}">
+    return `<section class="show ${n%2?'flip':''}" data-demo="${it.id}"${it.showIf!=null?` data-show-if="${it.showIf}" hidden`:''}>
       <div class="show-text">
         <span class="tag ${isAddon?'add':''}">${esc(it.tag)}</span>
-        <h3>${esc(C.h)}</h3>
+        <h3>${nb(C.h)}</h3>
         <p class="lead">${esc(lead)}</p>
         <ul>${C.li.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
         ${swatches}
@@ -1022,7 +1081,6 @@ function deviceHTML(id){
         <div class="sh-merchant">${esc(studio)}</div><div class="sh-amt">${money(C.amount)}</div><div class="sh-desc">${C.desc}</div>
         <button type="button" class="sh-m on" data-m="card" tabindex="-1"><span class="ico" style="background:#081838;color:#fff">VISA</span>${C.card} •••• 4821<span class="rd"></span></button>
         <button type="button" class="sh-m" data-m="bit" tabindex="-1"><span class="ico" style="background:#1fb8c4;color:#fff">bit</span>Bit<span class="rd"></span></button>
-        <button type="button" class="sh-m" data-m="apple" tabindex="-1"><span class="ico" style="background:#000;color:#fff"></span>Apple Pay<span class="rd"></span></button>
         <button type="button" class="sh-pay" id="pay-btn" tabindex="-1">${C.payBtn(money(C.amount))}</button>
         <div class="sh-done" id="pay-done"><div><div class="ok-ring" style="color:#fff">${BIG_CHECK}</div><b>${C.done}</b><span>${C.doneSub}</span></div></div>
       </div>`);
@@ -1037,6 +1095,14 @@ function deviceHTML(id){
       <div class="qr-box">${qrSVG(studio)}<div class="beam" id="acc-beam"></div></div>
       <div class="acc-name">${esc(n)}</div><div class="acc-plan">${C.plan}</div></div>
       <div class="acc-ok" id="acc-ok"><div><div class="ok-ring" style="color:#1f9d55">${BIG_CHECK}</div><b>${C.ok}</b><span>${esc(C.okSub(n))}</span></div></div>`);
+  }
+  if(id==='ai'){
+    const C=U.ai;
+    return `<div class="tab"><div class="ai">
+      <div class="ai-top"><div class="ai-who"><span class="ai-av">C</span>Claude</div><div class="ai-conn"><i></i><span>${C.conn}</span><img src="${LOGO}" alt="Arbox"></div></div>
+      <div class="ai-body" id="ai-body"></div>
+      <div class="ai-in"><span class="t" id="ai-in">${C.input}</span><span class="ai-send"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></div>
+    </div></div>`;
   }
   if(id==='dash'){
     const C=U.dash, h=[52,58,55,67,74,86];
@@ -1161,6 +1227,39 @@ function makeDemos(){
   };
   demos.access=acc;
 
+  /* Claude + Arbox */
+  const ai={};
+  const A=U.ai;
+  ai.body=()=>document.getElementById('ai-body');
+  ai.reset=()=>{const b=ai.body(); if(!b)return; b.innerHTML=''; const i=document.getElementById('ai-in'); i.textContent=A.input; i.classList.remove('on');};
+  ai.add=html=>{const b=ai.body(); b.insertAdjacentHTML('beforeend',html); b.scrollTop=b.scrollHeight; return b.lastElementChild;};
+  ai.type=async(txt,stale)=>{
+    const i=document.getElementById('ai-in'); i.classList.add('on'); i.textContent='';
+    for(const ch of txt){ if(stale())return false; i.textContent+=ch; await sleep(32); }
+    await sleep(350); if(stale())return false;
+    i.classList.remove('on'); i.textContent=A.input; ai.add(`<div class="ai-u">${esc(txt)}</div>`); return true;
+  };
+  ai.tool=async(name,stale)=>{
+    const t=ai.add(`<div class="ai-tool"><span class="spin"></span><img src="${LOGO}" alt="">${esc(name)}</div>`);
+    await sleep(1300); if(stale())return false;
+    t.querySelector('.spin').outerHTML='<span class="ok">✓</span>'; return true;
+  };
+  ai.run=async stale=>{
+    await sleep(600); if(stale())return;
+    if(!await ai.type(A.q1,stale))return;
+    await sleep(400); if(stale())return;
+    if(!await ai.tool(A.tool1,stale))return;
+    await sleep(300); if(stale())return;
+    ai.add(`<div class="ai-a">${esc(A.a1)}<div class="ai-rows">${A.rows.map(r=>`<div class="ai-row"><b>${esc(r[0])}</b><span>${esc(r[1])}</span><span>${esc(r[2])}</span></div>`).join('')}</div>${esc(A.a1b)}</div>`);
+    await sleep(2200); if(stale())return;
+    if(!await ai.type(A.q2,stale))return;
+    await sleep(400); if(stale())return;
+    if(!await ai.tool(A.tool2,stale))return;
+    await sleep(300); if(stale())return;
+    ai.add(`<div class="ai-a">${esc(A.a2)}<div class="ai-card"><div class="ai-cal">${esc(A.card[0])}<b>19:00</b></div><div><b>${esc(A.card[1])}</b><span>${esc(A.card[2])}</span></div></div></div>`);
+  };
+  demos.ai=ai;
+
   /* dashboard */
   const dash={};
   dash.reset=()=>{
@@ -1224,6 +1323,10 @@ function update(animate=true){
   document.querySelectorAll('.js-bp').forEach(el=>el.textContent=money(vatify(+el.dataset[bp])));
   document.querySelectorAll('.js-ud').forEach(el=>{el.textContent=el.dataset[bp]||'';});
   document.querySelectorAll('.js-ot').forEach(el=>{const v=+el.dataset.v; el.textContent=v?money(vatify(v)):U.free;});
+  document.querySelectorAll('[data-show-if]').forEach(sec=>{
+    const vis=!!st.on[+sec.dataset.showIf], was=!sec.hidden; sec.hidden=!vis;
+    if(vis&&!was&&animate&&demos[sec.dataset.demo]) playDemo(sec.dataset.demo);
+  });
   document.querySelectorAll('[data-addon-toggle]').forEach(b=>{const on=!!st.on[+b.dataset.addonToggle]; b.classList.toggle('on',on); b.setAttribute('aria-pressed',String(on)); b.textContent=on?U.addedAddon:U.addAddon;});
   document.getElementById('print-billing').textContent=U.printBilling(st.b);
   const bn=document.getElementById('bill-note-t'); if(bn)bn.textContent=an?U.addonsBillA:U.addonsBill;
